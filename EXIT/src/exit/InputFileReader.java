@@ -7,10 +7,12 @@ package exit;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,25 +36,31 @@ public class InputFileReader {
     
     CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITException {
         
-        List<String> lines = Files.readAllLines(Paths.get(filename));
-        int variableCount = lines.size();
-        
-        
         try {
+            List<String> lines = Files.readAllLines(Paths.get(filename));
+            eliminateEmptyLines(lines);
+            
+            
+            int variableCount = lines.size();
             
             int var=1;
             
             CrossImpactMatrix cim = new CrossImpactMatrix(null, variableCount);
             
             for(String l : lines) {
-                int imp=1;
-
+                
                 Scanner sc = new Scanner(l).useDelimiter(String.valueOf(separator));
                 cim.setName(var, sc.next());
+                int imp=0;
                 while(sc.hasNextDouble()) {
-                    cim.setImpact(var, imp, sc.nextDouble());
                     imp++;
+                    cim.setImpact(var, imp, sc.nextDouble());
                 }
+                
+                if (imp != variableCount) {
+                    throw new ModelBuildingException(String.format("Wrong number of impact values: number of lines in input file suggests that there are %d variables, but line %d (Variable '%s') contains %d impact values", variableCount, var, cim.getName(var), imp));
+                }
+                
                 var++;
             }
             
@@ -60,14 +68,33 @@ public class InputFileReader {
             return cim;
             
         } catch (ModelBuildingException ex) {
-            Logger.getLogger(InputFileReader.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         } catch (ArgumentException ex) {
             Logger.getLogger(InputFileReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (EXITException ex) {
             Logger.getLogger(InputFileReader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchElementException ex) {
+            Logger.getLogger(InputFileReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        throw new EXITException("No dice");
+        throw new EXITException("Unknown error");
         
     }
+    
+    /**
+     * 
+     * @param lines 
+     */
+    void eliminateEmptyLines(List<String> lines) {
+        
+        List<String> removed = new LinkedList<>();
+        
+        for(String l : lines) {
+            if(l.trim().length() == 0) { removed.add(l); }
+        }
+        
+        lines.removeAll(removed);
+        
+    }
+    
 }

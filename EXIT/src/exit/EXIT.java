@@ -13,27 +13,31 @@ import java.util.logging.Logger;
  *
  * @author jmpaon
  */
-public class EXIT_cross_impact_analysis {
+public class EXIT {
 
     /**
      * @param args the command line arguments
+     * @throws exit.ModelBuildingException
      */
     public static void main(String[] args) throws ModelBuildingException {
         
-        InputFileReader ifr = new InputFileReader();
-        CrossImpactMatrix matrix;
-        
+
+
         try {
-            matrix = ifr.readInputFile("src/exit_cross_impact_analysis/inputfile.csv");
-            System.out.println(matrix.toString());
+            
+            InputFileReader ifr = new InputFileReader();
+            CrossImpactMatrix matrix;            
+            matrix = ifr.readInputFile("src/exit/inputfile.csv");
+            System.out.println(matrix.toString());            
             
             
             
-        } catch (IOException ex) {
-            Logger.getLogger(EXIT_cross_impact_analysis.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(EXIT_cross_impact_analysis.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | EXITException ex) {
+            Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+            
+
         
         
         

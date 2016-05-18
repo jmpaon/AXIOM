@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package exit_cross_impact_analysis;
+package exit;
 
 import java.io.IOException;
 import java.nio.file.Files;

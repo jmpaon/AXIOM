@@ -96,30 +96,32 @@ public class CrossImpactMatrix {
      * @param impactOf Index of variable that is the impactor variable of the impact
      * @param impactOn Index of variable that is the impacted variable of the impact
      * @param value Value/strength of the impact
-     * @throws ArgumentException
+     * @throws IllegalArgumentException
      * @throws EXITException 
      */
-    public void setImpact(int impactOf, int impactOn, double value) throws ArgumentException, EXITException {
+    public void setImpact(int impactOf, int impactOn, double value) throws IllegalArgumentException, IndexOutOfBoundsException, EXITException {
         
         if(isLocked) { throw new EXITException("The impact matrix is locked and cannot be modified"); }
 
         if(impactOf < 1 || impactOf > varCount || impactOn < 1 || impactOn > varCount) {
             String s = String.format("Impact for index [%d:%d] cannot be set, varCount for the matrix is %d.", impactOf, impactOn, varCount);
-            throw new ArgumentException(s);
+            throw new IndexOutOfBoundsException(s);
         }
         
         if(this.onlyIntegers && value != (int)value) {
-            throw new ArgumentException(String.format("Value %f is not an integer and not allowed", value));
+            throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
         }
         
         if(this.maxImpact != null && maxImpact < value) {
-            throw new ArgumentException(String.format("Value %2.2f is bigger than max value %2.2f",value, maxImpact));
+            throw new IllegalArgumentException(String.format("Value %2.2f is bigger than max value %2.2f",value, maxImpact));
         }
         
         int index = ((impactOf-1) * varCount) + (impactOn-1);
         impacts[index] = value; 
         
     }
+    
+    public int getVarCount() { return varCount; }
     
     
     /**

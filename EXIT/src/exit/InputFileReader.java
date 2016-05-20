@@ -45,7 +45,8 @@ public class InputFileReader {
             
             int var=1;
             
-            CrossImpactMatrix cim = new CrossImpactMatrix(null, variableCount);
+            // FIXME remove hard-coded maxImpact
+            CrossImpactMatrix cim = new CrossImpactMatrix(5, variableCount);
             
             for(String l : lines) {
                 

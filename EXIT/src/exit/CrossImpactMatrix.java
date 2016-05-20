@@ -5,7 +5,15 @@
 package exit;
 
 /**
- *
+ * <code>CrossImpactMatrix</code> represents a table of impacts 
+ * variables have on each other in EXIT cross-impact analysis.
+ * Impacts are usually integers, ranging from 
+ * negative <b>maxImpact</b> to positive <b>maxImpact</b>.
+ * Negative impact of variable X on variable Y represents
+ * probability-decreasing effect of X on Y; 
+ * Positive impact of variable X on variable Y represents
+ * probability-increasing effect of X on Y.
+ * 
  * @author jmpaon
  */
 public class CrossImpactMatrix {
@@ -17,9 +25,18 @@ public class CrossImpactMatrix {
     private boolean isLocked;
     private final String[] names;
     
-    
-    public CrossImpactMatrix(Double maxImpact, int varCount, boolean onlyIntegers, String[] names) throws ModelBuildingException {
-        if(maxImpact != null && maxImpact < 0) {throw new ModelBuildingException("Negative maxImpact");}
+    /**
+     * Constructor for <code>CrossImpactMatrix</code>
+     * @param maxImpact The maximum value impacts in the matrix can have.
+     * Minimum allowed value is <b>-maxImpact</b> and maximum <b>maxImpact</b>.
+     * @param varCount The number of variables in the matrix; 
+     * will be also the number of rows and the number of columns.
+     * @param onlyIntegers Are only integers accepted?
+     * @param names Array of variable names
+     * @throws ModelBuildingException 
+     */
+    public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names) throws ModelBuildingException {
+        if(maxImpact < 0) {throw new ModelBuildingException("Negative maxImpact");}
         if(varCount < 2) {throw new ModelBuildingException("Matrix must have at least 2 rows");}
         
         this.maxImpact = maxImpact;
@@ -33,8 +50,7 @@ public class CrossImpactMatrix {
     }
     
     
-    
-    public CrossImpactMatrix(Double maxImpact, int varCount) throws ModelBuildingException {
+    public CrossImpactMatrix(double maxImpact, int varCount) throws ModelBuildingException {
         this(maxImpact, varCount, true, null);
     }
     
@@ -112,7 +128,7 @@ public class CrossImpactMatrix {
             throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
         }
         
-        if(this.maxImpact != null && maxImpact < value) {
+        if(this.maxImpact != null && maxImpact < Math.abs(value)) {
             throw new IllegalArgumentException(String.format("Value %2.2f is bigger than max value %2.2f",value, maxImpact));
         }
         

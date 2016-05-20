@@ -6,8 +6,10 @@
 package exit;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  *
@@ -21,14 +23,27 @@ public class EXIT {
      */
     public static void main(String[] args) throws ModelBuildingException {
         
-
-
         try {
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix matrix;            
             matrix = ifr.readInputFile("src/exit/inputfile.csv");
-            System.out.println(matrix.toString());            
+            System.out.println(matrix.toString());
+
+            
+            ImpactChain ic = new ImpactChain(matrix, null);
+            // System.out.println(ic.toString());
+            // printSet(ic.notInThisChain());
+            Set<ImpactChain> sic = ic.continuedByOneVariable();
+            for(ImpactChain ic2 : sic)
+                for(ImpactChain ic3 : ic2.continuedByOneVariable()) {
+                    System.out.println(ic3.toString());
+                    System.out.println(ic3.chainedImpact());
+                }
+                    
+            
+            
+            
             
             
             
@@ -36,10 +51,10 @@ public class EXIT {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-            
-
-        
-        
-        
     }
+    
+    public static void printSet(Set<Integer> s) {
+        System.out.println(s.toString());
+    }
+    
 }

@@ -124,6 +124,8 @@ public class CrossImpactMatrix {
             throw new IndexOutOfBoundsException(s);
         }
         
+        if(impactOf == impactOn) throw new IllegalArgumentException("Attempt to set an impact for variable at itself");
+        
         if(this.onlyIntegers && value != (int)value) {
             throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
         }

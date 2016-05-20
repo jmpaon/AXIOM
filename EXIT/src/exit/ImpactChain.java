@@ -5,7 +5,7 @@
  */
 package exit;
 
-import java.util.Collections;
+
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * 
  * @author jmpaon
  */
 public class ImpactChain implements Comparable<ImpactChain> {
+    
     public final CrossImpactMatrix matrix;
     public final List<Integer> chainMembers;
     public final int memberCount;
@@ -37,8 +39,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
     }
     
     /**
-     * Calculates the impact contribution of the <u>last</u> variable in the chain
-     * through the impact chain.
+     * Calculates the impact contribution of the <u>last</u> variable 
+     * in the chain through the impact chain.
      * The direct impact of the last variable can be and usually is greater
      * than the indirect impact through the chain.
      * TODO explain impact contribution
@@ -50,7 +52,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
     }
     
     /**
-     * 
+     * Calculates the impact contribution of the <u>last</u> variable in the chain
+     * through the impact chain.
      * @param chain
      * @return
      * @throws ArgumentException 
@@ -77,7 +80,31 @@ public class ImpactChain implements Comparable<ImpactChain> {
         
     }
     
-    public Set<Integer> notInThisChain() {
+//    private Set<ImpactChain> allExpandedChains(List<Integer> expandedChain) {
+//        Set<ImpactChain> expandedChains = new TreeSet<>();
+//        // Set<Integer> notIncluded = 
+//        throw new UnsupportedOperationException();
+//    }
+    
+    public Set<ImpactChain> allExpandedChains() throws ImpactChainException {
+        Set<ImpactChain> allChains = new TreeSet<>();
+        allChains.add(this);
+        Set<ImpactChain> immediateExpansions = continuedByOneVariable();
+        allChains.addAll(immediateExpansions);
+        for(ImpactChain ic : immediateExpansions) {
+            allChains.addAll(ic.allExpandedChains());
+        }
+        
+        return allChains;
+
+    }
+    
+//    public Set<ImpactChain> allImpactChains() {
+//        Set<ImpactChain> allChains = new TreeSet<>();
+//        
+//    }
+    
+    private Set<Integer> notInThisChain() {
         Set<Integer> s = new TreeSet<>();
         for(int i = 1; i <= matrix.getVarCount() ; i++ ) {
             if(! chainMembers.contains(i)) {

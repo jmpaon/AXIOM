@@ -27,19 +27,25 @@ public class EXIT {
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix matrix;            
-            matrix = ifr.readInputFile("src/exit/inputfile4.csv");
+            matrix = ifr.readInputFile("src/exit/inputfile8.csv");
             System.out.println(matrix.toString());
 
             
             ImpactChain ic = new ImpactChain(matrix, null);
-            // System.out.println(ic.toString());
-            // printSet(ic.notInThisChain());
+
             Set<ImpactChain> sic = ic.allExpandedChains();
-            for(ImpactChain ic2 : sic)
-                for(ImpactChain ic3 : ic2.continuedByOneVariable()) {
-                    System.out.println(ic3.toString());
-                    System.out.println(ic3.chainedImpact());
-                }
+            
+            
+            int counter=0;
+            for(ImpactChain i : sic) {
+                System.out.println(i.toString());
+                counter++;
+            }
+            System.out.println(counter);
+//            for(ImpactChain ic2 : sic)
+//                for(ImpactChain ic3 : ic2.continuedByOneVariable()) {
+//                    System.out.println(ic3.toString());
+//                }
                     
             
             

@@ -32,6 +32,11 @@ public class ImpactChain implements Comparable<ImpactChain> {
         if(chainMembers == null) {
             this.chainMembers = new LinkedList();
         } else {
+            for(Integer i : chainMembers) {
+                if(i < 0 || i > matrix.getVarCount()) {
+                    throw new IllegalArgumentException("Chain member %d not present in impact matrix");
+                }
+            }
             this.chainMembers = chainMembers;
         }
         
@@ -79,13 +84,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return continued;
         
     }
-    
-//    private Set<ImpactChain> allExpandedChains(List<Integer> expandedChain) {
-//        Set<ImpactChain> expandedChains = new TreeSet<>();
-//        // Set<Integer> notIncluded = 
-//        throw new UnsupportedOperationException();
-//    }
-    
+
     public Set<ImpactChain> allExpandedChains() throws ImpactChainException {
         Set<ImpactChain> allChains = new TreeSet<>();
         allChains.add(this);
@@ -96,13 +95,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
         }
         
         return allChains;
-
     }
-    
-//    public Set<ImpactChain> allImpactChains() {
-//        Set<ImpactChain> allChains = new TreeSet<>();
-//        
-//    }
+
     
     private Set<Integer> notInThisChain() {
         Set<Integer> s = new TreeSet<>();
@@ -117,6 +111,11 @@ public class ImpactChain implements Comparable<ImpactChain> {
     @Override
     public String toString() {
         String s="";
+        try {
+            s = String.format("  %+2.2f : ", chainedImpact());
+        } catch (ArgumentException ex) {
+            Logger.getLogger(ImpactChain.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         for(Integer i : chainMembers) {
             try {
@@ -151,6 +150,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
         }
         return 0;
     }
+    
+    
 
     
     

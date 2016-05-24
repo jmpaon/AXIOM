@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  *
@@ -27,13 +28,16 @@ public class EXIT {
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix matrix;            
-            matrix = ifr.readInputFile("src/exit/inputfile8.csv");
+            matrix = ifr.readInputFile("src/exit/inputfile35L.csv");
             System.out.println(matrix.toString());
-
             
             ImpactChain ic = new ImpactChain(matrix, null);
+            List<Integer> list = new LinkedList<>();
+            list.add(4); list.add(6); list.add(3);
+            ImpactChain ict = new ImpactChain(matrix, list);
 
-            Set<ImpactChain> sic = ic.allExpandedChains();
+
+            List<ImpactChain> sic = matrix.indirectImpacts(0.1);
             
             
             int counter=0;
@@ -41,15 +45,7 @@ public class EXIT {
                 System.out.println(i.toString());
                 counter++;
             }
-            System.out.println(counter);
-//            for(ImpactChain ic2 : sic)
-//                for(ImpactChain ic3 : ic2.continuedByOneVariable()) {
-//                    System.out.println(ic3.toString());
-//                }
-                    
-            
-            
-            
+            System.out.println(counter + " impact chains printed");
             
             
             

@@ -4,6 +4,11 @@
  */
 package exit;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * <code>CrossImpactMatrix</code> represents a table of impacts 
  * variables have on each other in EXIT cross-impact analysis.
@@ -53,6 +58,50 @@ public class CrossImpactMatrix {
     public CrossImpactMatrix(double maxImpact, int varCount) throws ModelBuildingException {
         this(maxImpact, varCount, true, null);
     }
+    
+    
+    public List<ImpactChain> indirectImpacts(double treshold) throws ImpactChainException, ArgumentException {
+        return new ImpactChain(this, null).highImpactChains(treshold).stream()
+                .filter(c -> c.memberCount > 1)
+                .sorted(new ImpactComparator())
+                .collect(Collectors.toList());
+    }
+    
+    public List<ImpactChain> indirectImpacts(int impactOf, int impactOn, double treshold) throws ImpactChainException, ArgumentException {
+        
+        List<Integer> initialChain = new LinkedList<>();
+        initialChain.add(impactOf);
+        ImpactChain ic = new ImpactChain(this, initialChain);
+        return ic.highImpactChains(treshold).stream()
+                .filter(c -> c.chainEndsToIndex(impactOn))
+                .filter(c -> c.memberCount > 1)
+                .sorted(new ImpactComparator())
+                .collect(Collectors.toList());
+    }
+    
+    public List<ImpactChain> indirectImpactsOf(int impactOf, double treshold) throws ImpactChainException, ArgumentException {
+        List<Integer> initialChain = new LinkedList<>();
+        initialChain.add(impactOf);
+        ImpactChain ic = new ImpactChain(this, initialChain);
+        return ic.highImpactChains(treshold).stream()
+                .filter(c -> c.memberCount > 1)
+                .sorted(new ImpactComparator())
+                .collect(Collectors.toList());
+    }
+    
+    public List<ImpactChain> indirectImpactsOn(int impactOn, double treshold) throws ImpactChainException, ArgumentException {
+        ImpactChain ic = new ImpactChain(this, null);
+        Set<ImpactChain> chains = ic.highImpactChains(treshold);
+        return chains.stream()
+                .filter(c -> c.chainEndsToIndex(impactOn))
+                .filter(c -> c.memberCount > 1)
+                .sorted(new ImpactComparator())
+                .collect(Collectors.toList());
+        
+    } 
+    
+    
+    
     
     /**
      * Creates variable names for the cross-impact matrix.
@@ -216,12 +265,15 @@ public class CrossImpactMatrix {
     public double greatestImpact() {
         
         double greatest = Math.abs(impacts[0]);
-        for(int i=1; i<impacts.length; i++) {
+        for (int i=1; i<impacts.length; i++) {
             double v = Math.abs(impacts[i]);
             if(v > greatest) { greatest = v; }
         }
         return greatest;
     }
+    
+    
+    
     
     /**
      * Returns a copy of the impact matrix (only the impact values)

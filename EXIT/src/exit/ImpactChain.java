@@ -88,8 +88,22 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return (matrix.getImpact(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * chainedImpact(chain.subList(1, chain.size()));
     }
     
+    private Set<ImpactChain> continuedByOneIntermediary() {
+        Set<ImpactChain> continued = new TreeSet<>();
+        Set<Integer> notIncluded = notInThisChain();
+        for(Integer i : notIncluded) {
+            List cm = new LinkedList(chainMembers);
+            cm.add(cm.size()-1, i);
+            ImpactChain c = new ImpactChain(this.matrix, cm);
+            continued.add(c);
+        }
+        
+        return continued;
+    }
     
-    private Set<ImpactChain> continuedByOneVariable()  {
+    
+    
+    private Set<ImpactChain> continuedByOne()  {
         Set<ImpactChain> continued = new TreeSet<>();
         Set<Integer> notIncluded = notInThisChain();
         
@@ -112,7 +126,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
     public Set<ImpactChain> allExpandedChains()  {
         Set<ImpactChain> allChains = new TreeSet<>();
         allChains.add(this);
-        Set<ImpactChain> immediateExpansions = continuedByOneVariable();
+        Set<ImpactChain> immediateExpansions = continuedByOne();
         allChains.addAll(immediateExpansions);
         for(ImpactChain ic : immediateExpansions) {
             allChains.addAll(ic.allExpandedChains());
@@ -135,7 +149,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
         
         if(this.chainedImpact() >= impactTreshold) { 
             chains.add(this);
-            Set<ImpactChain> immediateExpansions = continuedByOneVariable();
+            Set<ImpactChain> immediateExpansions = continuedByOne();
             for(ImpactChain ic : immediateExpansions) {
                 chains.addAll(ic.highImpactChains(impactTreshold));
             }

@@ -60,46 +60,6 @@ public class CrossImpactMatrix {
     }
     
     
-//    public List<ImpactChain> indirectImpacts(double treshold)   {
-//        return new ImpactChain(this, null).highImpactChains(treshold).stream()
-//                .filter(c -> c.memberCount > 1)
-//                .sorted(new ImpactComparator())
-//                .collect(Collectors.toList());
-//    }
-    
-//    public List<ImpactChain> indirectImpacts(int impactOf, int impactOn, double treshold) {
-//        
-//        List<Integer> initialChain = new LinkedList<>();
-//        initialChain.add(impactOf);
-//        ImpactChain ic = new ImpactChain(this, initialChain);
-//        return ic.highImpactChains(treshold).stream()
-//                .filter(c -> c.chainEndsToIndex(impactOn))
-//                .filter(c -> c.memberCount > 1)
-//                .sorted(new ImpactComparator())
-//                .collect(Collectors.toList());
-//    }
-    
-//    public List<ImpactChain> indirectImpactsOf(int impactOf, double treshold) {
-//        List<Integer> initialChain = new LinkedList<>();
-//        initialChain.add(impactOf);
-//        ImpactChain ic = new ImpactChain(this, initialChain);
-//        return ic.highImpactChains(treshold).stream()
-//                .filter(c -> c.memberCount > 1)
-//                .sorted(new ImpactComparator())
-//                .collect(Collectors.toList());
-//    }
-//    
-//    public List<ImpactChain> indirectImpactsOn(int impactOn, double treshold) {
-//        ImpactChain ic = new ImpactChain(this, null);
-//        Set<ImpactChain> chains = ic.highImpactChains(treshold);
-//        return chains.stream()
-//                .filter(c -> c.chainEndsToIndex(impactOn))
-//                .filter(c -> c.memberCount > 1)
-//                .sorted(new ImpactComparator())
-//                .collect(Collectors.toList());
-//        
-//    } 
-    
     public List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
         
         

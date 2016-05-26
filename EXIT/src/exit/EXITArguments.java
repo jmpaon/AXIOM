@@ -40,11 +40,11 @@ public class EXITArguments {
     }
     
     
-    public EXITArguments(String[] args) {
+    public EXITArguments(String[] args) throws EXITArgumentException {
         
         this.args = Arrays.asList(args);
         if(hasUnknownOptions()) {
-            throw new EXITArgumentException()
+            throw new EXITArgumentException("Unknown options");
         }
         
         inputFilename  = this.args.get(0);

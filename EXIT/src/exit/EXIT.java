@@ -23,14 +23,13 @@ public class EXIT {
      */
     public static void main(String[] args) {
         
-        EXITArguments arguments = new EXITArguments(args);
-        System.out.println(arguments.toString());
-        
-        
         try {
             
+            EXITArguments arguments = new EXITArguments(args);
+            System.out.println(arguments.toString());            
+            
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/inputfile35L.csv");
+            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/input35_55.csv");
             System.out.println(matrix.toString());
             
             ImpactChain ic = new ImpactChain(matrix, null);
@@ -39,7 +38,7 @@ public class EXIT {
             ImpactChain ict = new ImpactChain(matrix, list);
 
 
-            List<ImpactChain> sic = matrix.indirectImpacts(3, 5, 0.0001);
+            List<ImpactChain> sic = matrix.indirectImpacts(3, 5, 0.25);
             
             
             int counter=0;

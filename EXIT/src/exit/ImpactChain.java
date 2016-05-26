@@ -88,7 +88,13 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return (matrix.getImpact(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * chainedImpact(chain.subList(1, chain.size()));
     }
     
-    private Set<ImpactChain> continuedByOneIntermediary() {
+    public Set<ImpactChain> continuedByOneIntermediary() {
+        
+        // if(chainMembers.size() < 2) throw new IllegalStateException("This chain has less than 2 variables");
+        if(chainMembers.size() < 2) {
+            return continuedByOne();
+        }
+        
         Set<ImpactChain> continued = new TreeSet<>();
         Set<Integer> notIncluded = notInThisChain();
         for(Integer i : notIncluded) {
@@ -101,6 +107,21 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return continued;
     }
     
+    public Set<ImpactChain> highImpactChainsIM(double treshold) {
+        if(treshold <=0 || treshold >1 ) throw new IllegalArgumentException("impactTreshold should be in range ]0..1]");
+        
+        Set<ImpactChain> chains = new TreeSet<>();
+        
+        if(this.chainedImpact() >= treshold) { 
+            chains.add(this);
+            Set<ImpactChain> immediateExpansions = continuedByOneIntermediary();
+            for(ImpactChain ic : immediateExpansions) {
+                chains.addAll(ic.highImpactChains(treshold));
+            }
+        }
+        
+        return chains;        
+    }
     
     
     private Set<ImpactChain> continuedByOne()  {

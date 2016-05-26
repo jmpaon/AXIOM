@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <code>CrossImpactMatrix</code> represents a table of impacts 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public class CrossImpactMatrix {
     
-    private final double maxImpact;
+    private double maxImpact;
     private final int varCount;
     private final double[] impacts;
     private boolean onlyIntegers;
@@ -59,13 +60,43 @@ public class CrossImpactMatrix {
         this(maxImpact, varCount, true, null);
     }
     
+    public CrossImpactMatrix indirectImpactMatrix(double treshold) {
+        CrossImpactMatrix iim = new CrossImpactMatrix(1000, this.varCount, false, names);
+        for(int impactor = 1 ; impactor <= iim.varCount ; impactor++ ) {
+            for(int impacted = 1 ; impacted <= iim.varCount ; impacted++ ) {
+                double impactSum = 0;
+                if(impactor != impacted) {
+                    
+                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, treshold);
+                    System.out.printf("Calculating impacts of %s on %s...", this.getName(impactor), this.getName(impacted));
+                    
+                    int counter = 0;
+                    for(ImpactChain chain : chains) {
+                        // System.out.println(chain.toString() + String.format(" || Impactor: %d Impacted: %d", impactor, impacted)   );
+                        impactSum += chain.chainedImpact();
+                        counter++;
+                    }
+                    System.out.printf(" %d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum);
+               
+                }
+                if(iim.maxImpact < impactSum) iim.setMaxImpact(impactSum);
+                iim.setImpact(impactor, impacted, impactSum);
+            }
+        }
+        
+        return iim;
+    }
+    
+    void setMaxImpact(double newMaxImpact) {
+        if(newMaxImpact <= 0 ) throw new IllegalArgumentException("maxImpact cannot be 0 or smaller");
+        this.maxImpact = newMaxImpact;
+    }
     
     public List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
         
-        
         if(impactOn != null && (impactOn <1 || impactOn > varCount)) throw new IndexOutOfBoundsException("impactOn index is not present in the matrix");
         if(impactOf != null && (impactOf <1 || impactOf > varCount)) throw new IndexOutOfBoundsException("impactOf index is not present in the matrix");
-        if(treshold <=0 || treshold > 1) throw new IllegalArgumentException("treshold value is not in range [0..1]");
+        if(treshold <=0 || treshold > 1) throw new IllegalArgumentException("treshold value is not in range ]0..1]");
         
         List<Integer> initialChain = null;
         
@@ -74,7 +105,8 @@ public class CrossImpactMatrix {
         }
         
         ImpactChain ic = new ImpactChain(this, initialChain);
-        Set<ImpactChain> chains = ic.highImpactChains(treshold);
+        
+        Set<ImpactChain> chains = ic.highImpactChainsIM(treshold);
         
         if(impactOn != null) {
             chains = chains.stream()
@@ -149,12 +181,11 @@ public class CrossImpactMatrix {
      * @param impactOn Index of variable that is the impacted variable of the impact
      * @param value Value/strength of the impact
      * @throws IllegalArgumentException
-     * @throws EXITException 
      */
-    public void setImpact(int impactOf, int impactOn, double value) throws IllegalArgumentException, IndexOutOfBoundsException, EXITException {
+    public void setImpact(int impactOf, int impactOn, double value) throws IllegalArgumentException, IndexOutOfBoundsException, IllegalStateException {
         
         // Locked matrix cannot be changed
-        if(isLocked) { throw new EXITException("The impact matrix is locked and cannot be modified"); }
+        if(isLocked) { throw new IllegalStateException("The impact matrix is locked and cannot be modified"); }
         
         // Test if indexes are legal
         if(impactOf < 1 || impactOf > varCount || impactOn < 1 || impactOn > varCount) {

@@ -27,6 +27,7 @@ public class EXITArguments {
     public final String impactOf;
     public final String impactOn;
     public final boolean onlyIntegers;
+    public final double treshold;
     
     
     private List<String> initializeKnownOptions() {
@@ -35,7 +36,8 @@ public class EXITArguments {
                 "-int",    // All impacts are integers
                 "-of",     // Print impacts of 
                 "-on",     // Print impacts on
-                "-max"     // Maximum impact value
+                "-max",    // Maximum impact value
+                "-t"       // Impact treshold
         ));
     }
     
@@ -53,6 +55,7 @@ public class EXITArguments {
         impactOn       = extractArgumentValue("-on");
         maxImpact      = Double.valueOf(extractArgumentValue("-max"));
         onlyIntegers   = hasFlag("-int");
+        treshold       = hasFlag("-t") ? Double.valueOf(extractArgumentValue("-t")) : 0.001;
     }
     
     private boolean hasUnknownOptions() {
@@ -91,7 +94,7 @@ public class EXITArguments {
             String name = field.getName();
             Object value;
             try { value = field.get(this);} 
-            catch (Exception ex) { value = new String("No value"); }
+            catch (Exception ex) { value = "No value"; }
             s += String.format("%s%n", (name + ": " + (value == null ? "No value" : value.toString())));
         }
         

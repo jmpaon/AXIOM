@@ -41,6 +41,7 @@ public class EXITArguments {
     
     
     public EXITArguments(String[] args) {
+        
         this.args = Arrays.asList(args);
         inputFilename  = this.args.get(0);
         outputFilename = extractArgumentValue("-o");

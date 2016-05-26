@@ -60,48 +60,55 @@ public class CrossImpactMatrix {
     }
     
     
-    public List<ImpactChain> indirectImpacts(double treshold)   {
-        return new ImpactChain(this, null).highImpactChains(treshold).stream()
-                .filter(c -> c.memberCount > 1)
-                .sorted(new ImpactComparator())
-                .collect(Collectors.toList());
-    }
+//    public List<ImpactChain> indirectImpacts(double treshold)   {
+//        return new ImpactChain(this, null).highImpactChains(treshold).stream()
+//                .filter(c -> c.memberCount > 1)
+//                .sorted(new ImpactComparator())
+//                .collect(Collectors.toList());
+//    }
     
-    public List<ImpactChain> indirectImpacts(int impactOf, int impactOn, double treshold) {
+//    public List<ImpactChain> indirectImpacts(int impactOf, int impactOn, double treshold) {
+//        
+//        List<Integer> initialChain = new LinkedList<>();
+//        initialChain.add(impactOf);
+//        ImpactChain ic = new ImpactChain(this, initialChain);
+//        return ic.highImpactChains(treshold).stream()
+//                .filter(c -> c.chainEndsToIndex(impactOn))
+//                .filter(c -> c.memberCount > 1)
+//                .sorted(new ImpactComparator())
+//                .collect(Collectors.toList());
+//    }
+    
+//    public List<ImpactChain> indirectImpactsOf(int impactOf, double treshold) {
+//        List<Integer> initialChain = new LinkedList<>();
+//        initialChain.add(impactOf);
+//        ImpactChain ic = new ImpactChain(this, initialChain);
+//        return ic.highImpactChains(treshold).stream()
+//                .filter(c -> c.memberCount > 1)
+//                .sorted(new ImpactComparator())
+//                .collect(Collectors.toList());
+//    }
+//    
+//    public List<ImpactChain> indirectImpactsOn(int impactOn, double treshold) {
+//        ImpactChain ic = new ImpactChain(this, null);
+//        Set<ImpactChain> chains = ic.highImpactChains(treshold);
+//        return chains.stream()
+//                .filter(c -> c.chainEndsToIndex(impactOn))
+//                .filter(c -> c.memberCount > 1)
+//                .sorted(new ImpactComparator())
+//                .collect(Collectors.toList());
+//        
+//    } 
+    
+    public List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
         
-        List<Integer> initialChain = new LinkedList<>();
-        initialChain.add(impactOf);
-        ImpactChain ic = new ImpactChain(this, initialChain);
-        return ic.highImpactChains(treshold).stream()
-                .filter(c -> c.chainEndsToIndex(impactOn))
-                .filter(c -> c.memberCount > 1)
-                .sorted(new ImpactComparator())
-                .collect(Collectors.toList());
-    }
-    
-    public List<ImpactChain> indirectImpactsOf(int impactOf, double treshold) {
-        List<Integer> initialChain = new LinkedList<>();
-        initialChain.add(impactOf);
-        ImpactChain ic = new ImpactChain(this, initialChain);
-        return ic.highImpactChains(treshold).stream()
-                .filter(c -> c.memberCount > 1)
-                .sorted(new ImpactComparator())
-                .collect(Collectors.toList());
-    }
-    
-    public List<ImpactChain> indirectImpactsOn(int impactOn, double treshold) {
-        ImpactChain ic = new ImpactChain(this, null);
-        Set<ImpactChain> chains = ic.highImpactChains(treshold);
-        return chains.stream()
-                .filter(c -> c.chainEndsToIndex(impactOn))
-                .filter(c -> c.memberCount > 1)
-                .sorted(new ImpactComparator())
-                .collect(Collectors.toList());
         
-    } 
-    
-    private List<ImpactChain> sortAndFilter(Integer impactOn, Integer impactOf, double treshold) {
+        if(impactOn != null && (impactOn <1 || impactOn > varCount)) throw new IndexOutOfBoundsException("impactOn index is not present in the matrix");
+        if(impactOf != null && (impactOf <1 || impactOf > varCount)) throw new IndexOutOfBoundsException("impactOf index is not present in the matrix");
+        if(treshold <=0 || treshold > 1) throw new IllegalArgumentException("treshold value is not in range [0..1]");
+        
         List<Integer> initialChain = null;
+        
         if(impactOf != null) {
             initialChain = new LinkedList<>(Arrays.asList(impactOf));
         }
@@ -112,11 +119,13 @@ public class CrossImpactMatrix {
         if(impactOn != null) {
             chains = chains.stream()
                     .filter(c -> c.chainEndsToIndex(impactOn))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
         }
         
-        
-            
+        return chains.stream()
+                .sorted(new ImpactComparator())
+                .filter(c -> c.memberCount > 1)
+                .collect(Collectors.toList());
         
     }
     

@@ -41,7 +41,7 @@ public class EXIT {
             ImpactChain ict = new ImpactChain(matrix, list);
 
 
-            List<ImpactChain> sic = matrix.indirectImpacts(0.1);
+            List<ImpactChain> sic = matrix.indirectImpacts(3, 5, 0.0001);
             
             
             int counter=0;

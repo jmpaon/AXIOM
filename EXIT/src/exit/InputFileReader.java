@@ -58,7 +58,7 @@ public class InputFileReader {
             }
 
             if (imp != variableCount) {
-                throw new ModelBuildingException(String.format("Wrong number of impact values: number of lines in input file suggests that there are %d variables, but line %d (Variable '%s') contains %d impact values", variableCount, var, cim.getName(var), imp));
+                throw new EXITArgumentException(String.format("Wrong number of impact values: number of lines in input file suggests that there are %d variables, but line %d (Variable '%s') contains %d impact values", variableCount, var, cim.getName(var), imp));
             }
 
             var++;

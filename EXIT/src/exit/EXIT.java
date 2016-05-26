@@ -20,9 +20,8 @@ public class EXIT {
 
     /**
      * @param args the command line arguments
-     * @throws exit.ModelBuildingException
      */
-    public static void main(String[] args) throws ModelBuildingException {
+    public static void main(String[] args) {
         
         EXITArguments arguments = new EXITArguments(args);
         System.out.println(arguments.toString());
@@ -31,8 +30,7 @@ public class EXIT {
         try {
             
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix matrix;            
-            matrix = ifr.readInputFile("src/exit/inputfile35L.csv");
+            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/inputfile35L.csv");
             System.out.println(matrix.toString());
             
             ImpactChain ic = new ImpactChain(matrix, null);

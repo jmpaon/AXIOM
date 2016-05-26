@@ -43,6 +43,10 @@ public class EXITArguments {
     public EXITArguments(String[] args) {
         
         this.args = Arrays.asList(args);
+        if(hasUnknownOptions()) {
+            throw new EXITArgumentException()
+        }
+        
         inputFilename  = this.args.get(0);
         outputFilename = extractArgumentValue("-o");
         impactOf       = extractArgumentValue("-of");

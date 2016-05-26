@@ -4,6 +4,7 @@
  */
 package exit;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public class CrossImpactMatrix {
     
-    private final Double maxImpact;
+    private final double maxImpact;
     private final int varCount;
     private final double[] impacts;
     private boolean onlyIntegers;
@@ -38,11 +39,10 @@ public class CrossImpactMatrix {
      * will be also the number of rows and the number of columns.
      * @param onlyIntegers Are only integers accepted?
      * @param names Array of variable names
-     * @throws ModelBuildingException 
      */
-    public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names) throws ModelBuildingException {
-        if(maxImpact < 0) {throw new ModelBuildingException("Negative maxImpact");}
-        if(varCount < 2) {throw new ModelBuildingException("Matrix must have at least 2 rows");}
+    public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names)  {
+        if(maxImpact < 0) {throw new IllegalArgumentException("Negative maxImpact");}
+        if(varCount < 2) {throw new IllegalArgumentException("Matrix must have at least 2 rows");}
         
         this.maxImpact = maxImpact;
         this.varCount = varCount;
@@ -50,24 +50,24 @@ public class CrossImpactMatrix {
         this.onlyIntegers = onlyIntegers;
         this.isLocked = false;
         if(names == null) { names = createNames(varCount); }
-        if(names.length != varCount) { throw new ModelBuildingException("Names array should have length equal to impact count"); }
+        if(names.length != varCount) { throw new IllegalArgumentException("Names array should have length equal to impact count"); }
         this.names = names;
     }
     
     
-    public CrossImpactMatrix(double maxImpact, int varCount) throws ModelBuildingException {
+    public CrossImpactMatrix(double maxImpact, int varCount) {
         this(maxImpact, varCount, true, null);
     }
     
     
-    public List<ImpactChain> indirectImpacts(double treshold) throws ImpactChainException, ArgumentException {
+    public List<ImpactChain> indirectImpacts(double treshold)   {
         return new ImpactChain(this, null).highImpactChains(treshold).stream()
                 .filter(c -> c.memberCount > 1)
                 .sorted(new ImpactComparator())
                 .collect(Collectors.toList());
     }
     
-    public List<ImpactChain> indirectImpacts(int impactOf, int impactOn, double treshold) throws ImpactChainException, ArgumentException {
+    public List<ImpactChain> indirectImpacts(int impactOf, int impactOn, double treshold) {
         
         List<Integer> initialChain = new LinkedList<>();
         initialChain.add(impactOf);
@@ -79,7 +79,7 @@ public class CrossImpactMatrix {
                 .collect(Collectors.toList());
     }
     
-    public List<ImpactChain> indirectImpactsOf(int impactOf, double treshold) throws ImpactChainException, ArgumentException {
+    public List<ImpactChain> indirectImpactsOf(int impactOf, double treshold) {
         List<Integer> initialChain = new LinkedList<>();
         initialChain.add(impactOf);
         ImpactChain ic = new ImpactChain(this, initialChain);
@@ -89,7 +89,7 @@ public class CrossImpactMatrix {
                 .collect(Collectors.toList());
     }
     
-    public List<ImpactChain> indirectImpactsOn(int impactOn, double treshold) throws ImpactChainException, ArgumentException {
+    public List<ImpactChain> indirectImpactsOn(int impactOn, double treshold) {
         ImpactChain ic = new ImpactChain(this, null);
         Set<ImpactChain> chains = ic.highImpactChains(treshold);
         return chains.stream()
@@ -100,7 +100,25 @@ public class CrossImpactMatrix {
         
     } 
     
-    
+    private List<ImpactChain> sortAndFilter(Integer impactOn, Integer impactOf, double treshold) {
+        List<Integer> initialChain = null;
+        if(impactOf != null) {
+            initialChain = new LinkedList<>(Arrays.asList(impactOf));
+        }
+        
+        ImpactChain ic = new ImpactChain(this, initialChain);
+        Set<ImpactChain> chains = ic.highImpactChains(treshold);
+        
+        if(impactOn != null) {
+            chains = chains.stream()
+                    .filter(c -> c.chainEndsToIndex(impactOn))
+                    .collect(Collectors.toList());
+        }
+        
+        
+            
+        
+    }
     
     
     /**
@@ -123,20 +141,20 @@ public class CrossImpactMatrix {
      * Returns the name of variable with index <b>var</b>.
      * @param var Index of variable in question
      * @return Name of variable with index <b>var</b>.
-     * @throws ArgumentException 
+     * @throws IllegalArgumentException 
      */
-    public String getName(int var) throws ArgumentException {
+    public String getName(int var) throws IndexOutOfBoundsException {
         if(var < 1 || var > varCount) {
             String s = String.format("No name for index [%d], varCount for the matrix is %d.", var, varCount);
-            throw new ArgumentException(s);
+            throw new IndexOutOfBoundsException(s);
         }
         return names[var-1];
     }
     
-    public void setName(int varIndex, String varName) throws ArgumentException, EXITException {
+    public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, EXITException {
         if(isLocked) { throw new EXITException("The impact matrix is locked and cannot be modified"); }
-        if(varIndex < 0 || varIndex > varCount) { throw new ArgumentException("Invalid variable index"); }
-        if(varName == null) { throw new ArgumentException("Variable name cannot be null"); }
+        if(varIndex < 0 || varIndex > varCount) { throw new IndexOutOfBoundsException("Invalid variable index"); }
+        if(varName == null) { throw new IllegalArgumentException("Variable name cannot be null"); }
         this.names[varIndex-1] = varName;
     }
     
@@ -145,12 +163,12 @@ public class CrossImpactMatrix {
      * @param impactOf Index of variable that is the impactor variable of the impact
      * @param impactOn Index of variable that is the impacted variable of the impact
      * @return 
-     * @throws ArgumentException 
+     * @throws IllegalArgumentException 
      */
-    public double getImpact(int impactOf, int impactOn) throws ArgumentException {
+    public double getImpact(int impactOf, int impactOn) throws IndexOutOfBoundsException {
         if(impactOf < 1 || impactOf > varCount || impactOn < 1 || impactOn > varCount) {
             String s = String.format("No impact for index [%d:%d], varCount for the matrix is %d.", impactOf, impactOn, varCount);
-            throw new ArgumentException(s);
+            throw new IndexOutOfBoundsException(s);
         }
         int index = ((impactOf-1) * varCount) + (impactOn-1);
         return impacts[index];
@@ -184,7 +202,7 @@ public class CrossImpactMatrix {
         }
         
         // Absolute value of impact cannot be greater than maxImpact
-        if(this.maxImpact != null && maxImpact < Math.abs(value)) {
+        if(maxImpact < Math.abs(value)) {
             throw new IllegalArgumentException(String.format("Value %2.2f is bigger than max value %2.2f",value, maxImpact));
         }
 

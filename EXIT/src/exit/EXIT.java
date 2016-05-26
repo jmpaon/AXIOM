@@ -24,6 +24,10 @@ public class EXIT {
      */
     public static void main(String[] args) throws ModelBuildingException {
         
+        EXITArguments arguments = new EXITArguments(args);
+        System.out.println(arguments.toString());
+        
+        
         try {
             
             InputFileReader ifr = new InputFileReader();

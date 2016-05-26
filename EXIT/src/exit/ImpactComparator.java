@@ -17,12 +17,14 @@ public class ImpactComparator implements Comparator<ImpactChain> {
     
     @Override
     public int compare(ImpactChain ic1, ImpactChain ic2) {
-        try {
-            return Double.compare(ic2.chainedImpact(), ic1.chainedImpact());
-        } catch (ArgumentException ex) {
-            Logger.getLogger(ImpactChain.class.getName()).log(Level.SEVERE, null, ex);
+        
+        int result = Double.compare(ic2.chainedImpact(), ic1.chainedImpact());
+        
+        if(result == 0) {
+            result = ic1.compareTo(ic2);
         }
-        return 0;
+        
+        return result;
     }
     
 }

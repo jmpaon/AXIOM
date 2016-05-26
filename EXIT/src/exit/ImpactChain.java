@@ -27,7 +27,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
     public final int memberCount;
     
     
-    public ImpactChain(CrossImpactMatrix matrix, List<Integer> chainMembers) throws ImpactChainException {
+    public ImpactChain(CrossImpactMatrix matrix, List<Integer> chainMembers) {
         if(matrix == null) throw new NullPointerException("matrix is null");
         this.matrix = matrix;
         if(chainMembers == null) {
@@ -38,9 +38,10 @@ public class ImpactChain implements Comparable<ImpactChain> {
             Set<Integer> woDuplicates = new TreeSet<>(chainMembers);
             if(woDuplicates.size() != chainMembers.size()) { throw new IllegalArgumentException("duplicate items in chainMembers"); }
             
+            // Test that indices in chainMembers are present in matrix of this impactChain
             for(Integer i : chainMembers) {
                 if(i < 0 || i > matrix.getVarCount()) {
-                    throw new IllegalArgumentException("Chain member %d not present in impact matrix");
+                    throw new IndexOutOfBoundsException("Chain member %d not present in impact matrix");
                 }
             }
             this.chainMembers = chainMembers;
@@ -53,7 +54,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return chainMembers.get(memberCount-1);
     }
     
-    public String lastVariableName() throws ArgumentException {
+    public String lastVariableName() {
         return matrix.getName(chainMembers.get(memberCount-1));
     }
     
@@ -69,9 +70,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * than the indirect impact through the chain.
      * TODO explain impact contribution
      * @return Impact contribution of the last variable of the chain through this particular chain
-     * @throws ArgumentException 
      */
-    public double chainedImpact() throws ArgumentException {
+    public double chainedImpact() {
         return chainedImpact(chainMembers);
     }
     
@@ -80,9 +80,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * through the impact chain.
      * @param chain
      * @return
-     * @throws ArgumentException 
      */
-    private double chainedImpact(List<Integer> chain) throws ArgumentException {
+    private double chainedImpact(List<Integer> chain)  {
         if(chain == null) { throw new NullPointerException("chain argument is null"); }
         if(chain.isEmpty()) return 1;
         if(chain.size()==1) return 1;
@@ -90,7 +89,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
     }
     
     
-    private Set<ImpactChain> continuedByOneVariable() throws ImpactChainException {
+    private Set<ImpactChain> continuedByOneVariable()  {
         Set<ImpactChain> continued = new TreeSet<>();
         Set<Integer> notIncluded = notInThisChain();
         
@@ -108,10 +107,9 @@ public class ImpactChain implements Comparable<ImpactChain> {
     /**
      * Generates all possible impact chains that can be expanded from
      * this impact chain using the variables in the matrix of this impact chain
-     * @return All possible impact chains expanded from this impact chain
-     * @throws ImpactChainException 
+     * @return All possible impact chains expanded from this impact chain 
      */
-    public Set<ImpactChain> allExpandedChains() throws ImpactChainException {
+    public Set<ImpactChain> allExpandedChains()  {
         Set<ImpactChain> allChains = new TreeSet<>();
         allChains.add(this);
         Set<ImpactChain> immediateExpansions = continuedByOneVariable();
@@ -129,10 +127,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * than <code>impactTreshold</code>).
      * @param impactTreshold The minimum impact a chain should have to be included in the returned chain
      * @return All impact chains expanded from this chain that have higher impact than treshold.
-     * @throws ImpactChainException
-     * @throws ArgumentException 
      */
-    public Set<ImpactChain> highImpactChains(double impactTreshold) throws ImpactChainException, ArgumentException {
+    public Set<ImpactChain> highImpactChains(double impactTreshold)  {
         if(impactTreshold <0 || impactTreshold >1 ) throw new IllegalArgumentException("impactTreshold should be in range [0..1]");
         
         Set<ImpactChain> chains = new TreeSet<>();
@@ -165,21 +161,11 @@ public class ImpactChain implements Comparable<ImpactChain> {
     
     @Override
     public String toString() {
-        String s="";
-        try {
-            s = String.format("  %+2.2f : ", chainedImpact());
-        } catch (ArgumentException ex) {
-            Logger.getLogger(ImpactChain.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String s = String.format("  %+2.2f : ", chainedImpact());
         
         for(Integer i : chainMembers) {
-            try {
-                s += matrix.getName(i);
-                if( ! i.equals(chainMembers.get(chainMembers.size()-1))) { s += " -> "; }
-                // if( i != chainMembers.get(chainMembers.size()-1)) { notInThisChain += " -> "; }
-            } catch (ArgumentException ex) {
-                Logger.getLogger(ImpactChain.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            s += matrix.getName(i);
+            if( ! i.equals(chainMembers.get(chainMembers.size()-1))) { s += " -> "; }
         }
         
         return s;
@@ -207,5 +193,6 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return 0;
     }
     
+
     
 }

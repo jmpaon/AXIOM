@@ -4,12 +4,12 @@
  */
 package exit;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <code>CrossImpactMatrix</code> represents a table of impacts 
@@ -61,31 +61,43 @@ public class CrossImpactMatrix {
     }
     
     public CrossImpactMatrix indirectImpactMatrix(double treshold) {
-        CrossImpactMatrix iim = new CrossImpactMatrix(1000, this.varCount, false, names);
+        
+        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", treshold));
+        CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
+        int chainsProcessedCount=0;
+        
         for(int impactor = 1 ; impactor <= iim.varCount ; impactor++ ) {
             for(int impacted = 1 ; impacted <= iim.varCount ; impacted++ ) {
                 double impactSum = 0;
                 if(impactor != impacted) {
                     
                     List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, treshold);
-                    System.out.printf("Calculating impacts of %s on %s...", this.getName(impactor), this.getName(impacted));
+                    Reporter.indicateProgress(String.format(
+                            "Calculating impacts of %4s (%10s) on %4s (%10s)...", 
+                            "V"+impactor, 
+                            truncateName(this.getName(impactor),10), 
+                            "V"+impacted, 
+                            truncateName(this.getName(impacted),10)
+                    ));
                     
                     int counter = 0;
                     for(ImpactChain chain : chains) {
-                        // System.out.println(chain.toString() + String.format(" || Impactor: %d Impacted: %d", impactor, impacted)   );
                         impactSum += chain.chainedImpact();
                         counter++;
                     }
-                    System.out.printf(" %d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum);
-               
+                    Reporter.indicateProgress(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum));
+                    chainsProcessedCount += counter;
                 }
                 if(iim.maxImpact < impactSum) iim.setMaxImpact(impactSum);
                 iim.setImpact(impactor, impacted, impactSum);
             }
         }
         
+        Reporter.indicateProgress(String.format("Total of %d significant impact chains found in the matrix.", chainsProcessedCount));
         return iim;
     }
+    
+
     
     void setMaxImpact(double newMaxImpact) {
         if(newMaxImpact <= 0 ) throw new IllegalArgumentException("maxImpact cannot be 0 or smaller");
@@ -215,7 +227,13 @@ public class CrossImpactMatrix {
      * @return The number of variables in the <code>CrossImpactMatrix</code>.
      */
     public int getVarCount() { return varCount; }
-    
+
+    private boolean allImpactsAreIntegers() {
+        for(int i=0;i<impacts.length;i++) {
+            if(impacts[i] != (int)impacts[i]) { return false; }
+        }
+        return true;
+    }    
     
     /**
      * Returns true if <code>CrossImpactMatrix</code> is locked, false otherwise.
@@ -233,7 +251,6 @@ public class CrossImpactMatrix {
         this.isLocked = true; 
     }
     
-    
     /**
      * @return A string representation of the impact matrix.
      */
@@ -242,9 +259,14 @@ public class CrossImpactMatrix {
         int i=0, c, n=0;
         String stringRepresentation="";
         
+        stringRepresentation += String.format("%30s     \t", " ");
+        for(c=0; c<varCount;c++) {
+            stringRepresentation += String.format("%s\t", "V"+(c+1));
+        }
+        stringRepresentation += String.format("%n");
+        
         while( i < impacts.length) {
-
-            stringRepresentation += String.format("%25s\t", names[n]);
+            stringRepresentation += String.format("%30s (%s)\t", truncateName(names[n], 30), ("V"+(n+1)));
             n++;
             c=0;
             while(c < varCount) {
@@ -262,12 +284,19 @@ public class CrossImpactMatrix {
         return stringRepresentation;
     }
     
-    private boolean allImpactsAreIntegers() {
-        for(int i=0;i<impacts.length;i++) {
-            if(impacts[i] != (int)impacts[i]) { return false; }
-        }
-        return true;
+    /**
+     * If <b>s</b> is shorter than <b>len</b>, <b>s</b> is returned;
+     * Otherwise, first <b>len</b>-3 characters of <b>s</b> 
+     * appended with three dots are returned.
+     * @param s String (name) to truncate
+     * @param len Length of <b>s</b> after truncation.
+     * @return Truncated String/name.
+     */
+    private String truncateName(String s, int len) {
+        return s.length()<=len ? s : s.substring(0, len-3) + "...";
     }
+    
+
     
     /**
      * @return The defined maximum value for impacts in this matrix.

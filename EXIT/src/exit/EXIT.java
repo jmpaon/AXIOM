@@ -26,7 +26,8 @@ public class EXIT {
         
         // testWargs(args);
         testWOargs();
-//        CrossImpactMatrix matrix = new InputFileReader().readInputFile("src/exit/input35_55.csv");
+        // CrossImpactMatrix matrix = new InputFileReader().readInputFile("src/exit/input35_55.csv");
+        // System.out.println(matrix.possibleChainCount(3));
 //        ImpactChain ic = new ImpactChain(matrix, new LinkedList<>( Arrays.asList(1,2,3,4) ) );
 //        Set<ImpactChain> set = ic.continuedByOneIntermediary();
 //        for(ImpactChain i : set) System.out.println(i.toString());
@@ -40,11 +41,14 @@ public class EXIT {
         
         try {
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/inputfile12.csv");
+            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/inputfile35L.csv");
+            
+            System.out.println("\nImpact matrix describing direct impacts between variables:");
             System.out.println(matrix.toString());
             
             CrossImpactMatrix result = matrix.indirectImpactMatrix(0.05);
             
+            System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());
             
 

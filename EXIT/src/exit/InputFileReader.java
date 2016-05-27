@@ -36,12 +36,12 @@ public class InputFileReader {
     
     CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITException {
         
+        Reporter.indicateProgress(String.format("Reading matrix data from file %25s%n", filename));
+        
         List<String> lines = Files.readAllLines(Paths.get(filename));
         eliminateEmptyLines(lines);
 
-
         int variableCount = lines.size();
-
         int var=1;
 
         // FIXME remove hard-coded maxImpact
@@ -50,7 +50,7 @@ public class InputFileReader {
         for(String l : lines) {
 
             Scanner sc = new Scanner(l).useDelimiter(String.valueOf(separator));
-            cim.setName(var, sc.next());
+            cim.setName(var, sc.next() );
             int imp=0;
             while(sc.hasNextDouble()) {
                 imp++;
@@ -65,6 +65,7 @@ public class InputFileReader {
         }
 
         cim.lock();
+        Reporter.indicateProgress(String.format("Read %d variables from input file.%n", cim.getVarCount()));
         return cim;
 
     }

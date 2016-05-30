@@ -5,19 +5,22 @@
  */
 package exit;
 
-
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
- * 
+ * Instances of this class represent chains of variables in a cross-impact matrix.
+ * The indices of variables are stored in <code>chainMembers</code>.
+ * <code>ImpactChain</code> consists of 
+ * <i>impactor</i> variable, <i>intermediary variables</i> and <i>impacted</i> variable.
+ * The <code>chainedImpact</code> of the chain is the impact of <i>impactor</i>
+ * on the <i>impacted</i> variable, through the chain of intermediary variables
+ * between <i>impactor</i> and <i>impacted</i>. 
+ * In a direct impact, there are no intermediary variables.
  * @author jmpaon
  */
 public class ImpactChain implements Comparable<ImpactChain> {
@@ -26,7 +29,12 @@ public class ImpactChain implements Comparable<ImpactChain> {
     public final List<Integer> chainMembers;
     public final int memberCount;
     
-    
+    /**
+     * @param matrix The cross-impact matrix from whose variables 
+     * this <code>ImpactChain</code> is constructed of
+     * @param chainMembers The indices of the variables in the matrix.
+     * All indices must be present in <b>matrix</b>.
+     */
     public ImpactChain(CrossImpactMatrix matrix, List<Integer> chainMembers) {
         if(matrix == null) throw new NullPointerException("matrix is null");
         this.matrix = matrix;
@@ -50,36 +58,65 @@ public class ImpactChain implements Comparable<ImpactChain> {
         this.memberCount = this.chainMembers.size();
     }
     
+    /**
+     * @return The index of the last (impacted) variable in the chain
+     */
     public int lastVariableIndex() {
         return chainMembers.get(memberCount-1);
     }
     
+    /**
+     * @return The index of the first (impactor) variable in the chain
+     */
+    public int firstVariableIndex() {
+        return chainMembers.get(0);
+    }
+    
+    /**
+     * @return The name of the last (impacted) variable in the chain
+     */
     public String lastVariableName() {
         return matrix.getName(chainMembers.get(memberCount-1));
     }
     
+    /**
+     * @return The name of the first (impactor) variable in the chain
+     */
+    public String firstVariableName() {
+        return matrix.getName(chainMembers.get(0));
+    }
+    
+    /**
+     * @param index The index to be tested
+     * @return <b>true</b> if the chain ends to <b>index</b>.
+     */
     public boolean chainEndsToIndex(int index) {
         if(memberCount == 0) return false;
         return index == chainMembers.get(memberCount-1);
     }
     
     /**
-     * Calculates the impact contribution of the <u>last</u> variable 
-     * in the chain through the impact chain.
-     * The direct impact of the last variable can be and usually is greater
-     * than the indirect impact through the chain.
-     * TODO explain impact contribution
-     * @return Impact contribution of the last variable of the chain through this particular chain
+     * Returns the impact of the first variable of the chain (impactor) 
+     * on the last variable of the chain (impacted)
+     * through the entire chain.
+     * If chain has only one variable, <code>chainedImpact</code> is 1.
+     * If chain has two variables, it represents a direct impact from
+     * first variable to the last (second) variable and the impact is equal
+     * to the direct impact expressed in the <code>matrix</code>.
+     * For longer chains, the chain represents impact of <i>impactor</i> on <i>impacted</i>
+     * through all the intermediary variables.
+     * @return The effect of first variable on the last variable, through the intermediary variables in the chain
      */
     public double chainedImpact() {
         return chainedImpact(chainMembers);
     }
     
     /**
-     * Calculates the impact contribution of the <u>last</u> variable in the chain
-     * through the impact chain.
-     * @param chain
-     * @return
+     * Calculates the impact of the impactor on the impacted through the 
+     * intermediary variables in <code>chain</code>.
+     * @param chain List containing indices of the variables in the chain whose impact is calculated
+     * @return The impact of first variable in the chain on the last variable of the chain trough the chain
+     * @see ImpactChain#chainedImpact()
      */
     private double chainedImpact(List<Integer> chain)  {
         if(chain == null) { throw new NullPointerException("chain argument is null"); }
@@ -88,9 +125,20 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return (matrix.getImpact(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * chainedImpact(chain.subList(1, chain.size()));
     }
     
-    public Set<ImpactChain> continuedByOneIntermediary() {
+    /**
+     * Returns a <code>Set</code> of <code>ImpactChain</code>s,
+     * that are one variable longer than this chain
+     * and where the first and last variables are the same as in this chain.
+     * The method is used for generating the <code>ImpactChain</code>s
+     * that represents the different direct and indirect impacts between
+     * the impactor variable and impacted variable in this chain.
+     * The new variables are introduced to the second to last place of the chain,
+     * before the impacted variable.
+     * @return <code>Set</code> of <code>ImpactChain</code>s
+     * that have been expanded to be longer than this chain by one variable.
+     */
+    private Set<ImpactChain> continuedByOneIntermediary() {
         
-        // if(chainMembers.size() < 2) throw new IllegalStateException("This chain has less than 2 variables");
         if(chainMembers.size() < 2) {
             return continuedByOne();
         }
@@ -107,7 +155,16 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return continued;
     }
     
-    public Set<ImpactChain> highImpactChainsIM(double treshold) {
+    /**
+     * Returns a <code>Set</code> of <code>ImpactChain</code>s
+     * that are high impact (having an impact value ({@see ImpactChain#chainedImpact})
+     * higher than <b>treshold</b>) and that are generated by continuing chains
+     * by adding variables missing from them to the second-to-last place in the chain.
+     * 
+     * @param treshold
+     * @return 
+     */
+    public Set<ImpactChain> highImpactChainsIntermediary(double treshold) {
         if(treshold <=0 || treshold >1 ) throw new IllegalArgumentException("impactTreshold should be in range ]0..1]");
         
         Set<ImpactChain> chains = new TreeSet<>();
@@ -122,8 +179,17 @@ public class ImpactChain implements Comparable<ImpactChain> {
         
         return chains;        
     }
+
     
-    
+    /**
+     * Returns a <code>Set</code> of <code>ImpactChain</code>s,
+     * which are one variable longer than this chain;
+     * the chains are continued by variables that are not present in this chain
+     * but are present in the matrix.
+     * There will be as many continued chains in the returned set as there
+     * are variables in the matrix that are not yet present in the chain.
+     * @return Set of <code>ImpactChain</code>s.
+     */
     private Set<ImpactChain> continuedByOne()  {
         Set<ImpactChain> continued = new TreeSet<>();
         Set<Integer> notIncluded = notInThisChain();
@@ -143,6 +209,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * Generates all possible impact chains that can be expanded from
      * this impact chain using the variables in the matrix of this impact chain
      * @return All possible impact chains expanded from this impact chain 
+     * @see ImpactChain#continuedByOne() 
      */
     public Set<ImpactChain> allExpandedChains()  {
         Set<ImpactChain> allChains = new TreeSet<>();

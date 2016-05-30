@@ -4,6 +4,7 @@
  */
 package exit;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -93,10 +94,26 @@ public class CrossImpactMatrix {
             }
         }
         
-        Reporter.indicateProgress(String.format("Total of %d significant impact chains found in the matrix.", chainsProcessedCount));
+        Reporter.indicateProgress(String.format("Total of %d significant (treshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, treshold));
+        Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is%s %s.%n", varCount > 14 ? " approximately" : "", approximateChainCount(varCount).toString()));
         return iim;
     }
     
+    BigInteger approximateChainCount(int n) {
+        double sumOfFactorials = 0;
+        while(n > 0) {
+            sumOfFactorials += factorial(n);
+            n--;
+        }
+        
+        BigInteger b = new BigDecimal(sumOfFactorials).toBigInteger();
+        return b;
+    }
+    
+    public double factorial(int n) {
+        if(n == 1) return 1;
+        return n * factorial(n-1);
+    }
 
     
     void setMaxImpact(double newMaxImpact) {
@@ -118,7 +135,7 @@ public class CrossImpactMatrix {
         
         ImpactChain ic = new ImpactChain(this, initialChain);
         
-        Set<ImpactChain> chains = ic.highImpactChainsIM(treshold);
+        Set<ImpactChain> chains = ic.highImpactChainsIntermediary(treshold);
         
         if(impactOn != null) {
             chains = chains.stream()

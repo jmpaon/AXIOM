@@ -6,12 +6,15 @@
 package exit;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,8 +28,20 @@ public class EXIT {
     public static void main(String[] args) throws IOException, EXITException {
         
         // testWargs(args);
-        testWOargs();
-        // CrossImpactMatrix matrix = new InputFileReader().readInputFile("src/exit/input35_55.csv");
+         testWOargs();
+        
+        
+        
+//        CrossImpactMatrix matrix = new InputFileReader().readInputFile("src/exit/input35_55.csv");
+//        ImpactChain ic = new ImpactChain(matrix, Arrays.asList(1,2,3,4));
+//        System.out.println(ic.toString());
+//        
+//        for(Integer i : new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16))) {
+//            System.out.printf("%3d --> ", i);
+//            System.out.println(matrix.approximateChainCount(i));
+//        }
+        
+        
         // System.out.println(matrix.possibleChainCount(3));
 //        ImpactChain ic = new ImpactChain(matrix, new LinkedList<>( Arrays.asList(1,2,3,4) ) );
 //        Set<ImpactChain> set = ic.continuedByOneIntermediary();
@@ -46,7 +61,7 @@ public class EXIT {
             System.out.println("\nImpact matrix describing direct impacts between variables:");
             System.out.println(matrix.toString());
             
-            CrossImpactMatrix result = matrix.indirectImpactMatrix(0.05);
+            CrossImpactMatrix result = matrix.indirectImpactMatrix(0.10);
             
             System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());

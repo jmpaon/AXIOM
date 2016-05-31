@@ -14,8 +14,18 @@ import java.text.Format;
  * @author jmpaon
  */
 public class Reporter {
+    
+    /**
+     *
+     */
+    public static int verbosityLevel;
+    
     public static void indicateProgress(final String msg) {
         System.out.print(msg);
+    }
+    
+    public static void indicateProgress(final String msg, int verbosityLevel) {
+        
     }
     
     public static void reportError(final String msg) {

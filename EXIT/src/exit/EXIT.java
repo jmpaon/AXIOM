@@ -28,12 +28,14 @@ public class EXIT {
     public static void main(String[] args) throws IOException, EXITException {
         
         // testWargs(args);
-         testWOargs();
+        testWOargs();
+        // HugeNumber h = new HugeNumber(239085928);
+        // System.out.println(h);
         
         
         
-//        CrossImpactMatrix matrix = new InputFileReader().readInputFile("src/exit/input35_55.csv");
-//        ImpactChain ic = new ImpactChain(matrix, Arrays.asList(1,2,3,4));
+//        CrossImpactMatrix matrix = new InputFileReader().readInputFile("src/exit/inputfile6.csv");
+//        ImpactChain ic = new ImpactChain(matrix, Arrays.asList(3,5,6));
 //        System.out.println(ic.toString());
 //        
 //        for(Integer i : new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16))) {
@@ -56,12 +58,14 @@ public class EXIT {
         
         try {
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/inputfile35L.csv");
+            CrossImpactMatrix matrix = ifr.readInputFile("src/exit/inputfile12.csv");
             
             System.out.println("\nImpact matrix describing direct impacts between variables:");
             System.out.println(matrix.toString());
             
-            CrossImpactMatrix result = matrix.indirectImpactMatrix(0.10);
+
+            
+            CrossImpactMatrix result = matrix.summedImpactMatrix(0.5);
             
             System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());
@@ -82,6 +86,10 @@ public class EXIT {
         } catch (IOException | EXITException ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }        
+    }
+    
+    public static void JL_exit(String[] args) {
+        
     }
     
     public static void testWargs(String[] args) {

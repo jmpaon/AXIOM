@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
  * probability-decreasing effect of X on Y; 
  * Positive impact of variable X on variable Y represents
  * probability-increasing effect of X on Y.
+ * Cross-impact matrix can be used both for representing the direct impacts
+ * that are inputs for the EXIT calculation 
+ * and the summed direct and indirect impacts that are the result of the
+ * EXIT calculation.
  * 
  * @author jmpaon
  */
@@ -33,17 +37,19 @@ public class CrossImpactMatrix {
     private boolean isLocked;
     private final String[] names;
     
+    
     /**
-     * Constructor for <code>CrossImpactMatrix</code>
+     * Constructor for <code>CrossImpactMatrix</code>.
      * @param maxImpact The maximum value impacts in the matrix can have.
-     * Minimum allowed value is <b>-maxImpact</b> and maximum <b>maxImpact</b>.
+     * Minimum allowed value is negative <b>maxImpact</b> and maximum <b>maxImpact</b>.
+     * <b>maxImpact</b> must be greater than 0.
      * @param varCount The number of variables in the matrix; 
      * will be also the number of rows and the number of columns.
-     * @param onlyIntegers Are only integers accepted?
-     * @param names Array of variable names
+     * @param onlyIntegers <b>true</b> if matrix contains only integers
+     * @param names <code>String</code> array of variable names
      */
     public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names)  {
-        if(maxImpact < 0) {throw new IllegalArgumentException("Negative maxImpact");}
+        if(maxImpact <= 0) {throw new IllegalArgumentException("Negative maxImpact");}
         if(varCount < 2) {throw new IllegalArgumentException("Matrix must have at least 2 rows");}
         
         this.maxImpact = maxImpact;
@@ -57,13 +63,33 @@ public class CrossImpactMatrix {
     }
     
     
+    /**
+     * Constructor for <code>CrossImpactMatrix</code>.
+     * @param maxImpact The maximum value impacts in the matrix can have.
+     * Minimum allowed value is <b>-maxImpact</b> and maximum <b>maxImpact</b>.
+     * <b>maxImpact</b> must be greater than 0.
+     * @param varCount The number of variables in the matrix; 
+     * will be also the number of rows and the number of columns.
+     */
     public CrossImpactMatrix(double maxImpact, int varCount) {
         this(maxImpact, varCount, true, null);
     }
     
-    public CrossImpactMatrix indirectImpactMatrix(double treshold) {
+    
+    /**
+     * Calculates and returns 
+     * a new <code>CrossImpactMatrix</code> that contains
+     * the summed direct and indirect impacts between the variables.
+     * In the returned matrix, 
+     * impactor variables are in rows 
+     * and impacted variables are in columns.
+     * @param impactTreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
+     * See {@link ImpactChain#highImpactChainsIntermediary(double)}.
+     * @return <code>CrossImpactMatrix</code> with the summed direct and indirect impacts between variables
+     */
+    public CrossImpactMatrix summedImpactMatrix(double impactTreshold) {
         
-        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", treshold));
+        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactTreshold));
         CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
         int chainsProcessedCount=0;
         
@@ -72,7 +98,7 @@ public class CrossImpactMatrix {
                 double impactSum = 0;
                 if(impactor != impacted) {
                     
-                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, treshold);
+                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactTreshold);
                     Reporter.indicateProgress(String.format(
                             "Calculating impacts of %4s (%10s) on %4s (%10s)...", 
                             "V"+impactor, 
@@ -89,46 +115,82 @@ public class CrossImpactMatrix {
                     Reporter.indicateProgress(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum));
                     chainsProcessedCount += counter;
                 }
-                if(iim.maxImpact < impactSum) iim.setMaxImpact(impactSum);
+                if(iim.maxImpact < Math.abs(impactSum)) {
+                    iim.setMaxImpact(Math.abs(impactSum));
+                }
+                
                 iim.setImpact(impactor, impacted, impactSum);
             }
         }
         
-        Reporter.indicateProgress(String.format("Total of %d significant (treshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, treshold));
-        Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is%s %s.%n", varCount > 14 ? " approximately" : "", approximateChainCount(varCount).toString()));
+        Reporter.indicateProgress(String.format("Total of %d significant (treshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactTreshold));
+        Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is%s %s.%n", varCount > 14 ? " approximately" : "", approximateChainCount().toString()));
         return iim;
     }
     
-    BigInteger approximateChainCount(int n) {
+    
+    /**
+     * Returns the count or approximate count of possible impact chains
+     * for this matrix.
+     * Count is exact when <i>varCount</i> is smaller than 15
+     * and approximate when <i>varCount</i> is greater.
+     * @return Approximate count of possible impact chains in this matrix
+     */
+    BigInteger approximateChainCount() {
+        int n = varCount;
         double sumOfFactorials = 0;
         while(n > 0) {
             sumOfFactorials += factorial(n);
             n--;
         }
-        
         BigInteger b = new BigDecimal(sumOfFactorials).toBigInteger();
         return b;
     }
     
-    public double factorial(int n) {
+    
+    /**
+     * Returns the factorial of <i>n</i>.
+     * @param n 
+     * @return Factorial of <i>n</i>.
+     */
+    private double factorial(int n) {
         if(n == 1) return 1;
         return n * factorial(n-1);
     }
 
     
+    /**
+     * Sets a new value for the <b>maxImpact</b> of the matrix.
+     * @param newMaxImpact New  <b>maxImpact</b> value
+     */
     void setMaxImpact(double newMaxImpact) {
         if(newMaxImpact <= 0 ) throw new IllegalArgumentException("maxImpact cannot be 0 or smaller");
         this.maxImpact = newMaxImpact;
     }
     
+    
+    /**
+     * Generates a list of impact chains possible in this matrix 
+     * that have impact value greater than <b>treshold</b>.
+     * @param impactOf Index of impactor variable. 
+     * Only chains starting with this variable are included in returned list.
+     * Can also be null; if null, chains starting with any variable 
+     * are generated and returned.
+     * @param impactOn Index of impacted variable. 
+     * Only chains ending in this variable are included in returned list.
+     * Can also be null; if null, chains ending in any variable 
+     * are generated and returned.
+     * @param treshold The required minimum impact a chain must have to be included in returned list.
+     * @return A <code>List</code> of impact chains with impact higher than <i>treshold</i> and that have
+     * the impactor and impacted variables specified in the <b>impactOf</b> and <b>impactOn</b> arguments.
+     */
     public List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
         
-        if(impactOn != null && (impactOn <1 || impactOn > varCount)) throw new IndexOutOfBoundsException("impactOn index is not present in the matrix");
         if(impactOf != null && (impactOf <1 || impactOf > varCount)) throw new IndexOutOfBoundsException("impactOf index is not present in the matrix");
+        if(impactOn != null && (impactOn <1 || impactOn > varCount)) throw new IndexOutOfBoundsException("impactOn index is not present in the matrix");
         if(treshold <=0 || treshold > 1) throw new IllegalArgumentException("treshold value is not in range ]0..1]");
         
         List<Integer> initialChain = null;
-        
         if(impactOf != null) {
             initialChain = new LinkedList<>(Arrays.asList(impactOf));
         }
@@ -149,7 +211,6 @@ public class CrossImpactMatrix {
                 .collect(Collectors.toList());
         
     }
-    
     
     /**
      * Creates variable names for the cross-impact matrix.
@@ -181,6 +242,14 @@ public class CrossImpactMatrix {
         return names[var-1];
     }
     
+    /**
+     * Sets the variable name for variable at <i>varIndex</i>.
+     * @param varIndex Index of a variable in <i>matrix</i>
+     * @param varName New name for variable
+     * @throws IllegalArgumentException
+     * @throws IndexOutOfBoundsException
+     * @throws EXITException 
+     */
     public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, EXITException {
         if(isLocked) { throw new EXITException("The impact matrix is locked and cannot be modified"); }
         if(varIndex < 0 || varIndex > varCount) { throw new IndexOutOfBoundsException("Invalid variable index"); }
@@ -189,16 +258,17 @@ public class CrossImpactMatrix {
     }
     
     /**
-     * Gets the impact value from the impact matrix.
+     * Gets an impact value from the impact matrix.
+     * These values are the direct impacts, fed as input for the EXIT algorithm.
      * @param impactOf Index of variable that is the impactor variable of the impact
      * @param impactOn Index of variable that is the impacted variable of the impact
-     * @return 
+     * @return The direct impact of var with index <i>impactOf</i> on var with index <i>impactOn</i>
      * @throws IllegalArgumentException 
      */
     public double getImpact(int impactOf, int impactOn) throws IndexOutOfBoundsException {
         if(impactOf < 1 || impactOf > varCount || impactOn < 1 || impactOn > varCount) {
-            String s = String.format("No impact for index [%d:%d], varCount for the matrix is %d.", impactOf, impactOn, varCount);
-            throw new IndexOutOfBoundsException(s);
+            String exceptionMsg = String.format("No impact for index [%d:%d], varCount for the matrix is %d.", impactOf, impactOn, varCount);
+            throw new IndexOutOfBoundsException(exceptionMsg);
         }
         int index = ((impactOf-1) * varCount) + (impactOn-1);
         return impacts[index];
@@ -244,7 +314,10 @@ public class CrossImpactMatrix {
      * @return The number of variables in the <code>CrossImpactMatrix</code>.
      */
     public int getVarCount() { return varCount; }
-
+    
+    /**
+     * @return <b>true</b> if all direct impacts are integers, false otherwise
+     */
     private boolean allImpactsAreIntegers() {
         for(int i=0;i<impacts.length;i++) {
             if(impacts[i] != (int)impacts[i]) { return false; }
@@ -267,6 +340,7 @@ public class CrossImpactMatrix {
         if (allImpactsAreIntegers()) { onlyIntegers = true; }
         this.isLocked = true; 
     }
+    
     
     /**
      * @return A string representation of the impact matrix.
@@ -301,27 +375,27 @@ public class CrossImpactMatrix {
         return stringRepresentation;
     }
     
+    
     /**
      * If <b>s</b> is shorter than <b>len</b>, <b>s</b> is returned;
-     * Otherwise, first <b>len</b>-3 characters of <b>s</b> 
+     * Otherwise, first <b>len</b>-3 characters of <b>exceptionMsg</b> 
      * appended with three dots are returned.
      * @param s String (name) to truncate
-     * @param len Length of <b>s</b> after truncation.
+     * @param len Length of <b>exceptionMsg</b> after truncation.
      * @return Truncated String/name.
      */
     private String truncateName(String s, int len) {
         return s.length()<=len ? s : s.substring(0, len-3) + "...";
     }
     
-
     
     /**
      * @return The defined maximum value for impacts in this matrix.
-     * Can be null.
      */
     public double getMaxImpact() {
         return maxImpact;
     }
+    
     
     /**
      * @return The greatest <u>absolute</u> impact value in the matrix.
@@ -335,8 +409,6 @@ public class CrossImpactMatrix {
         }
         return greatest;
     }
-    
-    
     
     
     /**
@@ -355,13 +427,5 @@ public class CrossImpactMatrix {
         }
         return copy;
     }
-    
-
-    
-    
-    
-    
-
-    
     
 }

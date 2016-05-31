@@ -9,12 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Scanner;
-
-
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  *
@@ -36,7 +32,7 @@ public class InputFileReader {
     
     CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITException {
         
-        Reporter.indicateProgress(String.format("Reading matrix data from file %25s%n", filename));
+        Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", filename));
         
         List<String> lines = Files.readAllLines(Paths.get(filename));
         eliminateEmptyLines(lines);

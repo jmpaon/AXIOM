@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * 
  * @author jmpaon
  */
-public class CrossImpactMatrix {
+public final class CrossImpactMatrix {
     
     private double maxImpact;
     private final int varCount;
@@ -37,6 +37,30 @@ public class CrossImpactMatrix {
     private boolean isLocked;
     private final String[] names;
     
+    
+    public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names, double[] impacts) {
+        if(maxImpact <= 0) {throw new IllegalArgumentException("Negative maxImpact");}
+        if(varCount < 2) {throw new IllegalArgumentException("Matrix must have at least 2 rows");}
+        if(impacts == null) throw new NullPointerException("impacts array is null");
+        
+        this.maxImpact = maxImpact;
+        this.varCount = varCount;
+        this.impacts = new double[varCount*varCount];
+        this.onlyIntegers = onlyIntegers;
+        this.isLocked = false;
+        if(impacts.length / varCount != varCount) throw new IllegalArgumentException(
+                String.format("impacts array has %d elements, while varCount^2 is %d", impacts.length, varCount*varCount));
+        
+        int row = 1, col = 1;
+        for(Double i : impacts) {
+            setImpact(row, col, i);
+            if(++col > varCount) { col=1; row++; }
+        }
+
+        if(names == null) { names = createNames(varCount); }
+        if(names.length != varCount) { throw new IllegalArgumentException("Names array should have length equal to impact count"); }
+        this.names = names;        
+    }
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
@@ -89,7 +113,7 @@ public class CrossImpactMatrix {
      */
     public CrossImpactMatrix summedImpactMatrix(double impactTreshold) {
         
-        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactTreshold));
+        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactTreshold), 3);
         CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
         int chainsProcessedCount=0;
         
@@ -98,21 +122,22 @@ public class CrossImpactMatrix {
                 double impactSum = 0;
                 if(impactor != impacted) {
                     
-                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactTreshold);
                     Reporter.indicateProgress(String.format(
                             "Calculating impacts of %4s (%10s) on %4s (%10s)...", 
                             "V"+impactor, 
                             truncateName(this.getName(impactor),10), 
                             "V"+impacted, 
                             truncateName(this.getName(impacted),10)
-                    ));
+                    ), 3);
+                    
+                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactTreshold);
                     
                     int counter = 0;
                     for(ImpactChain chain : chains) {
                         impactSum += chain.chainedImpact();
                         counter++;
                     }
-                    Reporter.indicateProgress(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum));
+                    Reporter.indicateProgress(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum), 3);
                     chainsProcessedCount += counter;
                 }
                 if(iim.maxImpact < Math.abs(impactSum)) {
@@ -123,30 +148,76 @@ public class CrossImpactMatrix {
             }
         }
         
-        Reporter.indicateProgress(String.format("Total of %d significant (treshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactTreshold));
-        Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is%s %s.%n", varCount > 14 ? " approximately" : "", approximateChainCount().toString()));
+        Reporter.indicateProgress(String.format("Total of %d significant (treshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactTreshold), 5);
+        Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is %s.%n", approximateChainCountString()),2);
         return iim;
+    }
+    
+    CrossImpactMatrix scaleByMax(double scaleTo) {
+        if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
+        double max = greatestImpact();
+        double[] scaledImpacts = this.impacts.clone();
+        for(int i = 0; i < impacts.length; i++) {
+            scaledImpacts[i] = impacts[i] / max * scaleTo;
+        }
+        return new CrossImpactMatrix(Math.abs(scaleTo), this.varCount, this.onlyIntegers, this.names, scaledImpacts);
+    }
+    
+    /**
+     * 
+     * @param im Cross-impact matrix to compare against this one in terms of impact sizes
+     * @param maxDeviation The maximum relative deviation allowed to still consider the matrices approximately same in terms of impact sizes
+     * @return <b>true</b> if 
+     */
+    boolean areImpactsApproximatelySame(CrossImpactMatrix im, double maxDeviation) {
+        if(im.impacts.length != this.impacts.length) throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");
+        for(int i=0; i<this.impacts.length; i++) {
+            double v1 = this.impacts[i], v2 = im.impacts[i];
+            double rel = v1 > v2 ? v1 / v2 : v2 / v1;
+            if((1-rel) > maxDeviation) return false;
+        }
+        return true;
     }
     
     
     /**
-     * Returns the count or approximate count of possible impact chains
+     * Returns a String with information about 
+     * the count or approximate count of possible impact chains
      * for this matrix.
      * Count is exact when <i>varCount</i> is smaller than 15
      * and approximate when <i>varCount</i> is greater.
-     * @return Approximate count of possible impact chains in this matrix
+     * @return String for printing out information about count of possible chains
+     * in the matrix
      */
-    BigInteger approximateChainCount() {
+    String approximateChainCountString() {
         int n = varCount;
-        double sumOfFactorials = 0;
-        while(n > 0) {
-            sumOfFactorials += factorial(n);
-            n--;
+        double chainCount = approximateChainCount() ;
+        
+        if(varCount < 15) {
+            return new BigDecimal(chainCount).toBigInteger().toString();
+        } else {
+            int exp = 0;
+            while(chainCount >= 10) {
+                chainCount /= 10;
+                exp ++ ;
+            }
+            return String.format("approximately %1.2f x 10^%d", chainCount, exp);
         }
-        BigInteger b = new BigDecimal(sumOfFactorials).toBigInteger();
-        return b;
+
     }
     
+    /**
+     * @return The number of possible impact chains in this matrix.
+     */
+    private double approximateChainCount() {
+        int n = this.varCount-1;
+        double count = 0;
+        while(n >= 0) {
+            count += (factorial(varCount) / factorial(n));
+            n--;
+        }
+        return count;
+    }
     
     /**
      * Returns the factorial of <i>n</i>.
@@ -154,10 +225,18 @@ public class CrossImpactMatrix {
      * @return Factorial of <i>n</i>.
      */
     private double factorial(int n) {
-        if(n == 1) return 1;
+        if(n == 1 || n == 0) return 1;
         return n * factorial(n-1);
     }
-
+    
+    
+    /**
+     * @return The defined maximum value for impacts in this matrix.
+     */
+    public double getMaxImpact() {
+        return maxImpact;
+    }
+    
     
     /**
      * Sets a new value for the <b>maxImpact</b> of the matrix.
@@ -165,6 +244,7 @@ public class CrossImpactMatrix {
      */
     void setMaxImpact(double newMaxImpact) {
         if(newMaxImpact <= 0 ) throw new IllegalArgumentException("maxImpact cannot be 0 or smaller");
+        for(Double i : impacts) if(i > newMaxImpact) throw new IllegalArgumentException("impacts array contains values greater than new max impact");
         this.maxImpact = newMaxImpact;
     }
     
@@ -278,7 +358,7 @@ public class CrossImpactMatrix {
      * Sets an impact value in the impact matrix.
      * @param impactOf Index of variable that is the impactor variable of the impact
      * @param impactOn Index of variable that is the impacted variable of the impact
-     * @param value Value/strength of the impact
+     * @param value Value/strength of the impact, between negative <b>maxImpact</b> and positive <b>maxImpact</b>.
      * @throws IllegalArgumentException
      */
     public void setImpact(int impactOf, int impactOn, double value) throws IllegalArgumentException, IndexOutOfBoundsException, IllegalStateException {
@@ -293,7 +373,7 @@ public class CrossImpactMatrix {
         }
         
         // Variables cannot have an impact on themselves
-        if(impactOf == impactOn && value != 0) throw new IllegalArgumentException("Attempt to set an impact for variable at itself");
+        if(impactOf == impactOn && value != 0) throw new IllegalArgumentException(String.format("Attempt to set an impact (%s) of variable (%s) on itself", value, impactOf));
         
         // If onlyIntegers is true for the matrix, only integral impact values can be set in the matrix
         if(this.onlyIntegers && value != (int)value) {
@@ -390,14 +470,6 @@ public class CrossImpactMatrix {
     
     
     /**
-     * @return The defined maximum value for impacts in this matrix.
-     */
-    public double getMaxImpact() {
-        return maxImpact;
-    }
-    
-    
-    /**
      * @return The greatest <u>absolute</u> impact value in the matrix.
      */
     public double greatestImpact() {
@@ -412,7 +484,7 @@ public class CrossImpactMatrix {
     
     
     /**
-     * Returns a copy of the impact matrix (only the impact values)
+     * Returns a copy of the impact matrix contents (the impact values)
      * in a 2-dimensional array.
      * @return Impact matrix contents in a 2-dimensional array.
      */

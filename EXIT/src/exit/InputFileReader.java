@@ -18,8 +18,6 @@ import java.util.List;
  */
 public class InputFileReader {
     
-    
-    
     public CrossImpactMatrix readInputFile(String filename) throws IOException, EXITException {
         
         // At this point only CSV files are read
@@ -32,7 +30,7 @@ public class InputFileReader {
     
     CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITException {
         
-        Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", filename));
+        Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", filename),5);
         
         List<String> lines = Files.readAllLines(Paths.get(filename));
         eliminateEmptyLines(lines);
@@ -61,9 +59,19 @@ public class InputFileReader {
         }
 
         cim.lock();
-        Reporter.indicateProgress(String.format("Read %d variables from input file.%n", cim.getVarCount()));
+        Reporter.indicateProgress(String.format("Read %d variables from input file.%n", cim.getVarCount()),4);
         return cim;
 
+    }
+    
+    /**
+     * Reads 
+     * @param filename
+     * @param separator
+     * @return 
+     */
+    CrossImpactMatrix readTXTfile(String filename, String separator) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
     
     /**

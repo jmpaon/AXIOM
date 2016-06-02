@@ -4,6 +4,8 @@
  */
 package exit;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,19 +20,20 @@ import java.util.List;
  */
 public class InputFileReader {
     
-    public CrossImpactMatrix readInputFile(String filename) throws IOException, EXITException {
+    public CrossImpactMatrix readInputFile(EXITarguments args) throws IOException, EXITException {
         
         // At this point only CSV files are read
-        return readCSVfile(filename, ';');
-        
-        
-        
+        CrossImpactMatrix m = readCSVfile(args.inputFilename, ';');
+        m.setMaxImpact(args.maxImpact);
+        return m;
 
     }
     
     CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITException {
         
         Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", filename),5);
+        
+        if(! fileExists(filename)) throw new FileNotFoundException(String.format("Input file %s not found", filename));
         
         List<String> lines = Files.readAllLines(Paths.get(filename));
         eliminateEmptyLines(lines);
@@ -52,7 +55,7 @@ public class InputFileReader {
             }
 
             if (imp != variableCount) {
-                throw new EXITArgumentException(String.format("Wrong number of impact values: number of lines in input file suggests that there are %d variables, but line %d (Variable '%s') contains %d impact values", variableCount, var, cim.getName(var), imp));
+                throw new EXITargumentException(String.format("Wrong number of impact values: number of lines in input file suggests that there are %d variables, but line %d (Variable '%s') contains %d impact values", variableCount, var, cim.getName(var), imp));
             }
 
             var++;
@@ -88,6 +91,16 @@ public class InputFileReader {
         
         lines.removeAll(removed);
         
+    }
+    
+    /**
+     * Tests that <i>filename</i> exists and is not a directory.
+     * @param filename path to be tested
+     * @return true if file exists
+     */
+    boolean fileExists(String filename) {
+        File f = new File(filename);
+        return f.exists() && !f.isDirectory();
     }
     
 }

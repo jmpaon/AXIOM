@@ -4,6 +4,7 @@
  */
 package exit;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -153,7 +154,8 @@ public final class CrossImpactMatrix {
         return iim;
     }
     
-    CrossImpactMatrix scaleByMax(double scaleTo) {
+    
+    public CrossImpactMatrix scaleByMax(double scaleTo) {
         if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
         double max = greatestImpact();
         double[] scaledImpacts = this.impacts.clone();
@@ -161,6 +163,55 @@ public final class CrossImpactMatrix {
             scaledImpacts[i] = impacts[i] / max * scaleTo;
         }
         return new CrossImpactMatrix(Math.abs(scaleTo), this.varCount, this.onlyIntegers, this.names, scaledImpacts);
+    }
+    
+    public CrossImpactMatrix driverDriven() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+    
+    public String reportDrivingVariables() {
+        String report = "";
+        for(int i = 1 ; i<=varCount; i++) {
+            report += String.format("Important drivers for %s:%n", getName(i));
+            for(Integer imp : aboveAverageImpactors(i)) {
+                report += String.format("\t%s (%1.1f)%n", getName(imp), getImpact(imp, i));
+            }
+        }
+        return report;
+    }
+    
+    List<Integer> aboveAverageImpactors(int varIndex) {
+        List<Integer> impactors = new LinkedList<>();
+        double average = averageImpactOn(varIndex);
+        for(int i=1; i<=varCount; i++) {
+            if(getImpact(i, varIndex) >= average)
+                impactors.add(i);
+        }
+        return impactors;
+    }
+    
+    double sumImpactsOf(int varIndex, boolean absoluteValues) {
+        double sum=0;
+        for(int i=1; i<=varCount; i++) {
+            sum += absoluteValues ? Math.abs(getImpact(varIndex, i)) : getImpact(varIndex, i);
+        }
+        return sum;
+    }
+    
+    double sumImpactsOn(int varIndex, boolean absoluteValues) {
+        double sum=0;
+        for(int i=1; i<=varCount; i++) {
+            sum += absoluteValues ? Math.abs(getImpact(i, varIndex)) : getImpact(i, varIndex);
+        }
+        return sum;        
+    }
+    
+    double averageImpactOf(int varIndex) {
+        return sumImpactsOf(varIndex, true) / varCount;
+    }
+    
+    double averageImpactOn(int varIndex) {
+        return sumImpactsOn(varIndex, true) / varCount;
     }
     
     /**
@@ -328,10 +379,10 @@ public final class CrossImpactMatrix {
      * @param varName New name for variable
      * @throws IllegalArgumentException
      * @throws IndexOutOfBoundsException
-     * @throws EXITException 
+     * @throws EXITexception 
      */
-    public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, EXITException {
-        if(isLocked) { throw new EXITException("The impact matrix is locked and cannot be modified"); }
+    public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, EXITexception {
+        if(isLocked) { throw new EXITexception("The impact matrix is locked and cannot be modified"); }
         if(varIndex < 0 || varIndex > varCount) { throw new IndexOutOfBoundsException("Invalid variable index"); }
         if(varName == null) { throw new IllegalArgumentException("Variable name cannot be null"); }
         this.names[varIndex-1] = varName;

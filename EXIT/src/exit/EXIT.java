@@ -6,15 +6,11 @@
 package exit;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
-import java.util.LinkedList;
-import java.math.BigInteger;
-import java.util.ArrayList;
+
+
 
 /**
  *
@@ -25,18 +21,10 @@ public class EXIT {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, EXITException {
+    public static void main(String[] args) throws IOException, EXITexception {
         
         args[0] = "src/exit/test5.csv";
         standard_exit_analysis(args);
-        
-//        Reporter.requiredReportingLevel = 0;
-//        String[] names = {"purr","kurr","surr"};
-//        double[] imps  = {0,1,4,  5,0,4,  -2,4,0};
-//        CrossImpactMatrix m = new CrossImpactMatrix(5, 3, true, names, imps);
-//        System.out.println(m.toString());
-//        CrossImpactMatrix m2 = m.summedImpactMatrix(0.001).scaleByMax(5);
-//        System.out.println(m2.toString());
     
     }
     
@@ -48,7 +36,8 @@ public class EXIT {
      */
     public static void standard_exit_analysis(String[] args) {
         try {
-            String[] arggs = {"src/exit/test5.csv", "-max", "5", "-int"};
+            Reporter.requiredReportingLevel = 0;
+            String[] arggs = {"src/exit/inputfile8.csv", "-max", "5", "-int", "-t", "0.15"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
@@ -62,6 +51,10 @@ public class EXIT {
             System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, scaled to have max of 5:");
             System.out.println(resultMatrix.scaleByMax(inputMatrix.getMaxImpact()).toString());
             
+            System.out.println(resultMatrix.reportDrivingVariables());
+         
+        } catch(EXITexception eex) {
+            System.out.println(eex.getMessage());
         } catch(Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -89,7 +82,7 @@ public class EXIT {
             
           
             
-        } catch (IOException | EXITException ex) {
+        } catch (IOException | EXITexception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
@@ -118,41 +111,9 @@ public class EXIT {
             }
             
             
-        } catch (IOException | EXITException ex) {
+        } catch (IOException | EXITexception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
-    
-    public static void testWargs(String[] args) {
-        try {
-            
-            EXITarguments arguments = new EXITarguments(args);
-            System.out.println(arguments.toString());            
-            
-            InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix matrix = ifr.readInputFile(arguments);
-
-            List<ImpactChain> sic = matrix.indirectImpacts(Integer.valueOf(arguments.impactOf), Integer.valueOf(arguments.impactOn), 0.01);
-            
-            System.out.println(matrix.toString());
-            int counter=0;
-            for(ImpactChain i : sic) {
-                System.out.println(i.toString());
-                counter++;
-            }
-            System.out.println(counter + " impact chains printed");
-            
-            
-            
-        } catch (IOException | EXITException ex) {
-            Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-        
-    }
-    
-    public static void printSet(Set<Integer> s) {
-        System.out.println(s.toString());
-    }
-    
 }

@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class InputFileReader {
     
-    public CrossImpactMatrix readInputFile(EXITarguments args) throws IOException, EXITException {
+    public CrossImpactMatrix readInputFile(EXITarguments args) throws IOException, EXITexception {
         
         // At this point only CSV files are read
         CrossImpactMatrix m = readCSVfile(args.inputFilename, ';');
@@ -29,7 +29,7 @@ public class InputFileReader {
 
     }
     
-    CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITException {
+    CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITexception {
         
         Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", filename),5);
         

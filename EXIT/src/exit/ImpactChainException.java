@@ -9,7 +9,7 @@ package exit;
  *
  * @author jmpaon
  */
-public class ImpactChainException extends EXITException {
+public class ImpactChainException extends EXITexception {
 
 
 

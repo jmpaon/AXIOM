@@ -36,8 +36,9 @@ public class EXIT {
      */
     public static void standard_exit_analysis(String[] args) {
         try {
+            
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile8.csv", "-max", "5", "-int", "-t", "0.15"};
+            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0000000001"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();

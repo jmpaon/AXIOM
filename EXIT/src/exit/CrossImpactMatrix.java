@@ -100,6 +100,10 @@ public final class CrossImpactMatrix {
         this(maxImpact, varCount, true, null);
     }
     
+    public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers) {
+        this(maxImpact, varCount, onlyIntegers, null);
+    }
+    
     
     /**
      * Calculates and returns 
@@ -171,10 +175,11 @@ public final class CrossImpactMatrix {
     
     public String reportDrivingVariables() {
         String report = "";
+        CrossImpactMatrix m = this.scaleByMax(1);
         for(int i = 1 ; i<=varCount; i++) {
-            report += String.format("Important drivers for %s:%n", getName(i));
-            for(Integer imp : aboveAverageImpactors(i)) {
-                report += String.format("\t%s (%1.1f)%n", getName(imp), getImpact(imp, i));
+            report += String.format("Important drivers for %s:%n", m.getName(i));
+            for(Integer imp : m.aboveAverageImpactors(i)) {
+                report += String.format("\t%s (%1.1f)%n", m.getName(imp), m.getImpact(imp, i));
             }
         }
         return report;
@@ -182,9 +187,10 @@ public final class CrossImpactMatrix {
     
     List<Integer> aboveAverageImpactors(int varIndex) {
         List<Integer> impactors = new LinkedList<>();
-        double average = averageImpactOn(varIndex);
-        for(int i=1; i<=varCount; i++) {
-            if(getImpact(i, varIndex) >= average)
+        CrossImpactMatrix normMatrix = this.scaleByMax(1);
+        double average = normMatrix.averageImpactOn(varIndex);
+        for(int i=1; i<=normMatrix.varCount; i++) {
+            if(Math.abs(normMatrix.getImpact(i, varIndex)) >= average)
                 impactors.add(i);
         }
         return impactors;

@@ -8,6 +8,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -138,7 +139,7 @@ public final class CrossImpactMatrix {
                     List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactTreshold);
                     
                     int counter = 0;
-                    for(ImpactChain chain : chains) {
+                    for (ImpactChain chain : chains) {
                         impactSum += chain.chainedImpact();
                         counter++;
                     }
@@ -158,58 +159,44 @@ public final class CrossImpactMatrix {
         return iim;
     }
     
+    
     public CrossImpactMatrix summedImpactMatrixFast(double impactTreshold) {
-        CrossImpactMatrix resultMatrix = new CrossImpactMatrix(this.maxImpact * this.varCount, this.varCount, false, this.names);
-        for(int impactor=1; impactor <= resultMatrix.varCount; impactor++) {
-            for(int impacted=1; impacted <= resultMatrix.varCount; impacted++) {
+        CrossImpactMatrix resultMatrix = new CrossImpactMatrix(maxImpact*varCount, varCount, false, names);
+        for(int impactor=1;impactor <= varCount;impactor++) {
+            for(int impacted=1;impacted <= varCount;impacted++) {
                 if(impactor != impacted) {
-                    ImpactChain chain = new ImpactChain(this, Arrays.asList(impactor, impacted));
-                    stackImpacts(chain, impactTreshold, resultMatrix);                    
+                    ImpactChain directImpact = new ImpactChain(this, Arrays.asList(impactor, impacted));
+                    sumImpacts(directImpact, impactTreshold, resultMatrix);                    
                 }
             }
         }
-        
-        resultMatrix.setMaxImpact(resultMatrix.greatestImpact());
-        return resultMatrix;        
-        
-    }
-    
-    public CrossImpactMatrix summedImpactMatrixFaster(double impactTreshold) {
-        
-        CrossImpactMatrix resultMatrix = new CrossImpactMatrix(this.maxImpact * this.varCount, this.varCount, false, this.names);
-        for(int i=1; i <= this.varCount; i++) {
-            ImpactChain chain = new ImpactChain(this, Arrays.asList(i));
-            stackImpacts(chain, impactTreshold, resultMatrix);
-        }
-        
-        resultMatrix.setMaxImpact(resultMatrix.greatestImpact());
         
         return resultMatrix;
-        
     }
     
-    private void stackImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
-        // String r1 = String.format("Stacking impacts for chain %s... ", chain.toStringShort());
-        // Reporter.indicateProgress(r1, 5);
+    void sumImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
         if(Math.abs(chain.chainedImpact()) >= impactTreshold) {
+            System.out.print("Adding " + chain.toString() + " :: ");
             int impactor = chain.impactorIndex();
             int impacted = chain.impactedIndex();
-            double addition = resultMatrix.getImpact(impactor, impacted) + chain.chainedImpact();
-            if(impactor != impacted) {
-                // String r2 = String.format("Added impact of %f, generating expansions...%n", addition);
-                // Reporter.indicateProgress(r2, 5);
-                resultMatrix.setImpact(impactor, impacted, addition);
-            } 
+            double accumulatedValue = resultMatrix.getImpact(impactor, impacted);
+            double additionValue    = chain.chainedImpact();
+            resultMatrix.setImpact(impactor, impacted, accumulatedValue + additionValue);
+            
+            System.out.printf("has expansions " + chain.hasExpansion() + " = " + chain.continuedByOneIntermediary().toString()+ "\n");
             
             if(chain.hasExpansion()) {
-                for(ImpactChain i : chain.continuedByOneIntermediary()) {
-                    stackImpacts(i, impactTreshold, resultMatrix);
+                Set<ImpactChain> expansions = chain.continuedByOneIntermediary();
+                for(ImpactChain ic : expansions) {
+                    sumImpacts(ic, impactTreshold, resultMatrix);
                 }
             }
+            
         }
-        // Reporter.indicateProgress(String.format("%n"), 5);
     }
     
+
+
     
     public CrossImpactMatrix scaleByMax(double scaleTo) {
         if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
@@ -390,7 +377,7 @@ public final class CrossImpactMatrix {
         
         if(impactOn != null) {
             chains = chains.stream()
-                    .filter(c -> c.chainEndsToIndex(impactOn))
+                    .filter(c -> c.impactedIndex() == impactOn)
                     .collect(Collectors.toSet());
         }
         
@@ -400,6 +387,7 @@ public final class CrossImpactMatrix {
                 .collect(Collectors.toList());
         
     }
+
     
     /**
      * Creates variable names for the cross-impact matrix.

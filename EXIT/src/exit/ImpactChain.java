@@ -5,6 +5,8 @@
  */
 package exit;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -58,6 +60,10 @@ public class ImpactChain implements Comparable<ImpactChain> {
         this.memberCount = this.chainMembers.size();
     }
     
+    public ImpactChain(CrossImpactMatrix matrix, int... chainMembers) {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * @return The index of the last (impacted) variable in the chain
      */
@@ -85,15 +91,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
     public String impactorName() {
         return matrix.getName(chainMembers.get(0));
     }
-    
-    /**
-     * @param index The index to be tested
-     * @return <b>true</b> if the chain ends to <b>index</b>.
-     */
-    public boolean chainEndsToIndex(int index) {
-        if(memberCount == 0) return false;
-        return index == chainMembers.get(memberCount-1);
-    }
+
     
     /**
      * Returns the impact of the first variable of the chain (impactor) 
@@ -180,6 +178,37 @@ public class ImpactChain implements Comparable<ImpactChain> {
         
         return continued;
     }
+
+ 
+    /**
+     * Generates all impact chains expanded from this impact chain
+     * that are also high-impact 
+     * (having higher or equal <code>chainedImpact</code> 
+     * than <code>impactTreshold</code>).
+     * This method generates chains by adding variables to the end of the chain,
+     * as impacted variable.
+     * @param impactTreshold The minimum impact a chain should have to be included in the returned chain;
+     * must be greater than 0 and smaller than 1
+     * @return All impact chains expanded from this chain that have higher <code>chainedImpact</code> than treshold.
+     * @see ImpactChain#highImpactChainsIntermediary(double) 
+     */
+    public Set<ImpactChain> highImpactChains(double impactTreshold)  {
+        if(impactTreshold <=0 || impactTreshold >=1) throw new IllegalArgumentException("impactTreshold should be in range ]0..1[");
+        
+        Set<ImpactChain> chains = new TreeSet<>();
+        
+        if(Math.abs(this.chainedImpact()) >= impactTreshold) { 
+            chains.add(this);
+            
+            Set<ImpactChain> immediateExpansions = this.continuedByOne();
+            for(ImpactChain ic : immediateExpansions) {
+                chains.addAll(ic.highImpactChains(impactTreshold));
+            }
+        }
+        
+        return chains;
+    }    
+    
     
     /**
      * Returns a <code>Set</code> of <code>ImpactChain</code>s
@@ -210,38 +239,12 @@ public class ImpactChain implements Comparable<ImpactChain> {
     }
     
     
+
     /**
-     * Generates all impact chains expanded from this impact chain
-     * that are also high-impact 
-     * (having higher or equal <code>chainedImpact</code> 
-     * than <code>impactTreshold</code>).
-     * This method generates chains by adding variables to the end of the chain,
-     * as impacted variable.
-     * @param impactTreshold The minimum impact a chain should have to be included in the returned chain;
-     * must be greater than 0 and smaller than 1
-     * @return All impact chains expanded from this chain that have higher <code>chainedImpact</code> than treshold.
-     * @see ImpactChain#highImpactChainsIntermediary(double) 
+     * @return <b>true</b> if this chain can be expanded, false otherwise
      */
-    public Set<ImpactChain> highImpactChains(double impactTreshold)  {
-        if(impactTreshold <=0 || impactTreshold >=1) throw new IllegalArgumentException("impactTreshold should be in range ]0..1[");
-        
-        Set<ImpactChain> chains = new TreeSet<>();
-        
-        if(Math.abs(this.chainedImpact()) >= impactTreshold) { 
-            chains.add(this);
-            
-            Set<ImpactChain> immediateExpansions = this.continuedByOne();
-            for(ImpactChain ic : immediateExpansions) {
-                chains.addAll(ic.highImpactChains(impactTreshold));
-            }
-        }
-        
-        return chains;
-    }
-    
-    
     public boolean hasExpansion() {
-        return notInThisChain().size() > 0;
+        return !notInThisChain().isEmpty();
     }
     
     

@@ -22,12 +22,18 @@ public class EXIT {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, EXITexception {
+
+        /* Fast calculation procedure */
+        // fast_exit_analysis(args);
         
-        args[0] = "src/exit/test5.csv";
+        /* Normal calculation procedure */
         standard_exit_analysis(args);
+        
+        /* JL-procedure */
+        // JL_exit();
     
     }
-    
+
     /**
      * The standard EXIT analysis :
      * get direct impact matrix in,
@@ -38,7 +44,7 @@ public class EXIT {
         try {
             
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0000000001"};
+            String[] arggs = {"src/exit/inputfile12.csv", "-max", "5", "-t", "0.10"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
@@ -61,32 +67,34 @@ public class EXIT {
         }
     }
     
-    
-    public static void testWOargs() {
-        
+    public static void fast_exit_analysis(String[] args) {
         try {
             
-            Reporter.requiredReportingLevel = 10;
+            Reporter.requiredReportingLevel = 0;
+            String[] arggs = {"src/exit/inputfile12.csv", "-max", "5", "-t", "0.10"};
+            EXITarguments arguments = new EXITarguments(arggs);
+            
             InputFileReader ifr = new InputFileReader();
-            String[] args = {"src/exit/test5.csv", "-max", "5"};
-            EXITarguments arguments = new EXITarguments(args);
-            CrossImpactMatrix matrix = ifr.readInputFile(arguments);
+            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
+            System.out.println(arguments);
             
-            System.out.println("\nImpact matrix describing direct impacts between variables:");
-            System.out.println(matrix.toString());
+            System.out.println("Impact matrix describing direct impacts between variables:");
+            System.out.println(inputMatrix.toString());
             
-            CrossImpactMatrix result = matrix.summedImpactMatrix(0.000001);
+            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrixFast(arguments.treshold);
+            System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, scaled to have max of 5:");
+            System.out.println(resultMatrix.scaleByMax(inputMatrix.getMaxImpact()).toString());
             
-            System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
-            System.out.println(result.toString());
-            System.out.println(result.scaleByMax(matrix.getMaxImpact()));
-            
-          
-            
-        } catch (IOException | EXITexception ex) {
+            System.out.println(resultMatrix.reportDrivingVariables());
+         
+        } catch(EXITexception eex) {
+            System.out.println(eex.getMessage());
+        } catch(Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
+    
+
     
     public static void JL_exit() {
         try {

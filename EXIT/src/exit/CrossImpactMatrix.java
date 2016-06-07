@@ -158,6 +158,58 @@ public final class CrossImpactMatrix {
         return iim;
     }
     
+    public CrossImpactMatrix summedImpactMatrixFast(double impactTreshold) {
+        CrossImpactMatrix resultMatrix = new CrossImpactMatrix(this.maxImpact * this.varCount, this.varCount, false, this.names);
+        for(int impactor=1; impactor <= resultMatrix.varCount; impactor++) {
+            for(int impacted=1; impacted <= resultMatrix.varCount; impacted++) {
+                if(impactor != impacted) {
+                    ImpactChain chain = new ImpactChain(this, Arrays.asList(impactor, impacted));
+                    stackImpacts(chain, impactTreshold, resultMatrix);                    
+                }
+            }
+        }
+        
+        resultMatrix.setMaxImpact(resultMatrix.greatestImpact());
+        return resultMatrix;        
+        
+    }
+    
+    public CrossImpactMatrix summedImpactMatrixFaster(double impactTreshold) {
+        
+        CrossImpactMatrix resultMatrix = new CrossImpactMatrix(this.maxImpact * this.varCount, this.varCount, false, this.names);
+        for(int i=1; i <= this.varCount; i++) {
+            ImpactChain chain = new ImpactChain(this, Arrays.asList(i));
+            stackImpacts(chain, impactTreshold, resultMatrix);
+        }
+        
+        resultMatrix.setMaxImpact(resultMatrix.greatestImpact());
+        
+        return resultMatrix;
+        
+    }
+    
+    private void stackImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
+        // String r1 = String.format("Stacking impacts for chain %s... ", chain.toStringShort());
+        // Reporter.indicateProgress(r1, 5);
+        if(Math.abs(chain.chainedImpact()) >= impactTreshold) {
+            int impactor = chain.impactorIndex();
+            int impacted = chain.impactedIndex();
+            double addition = resultMatrix.getImpact(impactor, impacted) + chain.chainedImpact();
+            if(impactor != impacted) {
+                // String r2 = String.format("Added impact of %f, generating expansions...%n", addition);
+                // Reporter.indicateProgress(r2, 5);
+                resultMatrix.setImpact(impactor, impacted, addition);
+            } 
+            
+            if(chain.hasExpansion()) {
+                for(ImpactChain i : chain.continuedByOneIntermediary()) {
+                    stackImpacts(i, impactTreshold, resultMatrix);
+                }
+            }
+        }
+        // Reporter.indicateProgress(String.format("%n"), 5);
+    }
+    
     
     public CrossImpactMatrix scaleByMax(double scaleTo) {
         if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
@@ -377,6 +429,14 @@ public final class CrossImpactMatrix {
             throw new IndexOutOfBoundsException(s);
         }
         return names[var-1];
+    }
+    
+    public String getNameShort(int var) {
+        if(var < 1 || var > varCount) {
+            String s = String.format("No name for index [%d], varCount for the matrix is %d.", var, varCount);
+            throw new IndexOutOfBoundsException(s);
+        }
+        return "V"+var;
     }
     
     /**

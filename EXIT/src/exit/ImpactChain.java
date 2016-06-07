@@ -61,28 +61,28 @@ public class ImpactChain implements Comparable<ImpactChain> {
     /**
      * @return The index of the last (impacted) variable in the chain
      */
-    public int lastVariableIndex() {
+    public int impactedIndex() {
         return chainMembers.get(memberCount-1);
     }
     
     /**
      * @return The index of the first (impactor) variable in the chain
      */
-    public int firstVariableIndex() {
+    public int impactorIndex() {
         return chainMembers.get(0);
     }
     
     /**
      * @return The name of the last (impacted) variable in the chain
      */
-    public String lastVariableName() {
+    public String impactedName() {
         return matrix.getName(chainMembers.get(memberCount-1));
     }
     
     /**
      * @return The name of the first (impactor) variable in the chain
      */
-    public String firstVariableName() {
+    public String impactorName() {
         return matrix.getName(chainMembers.get(0));
     }
     
@@ -124,6 +124,32 @@ public class ImpactChain implements Comparable<ImpactChain> {
         if(chain.size()==1) return 1;
         return (matrix.getImpact(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * chainedImpact(chain.subList(1, chain.size()));
     }
+
+
+    /**
+     * Returns a <code>Set</code> of <code>ImpactChain</code>s,
+     * which are one variable longer than this chain;
+     * the chains are continued by variables that are not present in this chain
+     * but are present in the matrix.
+     * There will be as many continued chains in the returned set as there
+     * are variables in the matrix that are not yet present in the chain.
+     * @return Set of <code>ImpactChain</code>s.
+     */
+    Set<ImpactChain> continuedByOne()  {
+        Set<ImpactChain> continued = new TreeSet<>();
+        Set<Integer> notIncluded = notInThisChain();
+        
+        for(Integer i : notIncluded) {
+            List cm = new LinkedList(chainMembers);
+            cm.add(i);
+            ImpactChain c = new ImpactChain(this.matrix, cm);
+            continued.add(c);
+        }
+        
+        return continued;
+        
+    }
+    
     
     /**
      * Returns a <code>Set</code> of <code>ImpactChain</code>s,
@@ -137,7 +163,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * @return <code>Set</code> of <code>ImpactChain</code>s
      * that have been expanded to be longer than this chain by one variable.
      */
-    private Set<ImpactChain> continuedByOneIntermediary() {
+    Set<ImpactChain> continuedByOneIntermediary() {
         
         if(chainMembers.size() < 2) {
             return continuedByOne();
@@ -185,54 +211,6 @@ public class ImpactChain implements Comparable<ImpactChain> {
     
     
     /**
-     * Returns a <code>Set</code> of <code>ImpactChain</code>s,
-     * which are one variable longer than this chain;
-     * the chains are continued by variables that are not present in this chain
-     * but are present in the matrix.
-     * There will be as many continued chains in the returned set as there
-     * are variables in the matrix that are not yet present in the chain.
-     * @return Set of <code>ImpactChain</code>s.
-     */
-    private Set<ImpactChain> continuedByOne()  {
-        Set<ImpactChain> continued = new TreeSet<>();
-        Set<Integer> notIncluded = notInThisChain();
-        
-        for(Integer i : notIncluded) {
-            List cm = new LinkedList(chainMembers);
-            cm.add(i);
-            ImpactChain c = new ImpactChain(this.matrix, cm);
-            continued.add(c);
-        }
-        
-        return continued;
-        
-    }
-    
-    
-    /**
-     * Returns all possible impact chains that can be
-     * expanded from this impact chain
-     * using the <b>matrix</b> variables not yet present in the chain.
-     * Missing variables are added to the end of the chain,
-     * as impacted variable.
-     * @return All possible impact chains expanded from this impact chain 
-     * @see ImpactChain#continuedByOne() 
-     */
-    @Deprecated 
-    public Set<ImpactChain> allExpandedChains()  {
-        Set<ImpactChain> allChains = new TreeSet<>();
-        allChains.add(this);
-        Set<ImpactChain> immediateExpansions = continuedByOne();
-        allChains.addAll(immediateExpansions);
-        for(ImpactChain ic : immediateExpansions) {
-            allChains.addAll(ic.allExpandedChains());
-        }
-        
-        return allChains;
-    }
-    
-    
-    /**
      * Generates all impact chains expanded from this impact chain
      * that are also high-impact 
      * (having higher or equal <code>chainedImpact</code> 
@@ -259,6 +237,11 @@ public class ImpactChain implements Comparable<ImpactChain> {
         }
         
         return chains;
+    }
+    
+    
+    public boolean hasExpansion() {
+        return notInThisChain().size() > 0;
     }
     
     
@@ -291,6 +274,17 @@ public class ImpactChain implements Comparable<ImpactChain> {
         }
         
         return s;
+    }
+    
+    public String toStringShort() {
+        String s = String.format(" %+2.2f : ", chainedImpact());
+        
+        for(Integer i : chainMembers) {
+            s += matrix.getNameShort(i);
+            if( ! i.equals(chainMembers.get(chainMembers.size()-1))) { s += " -> "; }
+        }
+        
+        return s;        
     }
     
     

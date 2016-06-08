@@ -26,6 +26,10 @@ public class Reporter {
         } 
     }
     
+    public static void msg(String format, Object... args) {
+        System.out.print(String.format(format, (Object[]) args));
+    }
+    
     public static void reportError(final String msg) {
         System.out.print(msg);
         System.exit(1);

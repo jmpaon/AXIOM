@@ -31,6 +31,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
     public final List<Integer> chainMembers;
     public final int memberCount;
     
+    
     /**
      * @param matrix The cross-impact matrix from whose variables 
      * this <code>ImpactChain</code> is constructed of
@@ -61,8 +62,28 @@ public class ImpactChain implements Comparable<ImpactChain> {
     }
     
     public ImpactChain(CrossImpactMatrix matrix, int... chainMembers) {
-        throw new UnsupportedOperationException();
+        if(matrix == null) throw new NullPointerException("matrix is null");
+        this.matrix = matrix;
+        if(chainMembers == null || chainMembers.length == 0) {
+            this.chainMembers = new LinkedList();
+        } else {
+            // Test chainMembers for duplicates
+            List<Integer> list = new LinkedList<>();
+            for(int i : chainMembers) {list.add(i);}
+            Set<Integer> woDuplicates = new TreeSet<>(list);
+            if(woDuplicates.size() != list.size()) { throw new IllegalArgumentException("duplicate items in chainMembers"); }
+            
+            // Test that indices in chainMembers are present in matrix of this impactChain
+            for(Integer i : chainMembers) {
+                if(i < 0 || i > matrix.getVarCount()) {
+                    throw new IndexOutOfBoundsException("Chain member %d not present in impact matrix");
+                }
+            }
+            this.chainMembers = list;
+        }
+        this.memberCount = this.chainMembers.size();
     }
+    
     
     /**
      * @return The index of the last (impacted) variable in the chain
@@ -78,6 +99,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return chainMembers.get(0);
     }
     
+    
     /**
      * @return The name of the last (impacted) variable in the chain
      */
@@ -85,13 +107,14 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return matrix.getName(chainMembers.get(memberCount-1));
     }
     
+    
     /**
      * @return The name of the first (impactor) variable in the chain
      */
     public String impactorName() {
         return matrix.getName(chainMembers.get(0));
     }
-
+    
     
     /**
      * Returns the impact of the first variable of the chain (impactor) 
@@ -109,6 +132,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return chainedImpact(chainMembers);
     }
     
+    
     /**
      * Calculates the impact of the impactor on the impacted through the 
      * intermediary variables in <code>chain</code>.
@@ -122,8 +146,8 @@ public class ImpactChain implements Comparable<ImpactChain> {
         if(chain.size()==1) return 1;
         return (matrix.getImpact(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * chainedImpact(chain.subList(1, chain.size()));
     }
-
-
+    
+    
     /**
      * Returns a <code>Set</code> of <code>ImpactChain</code>s,
      * which are one variable longer than this chain;
@@ -135,7 +159,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
      */
     Set<ImpactChain> continuedByOne()  {
         Set<ImpactChain> continued = new TreeSet<>();
-        Set<Integer> notIncluded = notInThisChain();
+        Set<Integer> notIncluded = expandableBy();
         
         for(Integer i : notIncluded) {
             List cm = new LinkedList(chainMembers);
@@ -168,7 +192,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
         }
         
         Set<ImpactChain> continued = new TreeSet<>();
-        Set<Integer> notIncluded = notInThisChain();
+        Set<Integer> notIncluded = expandableBy();
         for(Integer i : notIncluded) {
             List cm = new LinkedList(chainMembers);
             cm.add(cm.size()-1, i);
@@ -222,7 +246,10 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * equal to or higher than impactTreshold will be included in the returned <code>Set</code>.
      * @return <code>Set</code> of <code>ImpactChain</code>s 
      * that have a higher impact than <b>impactTreshold</b>
+     * @deprecated This candidate chain generation strategy might
+     * result in some significant impact chains not being generated.
      */
+    @Deprecated
     public Set<ImpactChain> highImpactChainsIntermediary(double impactTreshold) {
         if(impactTreshold <=0 || impactTreshold >=1 ) throw new IllegalArgumentException("impactTreshold should be in range ]0..1[");
         
@@ -244,7 +271,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * @return <b>true</b> if this chain can be expanded, false otherwise
      */
     public boolean hasExpansion() {
-        return !notInThisChain().isEmpty();
+        return !expandableBy().isEmpty();
     }
     
     
@@ -254,7 +281,7 @@ public class ImpactChain implements Comparable<ImpactChain> {
      * that are not present in this <code>ImpactChain</code>
      * @return <code>Set</code> with variable indices not included in this <code>ImpactChain</code>
      */
-    private Set<Integer> notInThisChain() {
+    private Set<Integer> expandableBy() {
         Set<Integer> notInThisChain = new TreeSet<>();
         for(int i = 1; i <= matrix.getVarCount() ; i++ ) {
             if(! chainMembers.contains(i)) {
@@ -264,8 +291,9 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return notInThisChain;
     }
     
+    
     /**
-     * @return String representation of the impact chain.
+     * @return String representation of the impact chain, using long variable names.
      */
     @Override
     public String toString() {
@@ -279,6 +307,10 @@ public class ImpactChain implements Comparable<ImpactChain> {
         return s;
     }
     
+    
+    /**
+     * @return String representation of the impact chain, using short variable names.
+     */
     public String toStringShort() {
         String s = String.format(" %+2.2f : ", chainedImpact());
         

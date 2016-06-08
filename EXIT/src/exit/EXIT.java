@@ -25,33 +25,35 @@ public class EXIT {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, EXITexception {
-
+        
+        String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.00000000000001"};
+        
         /* Fast calculation procedure */
-        //fast_exit_analysis(args);
+        standard_exit_analysis(arggs);
         
         /* Normal calculation procedure */
-        //standard_exit_analysis(args);
+        // standard_exit_analysis(arggs);
         
         /* JL-procedure */
         // JL_exit();
         
         /* test */
-        test_features(args);
+        //test_features(args);
     
     }
     
     public static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile12.csv", "-max", "5", "-t", "0.000001"};
+            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
             ImpactChain ic = new ImpactChain(inputMatrix, Arrays.asList(4,1));
-            Set<ImpactChain> s1 = ic.highImpactChains(0.0001);
-            Set<ImpactChain> s2 = ic.highImpactChains(0.0001);
+            Set<ImpactChain> s1 = ic.highImpactChains(arguments.treshold);
+            Set<ImpactChain> s2 = ic.highImpactChains(arguments.treshold);
             
             System.out.printf("%d %d%n", s1.size(), s2.size());
             
@@ -60,19 +62,13 @@ public class EXIT {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     
-    /**
-     * The standard EXIT analysis :
-     * get direct impact matrix in,
-     * output the direct+indirect impact matrix.
-     * @param args 
-     */
     public static void standard_exit_analysis(String[] args) {
         try {
             
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile4.csv", "-max", "5", "-t", "0.000001"};
-            EXITarguments arguments = new EXITarguments(arggs);
+            EXITarguments arguments = new EXITarguments(args);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
@@ -82,40 +78,15 @@ public class EXIT {
             System.out.println(inputMatrix.toString());
             
             CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
-            System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, scaled to have max of 5:");
             
-            System.out.println(resultMatrix);
+            /* Show non-scaled result matrix */
+            System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, not scaled:");
+            System.out.println(resultMatrix);            
+            
+            /* Show result matrix scaled to maxImpact of input matrix */
+            //System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, scaled to maxImpact of input matrix:");
             //System.out.println(resultMatrix.scaleByMax(inputMatrix.getMaxImpact()).toString());
             
-            // System.out.println(resultMatrix.reportDrivingVariables());
-         
-        } catch(EXITexception eex) {
-            System.out.println(eex.getMessage());
-        } catch(Exception ex) {
-            Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    public static void fast_exit_analysis(String[] args) {
-        try {
-            
-            Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile4.csv", "-max", "5", "-t", "0.0000001"};
-            EXITarguments arguments = new EXITarguments(arggs);
-            
-            InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
-            System.out.println(arguments);
-            
-            System.out.println("Impact matrix describing direct impacts between variables:");
-            System.out.println(inputMatrix.toString());
-            
-            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
-            System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, scaled to have max of 5:");
-            System.out.println(resultMatrix);
-            //System.out.println(resultMatrix.scaleByMax(inputMatrix.getMaxImpact()).toString());
-            
-            // System.out.println(resultMatrix.reportDrivingVariables());
          
         } catch(EXITexception eex) {
             System.out.println(eex.getMessage());
@@ -136,7 +107,7 @@ public class EXIT {
             System.out.println("\nImpact matrix describing direct impacts between variables:");
             System.out.println(matrix.toString());
             
-            CrossImpactMatrix result = matrix.summedImpactMatrix(0.000001);
+            CrossImpactMatrix result = matrix.summedImpactMatrix_slow(0.000001);
             
             System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());
@@ -144,7 +115,7 @@ public class EXIT {
             System.out.println(result.scaleByMax(matrix.getMaxImpact()));
 
             for(int iter = 1; iter <= 15; iter++) {
-                result = result.summedImpactMatrix(0.0001);
+                result = result.summedImpactMatrix_slow(0.0001);
                 System.out.printf("Iteration %d:%n", iter);
                 System.out.println(result.scaleByMax(result.getMaxImpact()));
             }

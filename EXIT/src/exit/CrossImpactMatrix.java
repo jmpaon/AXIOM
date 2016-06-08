@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+
 /**
  * <code>CrossImpactMatrix</code> represents a table of impacts 
  * variables have on each other in EXIT cross-impact analysis.
@@ -101,6 +103,15 @@ public final class CrossImpactMatrix {
         this(maxImpact, varCount, true, null);
     }
     
+    
+    /**
+     * Constructor for <code>CrossImpactMatrix</code>.
+     * @param maxImpact The maximum value impacts in the matrix can have.
+     * Minimum allowed value is <b>-maxImpact</b> and maximum <b>maxImpact</b>.
+     * @param varCount The number of variables in the matrix; 
+     * @param onlyIntegers <b>true</b> if matrix contains only integers
+     * @see CrossImpactMatrix#CrossImpactMatrix(double, int, boolean, java.lang.String[], double[]) 
+     */
     public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers) {
         this(maxImpact, varCount, onlyIntegers, null);
     }
@@ -116,8 +127,10 @@ public final class CrossImpactMatrix {
      * @param impactTreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
      * See {@link ImpactChain#highImpactChainsIntermediary(double)}.
      * @return <code>CrossImpactMatrix</code> with the summed direct and indirect impacts between variables
+     * @deprecated This calculation strategy is highly inefficient.
      */
-    public CrossImpactMatrix summedImpactMatrix(double impactTreshold) {
+    @Deprecated
+    public CrossImpactMatrix summedImpactMatrix_slow(double impactTreshold) {
         
         Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactTreshold), 3);
         CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
@@ -160,44 +173,77 @@ public final class CrossImpactMatrix {
     }
     
     
-    public CrossImpactMatrix summedImpactMatrixFast(double impactTreshold) {
+    /**
+     * Calculates and returns 
+     * a new <code>CrossImpactMatrix</code> that contains
+     * the summed direct and indirect impacts between the variables.
+     * In the returned matrix, 
+     * impactor variables are in rows 
+     * and impacted variables are in columns.
+     * @param impactTreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
+     * See {@link ImpactChain#highImpactChains(double)}.
+     * @return <code>CrossImpactMatrix</code> with the summed direct and indirect impacts between variables
+     */
+    public CrossImpactMatrix summedImpactMatrix(double impactTreshold) {
         CrossImpactMatrix resultMatrix = new CrossImpactMatrix(maxImpact*varCount, varCount, false, names);
-        for(int impactor=1;impactor <= varCount;impactor++) {
-            for(int impacted=1;impacted <= varCount;impacted++) {
-                if(impactor != impacted) {
-                    ImpactChain directImpact = new ImpactChain(this, Arrays.asList(impactor, impacted));
-                    sumImpacts(directImpact, impactTreshold, resultMatrix);                    
-                }
-            }
+        double totalCount=0;
+        for(int impactor=1; impactor<=this.varCount; impactor++) {
+            Reporter.msg("Calculating direct and indirect impacts of %s(%s)... ", getNameShort(impactor), truncateName(getName(impactor), 15));
+            ImpactChain chain = new ImpactChain(this, Arrays.asList(impactor));
+            double count = sumImpacts(chain, impactTreshold, resultMatrix);
+            totalCount += count;
+            Reporter.msg("%10.0f significant (treshold %1.4f) impact chains found%n", count, impactTreshold);
         }
-        
+        Reporter.msg("%s significant (treshold %1.4f) impact chains found in the matrix.%n", Math.round(totalCount), impactTreshold);
+        Reporter.msg("The total number of possible chains in this matrix is %s.%n", approximateChainCountString());
         return resultMatrix;
     }
     
-    void sumImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
+    
+    /**
+     * If impact of <b>chain</b> is higher than <b>impactTreshold</b>,
+     * it is added to <b>resultMatrix</b> and the possible immediate expansions of
+     * <b>chain</b> are generated and their impacts added to <b>resultMatrix</b>
+     * if appropriate.
+     * @param chain <code>ImpactChain</code> to consider for addition to <b>resultMatrix</b>
+     * @param impactTreshold <b>chain</b> must have an impact of at least this value to be added to <b>resultMatrix</b>
+     * @param resultMatrix <code>CrossImpactMatrix</code> where the significant impacts are summed
+     * @return count of significant impact chains found in <b>chain</b> and its expansions.
+     */
+    private double sumImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
+        
+        double count = 0;
         if(Math.abs(chain.chainedImpact()) >= impactTreshold) {
-            System.out.print("Adding " + chain.toString() + " :: ");
+            count++;
             int impactor = chain.impactorIndex();
             int impacted = chain.impactedIndex();
             double accumulatedValue = resultMatrix.getImpact(impactor, impacted);
             double additionValue    = chain.chainedImpact();
-            resultMatrix.setImpact(impactor, impacted, accumulatedValue + additionValue);
             
-            System.out.printf("has expansions " + chain.hasExpansion() + " = " + chain.continuedByOneIntermediary().toString()+ "\n");
+            if(impactor != impacted) {
+                if(resultMatrix.maxImpact < accumulatedValue + additionValue) {
+                    resultMatrix.setMaxImpact(Math.round((accumulatedValue + additionValue)*1.5));
+                }
+                resultMatrix.setImpact(impactor, impacted, accumulatedValue + additionValue);
+            }
+                
             
             if(chain.hasExpansion()) {
-                Set<ImpactChain> expansions = chain.continuedByOneIntermediary();
+                Set<ImpactChain> expansions = chain.continuedByOne();
                 for(ImpactChain ic : expansions) {
-                    sumImpacts(ic, impactTreshold, resultMatrix);
+                    count += sumImpacts(ic, impactTreshold, resultMatrix);
                 }
             }
-            
         }
+        return count;
     }
     
 
-
-    
+    /**
+     * Scales an impact matrix to have its values within a certain range.
+     * @param scaleTo The value that the highest absolute impact value in the matrix will be scaled to
+     * @return Matrix scaled according to <b>scaleTo</b> argument.
+     */
     public CrossImpactMatrix scaleByMax(double scaleTo) {
         if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
         double max = greatestImpact();

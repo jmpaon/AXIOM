@@ -23,27 +23,26 @@ public class InputFileReader {
     public CrossImpactMatrix readInputFile(EXITarguments args) throws IOException, EXITexception {
         
         // At this point only CSV files are read
-        CrossImpactMatrix m = readCSVfile(args.inputFilename, ';');
+        CrossImpactMatrix m = readCSVfile(args, ';');
         m.setMaxImpact(args.maxImpact);
         return m;
 
     }
     
-    CrossImpactMatrix readCSVfile(String filename, char separator) throws IOException, EXITexception {
+    CrossImpactMatrix readCSVfile(EXITarguments args, char separator) throws IOException, EXITexception {
         
-        Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", filename),5);
+        Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", args.inputFilename),5);
         
-        if(! fileExists(filename)) throw new FileNotFoundException(String.format("Input file %s not found", filename));
+        if(! fileExists(args.inputFilename)) throw new FileNotFoundException(String.format("Input file %s not found", args.inputFilename));
         
-        List<String> lines = Files.readAllLines(Paths.get(filename));
+        List<String> lines = Files.readAllLines(Paths.get(args.inputFilename));
         eliminateEmptyLines(lines);
 
         int variableCount = lines.size();
         int var=1;
 
-        // FIXME remove hard-coded maxImpact
-        CrossImpactMatrix cim = new CrossImpactMatrix(5, variableCount, false);
-
+        CrossImpactMatrix cim = new CrossImpactMatrix(args.maxImpact, variableCount, args.onlyIntegers);
+        
         for(String l : lines) {
 
             Scanner sc = new Scanner(l).useDelimiter(String.valueOf(separator));

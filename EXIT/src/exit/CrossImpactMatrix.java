@@ -7,6 +7,7 @@ package exit;
 import java.lang.management.GarbageCollectorMXBean;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * 
  * @author jmpaon
  */
-public final class CrossImpactMatrix {
+public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
     
     private double maxImpact;
     private final int varCount;
@@ -196,6 +197,7 @@ public final class CrossImpactMatrix {
         }
         Reporter.msg("%s significant (treshold %1.4f) impact chains found in the matrix.%n", Math.round(totalCount), impactTreshold);
         Reporter.msg("The total number of possible chains in this matrix is %s.%n", approximateChainCountString());
+        resultMatrix.setMaxImpact(resultMatrix.greatestImpact());
         return resultMatrix;
     }
     
@@ -219,14 +221,14 @@ public final class CrossImpactMatrix {
             int impacted = chain.impactedIndex();
             double accumulatedValue = resultMatrix.getImpact(impactor, impacted);
             double additionValue    = chain.chainedImpact();
+            double newValue         = accumulatedValue + additionValue;
             
             if(impactor != impacted) {
-                if(resultMatrix.maxImpact < accumulatedValue + additionValue) {
-                    resultMatrix.setMaxImpact(Math.round((accumulatedValue + additionValue)*1.5));
+                if(resultMatrix.maxImpact < Math.abs(newValue)) {
+                    resultMatrix.setMaxImpact(Math.abs(Math.round((accumulatedValue + additionValue)*1.5)));
                 }
-                resultMatrix.setImpact(impactor, impacted, accumulatedValue + additionValue);
+                resultMatrix.setImpact(impactor, impacted, newValue);
             }
-                
             
             if(chain.hasExpansion()) {
                 Set<ImpactChain> expansions = chain.continuedByOne();
@@ -307,14 +309,14 @@ public final class CrossImpactMatrix {
     
     /**
      * 
-     * @param im Cross-impact matrix to compare against this one in terms of impact sizes
+     * @param impactMatrix Cross-impact matrix to compare against this one in terms of impact sizes
      * @param maxDeviation The maximum relative deviation allowed to still consider the matrices approximately same in terms of impact sizes
      * @return <b>true</b> if 
      */
-    boolean areImpactsApproximatelySame(CrossImpactMatrix im, double maxDeviation) {
-        if(im.impacts.length != this.impacts.length) throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");
+    boolean areImpactsApproximatelySame(CrossImpactMatrix impactMatrix, double maxDeviation) {
+        if(impactMatrix.impacts.length != this.impacts.length) throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");
         for(int i=0; i<this.impacts.length; i++) {
-            double v1 = this.impacts[i], v2 = im.impacts[i];
+            double v1 = this.impacts[i], v2 = impactMatrix.impacts[i];
             double rel = v1 > v2 ? v1 / v2 : v2 / v1;
             if((1-rel) > maxDeviation) return false;
         }
@@ -593,9 +595,16 @@ public final class CrossImpactMatrix {
             c=0;
             while(c < varCount) {
                 if(this.onlyIntegers) {
-                    stringRepresentation += String.format("%2d\t", (int)impacts[i]);
+                    DecimalFormat fmt = new DecimalFormat("+#,##0;-#");
+                    if(impacts[i] == 0) 
+                        {stringRepresentation += " 0\t"; } 
+                    else 
+                        {stringRepresentation += fmt.format((int)impacts[i]) + "\t"; }
+                    //stringRepresentation += String.format("%2d\t", (int)impacts[i]);
                 } else {
-                    stringRepresentation += String.format("%2.2f\t", impacts[i]);
+                    DecimalFormat fmt = new DecimalFormat("+#,##0.00;-#");
+                    stringRepresentation += fmt.format(impacts[i]) +"\t";
+                    //stringRepresentation += String.format("%2.2f\t", impacts[i]);
                 }
                 
                 c++;
@@ -649,6 +658,32 @@ public final class CrossImpactMatrix {
             r++;
         }
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object impactMatrix){
+        if(! (impactMatrix instanceof CrossImpactMatrix)) return false;
+        return this.hashCode() == impactMatrix.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (int) (Double.doubleToLongBits(this.maxImpact) ^ (Double.doubleToLongBits(this.maxImpact) >>> 32));
+        hash = 29 * hash + this.varCount;
+        hash = 29 * hash + Arrays.hashCode(this.impacts);
+        hash = 29 * hash + (this.isLocked ? 1 : 0);
+        hash = 29 * hash + Arrays.deepHashCode(this.names);
+        return hash;
+    }
+    
+    
+    @Override
+    public int compareTo(CrossImpactMatrix impactMatrix) {
+        if(this.varCount > impactMatrix.varCount) return  1;
+        if(this.varCount < impactMatrix.varCount) return -1;
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

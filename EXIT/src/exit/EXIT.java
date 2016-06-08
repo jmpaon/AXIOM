@@ -26,13 +26,10 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.00000000000001"};
-        
-        /* Fast calculation procedure */
-        standard_exit_analysis(arggs);
+        String[] arggs = {"src/exit/input35_65.csv", "-int", "-max", "5", "-t", "0.95"};
         
         /* Normal calculation procedure */
-        // standard_exit_analysis(arggs);
+        standard_exit_analysis(arggs);
         
         /* JL-procedure */
         // JL_exit();
@@ -41,28 +38,6 @@ public class EXIT {
         //test_features(args);
     
     }
-    
-    public static void test_features(String[] args) {
-        try {
-            Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
-            EXITarguments arguments = new EXITarguments(arggs);
-            
-            InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
-            
-            ImpactChain ic = new ImpactChain(inputMatrix, Arrays.asList(4,1));
-            Set<ImpactChain> s1 = ic.highImpactChains(arguments.treshold);
-            Set<ImpactChain> s2 = ic.highImpactChains(arguments.treshold);
-            
-            System.out.printf("%d %d%n", s1.size(), s2.size());
-            
-            
-        } catch (Exception ex) {
-            Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     
     public static void standard_exit_analysis(String[] args) {
         try {
@@ -107,7 +82,7 @@ public class EXIT {
             System.out.println("\nImpact matrix describing direct impacts between variables:");
             System.out.println(matrix.toString());
             
-            CrossImpactMatrix result = matrix.summedImpactMatrix_slow(0.000001);
+            CrossImpactMatrix result = matrix.summedImpactMatrix(0.005);
             
             System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());
@@ -115,7 +90,7 @@ public class EXIT {
             System.out.println(result.scaleByMax(matrix.getMaxImpact()));
 
             for(int iter = 1; iter <= 15; iter++) {
-                result = result.summedImpactMatrix_slow(0.0001);
+                result = result.summedImpactMatrix_slow(0.005);
                 System.out.printf("Iteration %d:%n", iter);
                 System.out.println(result.scaleByMax(result.getMaxImpact()));
             }
@@ -125,5 +100,31 @@ public class EXIT {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+    }    
+    
+    
+    public static void test_features(String[] args) {
+        try {
+            Reporter.requiredReportingLevel = 0;
+            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
+            EXITarguments arguments = new EXITarguments(arggs);
+            
+            InputFileReader ifr = new InputFileReader();
+            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
+            
+            ImpactChain ic = new ImpactChain(inputMatrix, 2,2,3,6,8,9,10);
+            System.out.println(ic.toStringShort());
+            System.out.println(ic.chainedImpact());
+
+            
+            
+            
+            
+        } catch (Exception ex) {
+            Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+    
+
 }

@@ -29,13 +29,13 @@ public class EXIT {
         String[] arggs = {"src/exit/input35_65.csv", "-int", "-max", "5", "-t", "0.95"};
         
         /* Normal calculation procedure */
-        standard_exit_analysis(arggs);
+        // standard_exit_analysis(arggs);
         
         /* JL-procedure */
         // JL_exit();
         
         /* test */
-        //test_features(args);
+        test_features(args);
     
     }
     
@@ -106,15 +106,18 @@ public class EXIT {
     public static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
+            String[] arggs = {"src/exit/inputfile6.csv", "-max", "5", "-t", "0.0010000"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
-            ImpactChain ic = new ImpactChain(inputMatrix, 2,2,3,6,8,9,10);
-            System.out.println(ic.toStringShort());
-            System.out.println(ic.chainedImpact());
+            ExperimentalChainMiner e = new ExperimentalChainMiner(inputMatrix);
+
+            Set<ImpactChain> spair = e.sigPairs(0.05);
+            ImpactChain ic2 = new ImpactChain(inputMatrix, 3,4);
+            ImpactChain i = spair.iterator().next().combineWith(ic2);
+            System.out.println(i);
 
             
             

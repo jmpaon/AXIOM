@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * 
  * @author jmpaon
  */
-public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
+public final class CrossImpactMatrix {
     
     private double maxImpact;
     private final int varCount;
@@ -118,6 +118,7 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
     }
     
     
+    
     /**
      * Calculates and returns 
      * a new <code>CrossImpactMatrix</code> that contains
@@ -154,7 +155,7 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
                     
                     int counter = 0;
                     for (ImpactChain chain : chains) {
-                        impactSum += chain.chainedImpact();
+                        impactSum += chain.impact();
                         counter++;
                     }
                     Reporter.indicateProgress(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum), 3);
@@ -215,12 +216,12 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
     private double sumImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
         
         double count = 0;
-        if(Math.abs(chain.chainedImpact()) >= impactTreshold) {
+        if(Math.abs(chain.impact()) >= impactTreshold) {
             count++;
             int impactor = chain.impactorIndex();
             int impacted = chain.impactedIndex();
             double accumulatedValue = resultMatrix.getImpact(impactor, impacted);
-            double additionValue    = chain.chainedImpact();
+            double additionValue    = chain.impact();
             double newValue         = accumulatedValue + additionValue;
             
             if(impactor != impacted) {
@@ -283,6 +284,15 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
         return impactors;
     }
     
+    
+    /**
+     * Returns the sum 
+     * of the impacts of a variable on other variables, 
+     * or the values in a specific row of the matrix.
+     * @param varIndex index of variable which impacts on other variables are summed
+     * @param absoluteValues if <i>true</i>, sum of absolute impact values is returned; otherwise sum of impact values is returned
+     * @return Sum of impacts of variable with index <b>varIndex</b> on other variables
+     */
     double sumImpactsOf(int varIndex, boolean absoluteValues) {
         double sum=0;
         for(int i=1; i<=varCount; i++) {
@@ -291,6 +301,15 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
         return sum;
     }
     
+    
+    /**
+     * Returns the sum
+     * of the impacts of all variables in the matrix on a specific variable,
+     * or the values in a specific column of the matrix.
+     * @param varIndex index of the variable which impacts on it are summed
+     * @param absoluteValues if <i>true</i>, sum of absolute impact values is returned; otherwise sum of impact values is returned
+     * @return Sum of impacts of other variables on variable with index <b>varIndex</b>
+     */
     double sumImpactsOn(int varIndex, boolean absoluteValues) {
         double sum=0;
         for(int i=1; i<=varCount; i++) {
@@ -299,16 +318,31 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
         return sum;        
     }
     
+    
+    /**
+     * Returns the average of impacts of specific variable
+     * @param varIndex Index of the variable which impacts are averaged
+     * @return Average of impacts of variable with index <b>varIndex</b> on other variables
+     */
     double averageImpactOf(int varIndex) {
         return sumImpactsOf(varIndex, true) / varCount;
     }
     
+    
+    /**
+     * Returns the average of impacts on specific variable
+     * @param varIndex Index of the variable which impacts are averaged
+     * @return Average of impacts of other variables on variable with index <b>varIndex</b>
+     */
     double averageImpactOn(int varIndex) {
         return sumImpactsOn(varIndex, true) / varCount;
     }
     
+    
     /**
-     * 
+     * Tests if impact values of this matrix deviate 
+     * from the impact values of <b>impactMatrix</b>
+     * at most by value of <b>maxDeviation</b>
      * @param impactMatrix Cross-impact matrix to compare against this one in terms of impact sizes
      * @param maxDeviation The maximum relative deviation allowed to still consider the matrices approximately same in terms of impact sizes
      * @return <b>true</b> if 
@@ -676,14 +710,6 @@ public final class CrossImpactMatrix implements Comparable<CrossImpactMatrix>{
         hash = 29 * hash + Arrays.deepHashCode(this.names);
         return hash;
     }
-    
-    
-    @Override
-    public int compareTo(CrossImpactMatrix impactMatrix) {
-        if(this.varCount > impactMatrix.varCount) return  1;
-        if(this.varCount < impactMatrix.varCount) return -1;
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
     
 }

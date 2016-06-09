@@ -18,7 +18,7 @@ public class ImpactComparator implements Comparator<ImpactChain> {
     @Override
     public int compare(ImpactChain ic1, ImpactChain ic2) {
         
-        int result = Double.compare(ic2.chainedImpact(), ic1.chainedImpact());
+        int result = Double.compare(ic2.impact(), ic1.impact());
         
         if(result == 0) {
             result = ic1.compareTo(ic2);

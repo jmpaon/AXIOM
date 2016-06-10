@@ -26,16 +26,16 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] arggs = {"src/exit/input35_65.csv", "-int", "-max", "5", "-t", "0.95"};
+        String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.000000000000000001"};
         
         /* Normal calculation procedure */
-        // standard_exit_analysis(arggs);
+        standard_exit_analysis(arggs);
         
         /* JL-procedure */
         // JL_exit();
         
         /* test */
-        test_features(args);
+        //test_features(args);
     
     }
     
@@ -52,7 +52,9 @@ public class EXIT {
             System.out.println("Impact matrix describing direct impacts between variables:");
             System.out.println(inputMatrix.toString());
             
+            Timer timer = new Timer();
             CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
+            timer.stopTime("Process duration: ");
             
             /* Show non-scaled result matrix */
             System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, not scaled:");
@@ -106,20 +108,22 @@ public class EXIT {
     public static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile6.csv", "-max", "5", "-t", "0.0010000"};
+            String[] arggs = {"src/exit/inputfile12.csv", "-max", "5", "-t", "0.0010000"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
             ExperimentalChainMiner e = new ExperimentalChainMiner(inputMatrix);
-
-            Set<ImpactChain> spair = e.sigPairs(0.05);
-            ImpactChain ic2 = new ImpactChain(inputMatrix, 3,4);
-            ImpactChain i = spair.iterator().next().combineWith(ic2);
-            System.out.println(i);
-
+            Timer timer = new Timer();
             
+            timer.startTime();
+            e.mineChains(0.25);
+            timer.stopTime("Experimental strategy time: ");
+            
+            timer.startTime();
+            System.out.println("Normal strategy: " + inputMatrix.indirectImpacts(null, null, 0.25).size() + " chains found");
+            timer.stopTime("Normal strategy time: ");
             
             
             

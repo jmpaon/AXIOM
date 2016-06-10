@@ -26,7 +26,7 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.000000000000000001"};
+        String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.001"};
         
         /* Normal calculation procedure */
         standard_exit_analysis(arggs);

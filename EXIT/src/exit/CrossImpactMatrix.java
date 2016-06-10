@@ -190,7 +190,7 @@ public final class CrossImpactMatrix {
         CrossImpactMatrix resultMatrix = new CrossImpactMatrix(maxImpact*varCount, varCount, false, names);
         double totalCount=0;
         for(int impactor=1; impactor<=this.varCount; impactor++) {
-            Reporter.msg("Calculating direct and indirect impacts of %s(%s)... ", getNameShort(impactor), truncateName(getName(impactor), 15));
+            Reporter.msg("Calculating significant indirect impacts of %s(%s)... ", getNameShort(impactor), truncateName(getName(impactor), 15));
             ImpactChain chain = new ImpactChain(this, Arrays.asList(impactor));
             double count = sumImpacts(chain, impactTreshold, resultMatrix);
             totalCount += count;
@@ -590,6 +590,20 @@ public final class CrossImpactMatrix {
             if(impacts[i] != (int)impacts[i]) { return false; }
         }
         return true;
+    }
+
+
+    /**
+     * @return The greatest <u>absolute</u> impact value in the matrix.
+     */
+    public double greatestImpact() {
+        
+        double greatest = Math.abs(impacts[0]);
+        for (int i=1; i<impacts.length; i++) {
+            double v = Math.abs(impacts[i]);
+            if(v > greatest) { greatest = v; }
+        }
+        return greatest;
     }    
     
     /**
@@ -614,17 +628,18 @@ public final class CrossImpactMatrix {
      */
     @Override
     public String toString() {
+        int labelWidth = 55;
         int i=0, c, n=0;
         String stringRepresentation="";
         
-        stringRepresentation += String.format("%30s     \t", " ");
+        stringRepresentation += String.format("%"+labelWidth+"s     \t", " ");
         for(c=0; c<varCount;c++) {
             stringRepresentation += String.format("%s\t", "V"+(c+1));
         }
         stringRepresentation += String.format("%n");
         
         while( i < impacts.length) {
-            stringRepresentation += String.format("%30s (%s)\t", truncateName(names[n], 30), ("V"+(n+1)));
+            stringRepresentation += String.format("%"+labelWidth+"s (%s)\t", truncateName(names[n], labelWidth), ("V"+(n+1)));
             n++;
             c=0;
             while(c < varCount) {
@@ -663,18 +678,7 @@ public final class CrossImpactMatrix {
     }
     
     
-    /**
-     * @return The greatest <u>absolute</u> impact value in the matrix.
-     */
-    public double greatestImpact() {
-        
-        double greatest = Math.abs(impacts[0]);
-        for (int i=1; i<impacts.length; i++) {
-            double v = Math.abs(impacts[i]);
-            if(v > greatest) { greatest = v; }
-        }
-        return greatest;
-    }
+
     
     
     /**

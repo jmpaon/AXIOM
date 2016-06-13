@@ -5,7 +5,11 @@
  */
 package exit;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,10 +30,10 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.001"};
+        String[] commandLineArguments = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0000001"};
         
         /* Normal calculation procedure */
-        standard_exit_analysis(arggs);
+        standard_exit_analysis(commandLineArguments);
         
         /* JL-procedure */
         // JL_exit();
@@ -47,29 +51,63 @@ public class EXIT {
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
-            System.out.println(arguments);
             
-            System.out.println("Impact matrix describing direct impacts between variables:");
+            System.out.printf("Impact matrix describing direct impacts between variables read from %s%n", arguments.inputFilename);
             System.out.println(inputMatrix.toString());
             
-            Timer timer = new Timer();
-            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
-            timer.stopTime("Process duration: ");
+            PrintStream output;
             
-            /* Show non-scaled result matrix */
-            System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, not scaled:");
-            System.out.println(resultMatrix);            
+            if(arguments.outputFilename == null) {
+                output = System.out;
+            } else {
+                output = new PrintStream(arguments.outputFilename);
+            }
             
-            /* Show result matrix scaled to maxImpact of input matrix */
-            //System.out.println("\nResult impact matrix with summed direct and indirect impacts between variables, scaled to maxImpact of input matrix:");
-            //System.out.println(resultMatrix.scaleByMax(inputMatrix.getMaxImpact()).toString());
+            if (arguments.impactOf != null || arguments.impactOn != null) {
+                
+                Integer impactOfIndex = isInteger(arguments.impactOf) ? Integer.parseInt(arguments.impactOf) : null;
+                Integer impactOnIndex = isInteger(arguments.impactOn) ? Integer.parseInt(arguments.impactOn) : null;
+                
+                
+                
+                if (arguments.impactOf != null && arguments.impactOn != null) {
+                    
+                    inputMatrix.indirectImpacts(arguments.impactOf, arguments.impactOn, 0)
+                } 
+
+                else if (arguments.impactOf != null && arguments.impactOn == null) {
+
+                } 
+
+                else if (arguments.impactOf == null && arguments.impactOn != null) {
+
+                }                 
+                
+                
+                
+                
+            } else {
+                Timer timer = new Timer();
+                CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
+                timer.stopTime("Process duration: ");
+                output.println("\nResult impact matrix with summed direct and indirect impacts between variables, not scaled:");
+                output.println(resultMatrix);                
+            }
             
-         
-        } catch(EXITexception eex) {
-            System.out.println(eex.getMessage());
+            
+
+
+            
+            
+            
+
+        }catch(EXITargumentException ex) {
+            
+        } catch(EXITexception ex) {
+            System.out.println(ex.getMessage());
         } catch(Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
     }
     
 
@@ -132,6 +170,11 @@ public class EXIT {
         }
     }
 
+    public static boolean isInteger(String str) {  
+        try {int d = Integer.parseInt(str);}  
+        catch(NumberFormatException nfe){ return false;}  
+        return true;  
+    }    
     
 
 }

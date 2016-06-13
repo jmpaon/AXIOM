@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -442,7 +443,7 @@ public final class CrossImpactMatrix {
      * @return A <code>List</code> of impact chains with impact higher than <i>treshold</i> and that have
      * the impactor and impacted variables specified in the <b>impactOf</b> and <b>impactOn</b> arguments.
      */
-    public List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
+    List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
         
         if(impactOf != null && (impactOf <1 || impactOf > varCount)) throw new IndexOutOfBoundsException("impactOf index is not present in the matrix");
         if(impactOn != null && (impactOn <1 || impactOn > varCount)) throw new IndexOutOfBoundsException("impactOn index is not present in the matrix");
@@ -507,6 +508,13 @@ public final class CrossImpactMatrix {
             throw new IndexOutOfBoundsException(s);
         }
         return "V"+var;
+    }
+    
+    public int getIndex(String varName) {
+        for (int i = 0; i < names.length; i++) {
+            if(names[i].equals(varName)) return i;
+        }
+        throw new NoSuchElementException(String.format("impact matrix doesn't have a variable with name %s", varName));
     }
     
     /**

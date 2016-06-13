@@ -48,7 +48,7 @@ public class EXITarguments {
         
         this.args = Arrays.asList(args);
         if(hasUnknownOptions()) {
-            throw new EXITargumentException("Unknown options");
+            throw new EXITargumentException(String.format("Unknown options used. Known options are the following: %s%n", knownOptions.toString()));
         }
         
         inputFilename  = this.args.get(0);
@@ -61,6 +61,12 @@ public class EXITarguments {
         separator      = hasFlag("-sep") ? extractArgumentValue("-sep").charAt(0) : ';' ;
     }
     
+    
+    /**
+     * Tests if args list contains flags (entries that have '-' character in front of them) 
+     * that are not in the known options list.
+     * @return <i>true</i> if args list contains flags not in <b>knownOptions</b> list, false otherwise.
+     */
     private boolean hasUnknownOptions() {
         for(String arg : args) {
             if(arg.startsWith("-")) {
@@ -72,7 +78,12 @@ public class EXITarguments {
         return false;
     }
     
-    
+    /**
+     * Extracts a value than follows a specific flag in the args list.
+     * @param id flag to search from the args list
+     * @return The value that is in the args list at the succeeding index of <b>id</b>
+     * @throws EXITargumentException 
+     */
     private String extractArgumentValue(String id) throws EXITargumentException {
         int idPos = args.indexOf(id);
         if(idPos == -1) return null;
@@ -80,7 +91,11 @@ public class EXITarguments {
         return args.get(idPos+1);
     }
     
-    
+    /**
+     * Tests if args list contains a specific flag (something that has a '-' character in front of it).
+     * @param id The flag that is sought from args list
+     * @return <i>true</i> if args list contains flag, false otherwise
+     */
     private boolean hasFlag(final String id) {
         return args.contains(id);
     }

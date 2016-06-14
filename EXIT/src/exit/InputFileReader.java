@@ -40,7 +40,7 @@ public class InputFileReader {
 
         int variableCount = lines.size();
         int var=1;
-
+        
         CrossImpactMatrix cim = new CrossImpactMatrix(args.maxImpact, variableCount, args.onlyIntegers);
         
         for(String l : lines) {
@@ -101,5 +101,12 @@ public class InputFileReader {
         File f = new File(filename);
         return f.exists() && !f.isDirectory();
     }
+    
+    
+    boolean isInteger(String str) {  
+        try {int d = Integer.parseInt(str);}  
+        catch(NumberFormatException nfe){ return false;}  
+        return true;  
+    }    
     
 }

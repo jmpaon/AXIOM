@@ -32,7 +32,7 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] commandLineArguments = {"src/exit/eltran1.csv", "-of", "1",  "-max", "4", "-t", "0.05"};
+        String[] commandLineArguments = {"src/exit/eltran1.csv", "-sep", ":",  "-max", "5", "-t", "0.05"};
         
         /* Normal calculation procedure */
         standard_exit_analysis(commandLineArguments);
@@ -129,7 +129,8 @@ public class EXIT {
         } catch(EXITexception ex) {
             System.out.println(ex.getMessage());
         } catch(Exception ex) {
-            Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error occurred: " +  ex.getMessage());
+            // Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

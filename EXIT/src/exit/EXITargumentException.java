@@ -14,7 +14,6 @@ class EXITargumentException extends EXITexception {
     public EXITargumentException(String msg) {
         super(msg);
         printUsage();
-        System.exit(1);
     }
     
     public final void printUsage() {

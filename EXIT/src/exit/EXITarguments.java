@@ -59,6 +59,7 @@ public class EXITarguments {
         onlyIntegers   = hasFlag("-int");
         treshold       = hasFlag("-t") ? Double.valueOf(extractArgumentValue("-t")) : 0.20;
         separator      = hasFlag("-sep") ? extractArgumentValue("-sep").charAt(0) : ';' ;
+        
     }
     
     

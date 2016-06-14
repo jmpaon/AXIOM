@@ -468,7 +468,6 @@ public final class CrossImpactMatrix {
                 .sorted(new ImpactComparator())
                 .filter(c -> c.memberCount > 1)
                 .collect(Collectors.toList());
-        
     }
 
     
@@ -512,7 +511,7 @@ public final class CrossImpactMatrix {
     
     public int getIndex(String varName) {
         for (int i = 0; i < names.length; i++) {
-            if(names[i].equals(varName)) return i;
+            if(names[i].equals(varName)) return i+1;
         }
         throw new NoSuchElementException(String.format("impact matrix doesn't have a variable with name %s", varName));
     }

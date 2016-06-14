@@ -5,7 +5,6 @@
  */
 package exit;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,10 +31,10 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] commandLineArguments = {"src/exit/eltran1.csv", "-sep", ":",  "-max", "5", "-t", "0.05"};
+        // String[] commandLineArguments = {"src/exit/inputfile5.csv", "-on",  "MC", "-max", "5", "-t", "0.05"};
         
         /* Normal calculation procedure */
-        standard_exit_analysis(commandLineArguments);
+        standard_exit_analysis(args);
         
         /* JL-procedure */
         // JL_exit();
@@ -69,7 +68,9 @@ public class EXIT {
             
 
             
-            if (arguments.impactOf != null || arguments.impactOn != null) {
+            if (arguments.impactOf != null || arguments.impactOn != null) 
+            /* Print requested impact chains and their summed impacts */
+            {
                 
                 Integer impactOfIndex = arguments.impactOf != null ? 
                         isInteger(arguments.impactOf) ? Integer.parseInt(arguments.impactOf) : inputMatrix.getIndex(arguments.impactOf)
@@ -86,13 +87,12 @@ public class EXIT {
                             String.format("Impacts of %s on %s", inputMatrix.getName(impactOfIndex), inputMatrix.getName(impactOnIndex))
                             : String.format("Impacts of %s", inputMatrix.getName(impactOfIndex))
                         : String.format("Impacts on %s", inputMatrix.getName(impactOnIndex));
-                        
-                        
+                
                         
                 output.printf("%s with significant (%1.3f) impact:%n", impactChainDescription,  arguments.treshold );
                 for (ImpactChain chain : significantChains) {
                     output.println( chain );
-                    List<String> key = new LinkedList<String>(Arrays.asList( chain.impactorName(), chain.impactedName() ));
+                    List<String> key = new LinkedList<>(Arrays.asList( chain.impactorName(), chain.impactedName() ));
                     if(chainsSummed.containsKey(key)) {
                         chainsSummed.put(key, chainsSummed.get(key) + chain.impact() );
                     } else {
@@ -107,7 +107,9 @@ public class EXIT {
                 }
                 
                 
-            } else {
+            } else 
+            /* Print full cross-impact matrix displaying direct and indirect impacts */
+            {
                 Timer timer = new Timer();
                 CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
@@ -125,11 +127,11 @@ public class EXIT {
             
 
         }catch(EXITargumentException ex) {
-            
+            System.out.println("Argument error occurred: " + ex.getMessage());            
         } catch(EXITexception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("EXIT error occurred: " + ex.getMessage());
         } catch(Exception ex) {
-            System.out.println("Error occurred: " +  ex.getMessage());
+            System.out.println("Error occurred: " + ex.getMessage());
             // Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

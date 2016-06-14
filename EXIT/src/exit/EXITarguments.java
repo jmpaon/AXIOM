@@ -3,6 +3,7 @@ package exit;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +49,7 @@ public class EXITarguments {
         
         this.args = Arrays.asList(args);
         if(hasUnknownOptions()) {
-            throw new EXITargumentException(String.format("Unknown options used. Known options are the following: %s%n", knownOptions.toString()));
+            throw new EXITargumentException(String.format("Unknown options %s used. Known options are the following: %s%n", unknownOptionsUsed(),  knownOptions.toString()));
         }
         
         inputFilename  = this.args.get(0);
@@ -77,6 +78,15 @@ public class EXITarguments {
             }
         }
         return false;
+    }
+    
+    private List<String> unknownOptionsUsed() {
+        List<String> unknown = new LinkedList<>();
+        for(String arg : args) {
+            if(arg.startsWith("-") && !knownOptions.contains(arg))
+                unknown.add(arg);
+        }
+        return unknown;
     }
     
     /**

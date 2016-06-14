@@ -23,13 +23,13 @@ public class InputFileReader {
     public CrossImpactMatrix readInputFile(EXITarguments args) throws IOException, EXITexception {
         
         // At this point only CSV files are read
-        CrossImpactMatrix m = readCSVfile(args, ';');
+        CrossImpactMatrix m = readCSVfile(args);
         m.setMaxImpact(args.maxImpact);
         return m;
 
     }
     
-    CrossImpactMatrix readCSVfile(EXITarguments args, char separator) throws IOException, EXITexception {
+    CrossImpactMatrix readCSVfile(EXITarguments args) throws IOException, EXITexception {
         
         Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", args.inputFilename),5);
         
@@ -45,7 +45,8 @@ public class InputFileReader {
         
         for(String l : lines) {
 
-            Scanner sc = new Scanner(l).useDelimiter(String.valueOf(separator));
+            Scanner sc = new Scanner(l).useDelimiter(String.valueOf(args.separator));
+            
             cim.setName(var, sc.next() );
             int imp=0;
             while(sc.hasNextDouble()) {

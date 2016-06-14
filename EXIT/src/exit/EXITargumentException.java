@@ -13,7 +13,7 @@ class EXITargumentException extends EXITexception {
 
     public EXITargumentException(String msg) {
         super(msg);
-        printUsage();
+        
     }
     
     public final void printUsage() {

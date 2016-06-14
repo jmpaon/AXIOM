@@ -61,6 +61,12 @@ public class ImpactChain implements Comparable<ImpactChain>  {
         this.memberCount = this.chainMembers.size();
     }
     
+    /**
+     * @param matrix The cross-impact matrix from whose variables 
+     * this <code>ImpactChain</code> is constructed of
+     * @param chainMembers The indices of the variables in the matrix.
+     * All indices must be present in <b>matrix</b>.
+     */
     public ImpactChain(CrossImpactMatrix matrix, int... chainMembers) {
         if(matrix == null) throw new NullPointerException("matrix is null");
         this.matrix = matrix;
@@ -85,6 +91,14 @@ public class ImpactChain implements Comparable<ImpactChain>  {
     }
     
     
+    /**
+     * Combines two impact chains so that 
+     * members of <b>chain</b> will be appended to the end of <b>this</b> chain.
+     * Combined chains cannot contain same chain members.
+     * @see ImpactChain#isCombinableWith(exit.ImpactChain)
+     * @param chain Chain to append
+     * @return Combined <code>ImpactChain</code>
+     */
     public ImpactChain combineWith(ImpactChain chain) {
         if(! this.matrix.equals(chain.matrix)) throw new IllegalArgumentException("Combined chains refer to different matrices");
         for(Integer i : chain.chainMembers) {
@@ -96,6 +110,14 @@ public class ImpactChain implements Comparable<ImpactChain>  {
         return new ImpactChain(this.matrix, combinedMembers);
     }
     
+    
+    /**
+     * Tests whether two ImpactChains can be combined.
+     * Combination is possible if the chains are formed
+     * from the same impact matrix and do not contain same variables.
+     * @param chain Chain whose combinability with this chain is tested
+     * @return <i>true</i> if chains can be combined, false otherwise
+     */
     public boolean isCombinableWith(ImpactChain chain) {
         if(! this.matrix.equals(chain.matrix)) return false;
         for(Integer i : chain.chainMembers) {
@@ -243,7 +265,8 @@ public class ImpactChain implements Comparable<ImpactChain>  {
         Set<ImpactChain> chains = new TreeSet<>();
         
         if(Math.abs(this.impact()) >= impactTreshold) { 
-            chains.add(this);
+            
+            if(this.memberCount > 0) chains.add(this);
             
             Set<ImpactChain> immediateExpansions = this.continuedByOne();
             for(ImpactChain ic : immediateExpansions) {

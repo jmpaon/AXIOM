@@ -456,7 +456,7 @@ public final class CrossImpactMatrix {
         
         ImpactChain ic = new ImpactChain(this, initialChain);
         
-        Set<ImpactChain> chains = ic.highImpactChainsIntermediary(treshold);
+        Set<ImpactChain> chains = ic.highImpactChains(treshold);
         
         if(impactOn != null) {
             chains = chains.stream()

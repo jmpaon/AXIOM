@@ -5,7 +5,9 @@
  */
 package exit;
 
+import java.io.PrintStream;
 import java.text.Format;
+import java.util.Arrays;
 
 /**
  * The methods of this class take care of reporting progress in
@@ -19,20 +21,26 @@ public class Reporter {
      *
      */
     public static int requiredReportingLevel;
+    public static PrintStream output = System.out;
         
     public static void indicateProgress(final String msg, int level) {
         if (level >= Reporter.requiredReportingLevel) {
-            System.out.print(msg);
+            output.print(msg);
         } 
     }
     
     public static void msg(String format, Object... args) {
-        System.out.print(String.format(format, (Object[]) args));
+        output.print(String.format(format, (Object[]) args));
     }
     
     public static void reportError(final String msg) {
-        System.out.print(msg);
+        output.print(msg);
         System.exit(1);
+    }
+    
+    public static void reportError(Exception e) {
+        output.println(e.getMessage());
+        output.println(Arrays.toString(e.getStackTrace()));
     }
     
 }

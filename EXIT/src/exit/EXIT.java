@@ -5,9 +5,9 @@
  */
 package exit;
 
-import java.io.File;
+
 import java.io.IOException;
-import java.io.OutputStream;
+
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class EXIT {
         standard_exit_analysis(args);
         
         /* JL-procedure */
-        // JL_exit();
+        //JL_exit(100);
         
         /* test */
         //test_features(args);
@@ -138,7 +138,7 @@ public class EXIT {
     
 
     
-    public static void JL_exit() {
+    public static void JL_exit(int iterations) {
         try {
             InputFileReader ifr = new InputFileReader();
             String[] args = {"src/exit/test5.csv", "-max", "5"};
@@ -155,9 +155,9 @@ public class EXIT {
             System.out.println("\nImpact matrix scaled to be similar in terms of impact sizes as the original matrix:");
             System.out.println(result.scaleByMax(matrix.getMaxImpact()));
 
-            for(int iter = 1; iter <= 15; iter++) {
-                result = result.summedImpactMatrix_slow(0.005);
-                System.out.printf("Iteration %d:%n", iter);
+            for(int iter = 1; iter <= iterations; iter++) {
+                result = result.summedImpactMatrix(0.005);
+                System.out.printf("%n%nIteration %d:%n", iter);
                 System.out.println(result.scaleByMax(result.getMaxImpact()));
             }
             

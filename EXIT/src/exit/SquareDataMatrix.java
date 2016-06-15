@@ -123,13 +123,14 @@ public class SquareDataMatrix {
     /**
      * Returns the maximum value in a specific row of the matrix.
      * @param row Row index
+     * @param absolute if true, maximum of absolute values is returned; else maximum of values is returned
      * @return the maximum value in row <i>row</i>
      */
-    protected double rowMax(int row) {
-        double max = this.getValue(row, 1);
+    protected double rowMax(int row, boolean absolute) {
+        double max = absolute ? Math.abs(this.getValue(row, 1)) : this.getValue(row, 1);
         for (int i = 1; i <= varCount; i++) {
-            if(this.getValue(row, i) > max)
-                max = this.getValue(row, i);
+            if(absolute ? Math.abs(this.getValue(row, i)) > max : this.getValue(row, i) > max)
+                max = absolute ? Math.abs(this.getValue(row, i)) : this.getValue(row, i);
         }
         return max;
     }
@@ -137,13 +138,14 @@ public class SquareDataMatrix {
     /**
      * Returns the maximum value in a specific column of the matrix
      * @param column Column index
+     * @param absolute if true, maximum of absolute values is returned; else maximum of values is returned
      * @return the maximum value in column <i>column</i>
      */
-    protected double columnMax(int column) {
-        double max = this.getValue(1, column);
+    protected double columnMax(int column, boolean absolute) {
+        double max = absolute ? Math.abs(this.getValue(1, column)) : this.getValue(1, column);
         for (int i = 1; i <= varCount; i++) {
-            if(this.getValue(i, column) > max)
-                max = this.getValue(i, column);
+            if(absolute ? Math.abs(this.getValue(i, column)) > max : this.getValue(i, column) > max)
+                max = absolute ? Math.abs(this.getValue(i, column)) : this.getValue(i, column);
         }
         return max;
     }
@@ -151,7 +153,6 @@ public class SquareDataMatrix {
     /**
      * Creates variable names for the matrix. Variable names are
      * numbered from 1 to <b>nameCount</b>.
-     *
      * @param nameCount How many names will be generated
      * @return String array containing variable names
      */
@@ -224,11 +225,10 @@ public class SquareDataMatrix {
      * @param varName New name for variable
      * @throws IllegalArgumentException
      * @throws IndexOutOfBoundsException
-     * @throws EXITexception
      */
-    public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, EXITexception {
+    public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, IllegalStateException  {
         if (isLocked) {
-            throw new EXITexception("The impact matrix is locked and cannot be modified");
+            throw new IllegalStateException("The impact matrix is locked and cannot be modified");
         }
         if (varIndex < 0 || varIndex > varCount) {
             throw new IndexOutOfBoundsException("Invalid variable index");

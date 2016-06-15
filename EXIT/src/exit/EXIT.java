@@ -34,13 +34,13 @@ public class EXIT {
         String[] commandLineArguments = {"src/exit/inputfile5.csv", "-max", "5", "-t", "0.05"};
         
         /* Normal calculation procedure */
-        standard_exit_analysis(commandLineArguments);
+        // standard_exit_analysis(commandLineArguments);
         
         /* JL-procedure */
         //JL_exit(100);
         
         /* test */
-        //test_features(args);
+        test_features(args);
     
     }
     

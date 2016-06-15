@@ -236,14 +236,28 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     /**
      * Creates an importance matrix from the impact matrix.
-     * Importance matrix has, for each variable, 
+     * Importance for each impact is calculated by comparing the
+     * impact an impactor has on impacted relative to all the impacts on the impacted.
+     * <table><tr><th>Absolute impact</th><th>Importance</th></tr><tr><td>&gt;0.5</td><td>3/-3</td></tr><tr><td>&gt;0.25</td><td>2/-2</td></tr><tr><td>&gt;0.1</td><td>1/-1</td></tr><tr><td>&lt;=0.1</td><td>0</td></tr></table>
+     * 
      * @return 
      */
     public CrossImpactMatrix importanceMatrix() {
         CrossImpactMatrix importanceMatrix = new CrossImpactMatrix(10, this.varCount, true, this.names);
         for (int impacted=1; impacted<=this.varCount; impacted++) {
             for (int impactor=1; impactor <= this.varCount; impactor++) {
-                int importance = (int)Math.round(this.getValue(impactor, impacted) / this.columnAverage(impacted));
+                double shareOfAbsoluteSum = this.columnSum(impacted, true) != 0 ? 
+                        this.getValue(impactor, impacted) /  this.columnSum(impacted, true) 
+                        : 0;
+                //int importance = (int) Math.round(shareOfAbsoluteSum * 3);
+                double absShare = Math.abs(shareOfAbsoluteSum);
+                int importance = 
+                          absShare > 0.5 ? 3
+                        : absShare > 0.25 ? 2
+                        : absShare > 0.10 ? 1
+                        : 0;
+                importance = shareOfAbsoluteSum < 0 ? -importance : importance ;
+                
                 importanceMatrix.setImpact(impactor, impacted, importance);
             }
         }

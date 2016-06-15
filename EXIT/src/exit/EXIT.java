@@ -31,10 +31,10 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        // String[] commandLineArguments = {"src/exit/inputfile5.csv", "-on",  "MC", "-max", "5", "-t", "0.05"};
+        String[] commandLineArguments = {"src/exit/inputfile5.csv", "-max", "5", "-t", "0.05"};
         
         /* Normal calculation procedure */
-        standard_exit_analysis(args);
+        standard_exit_analysis(commandLineArguments);
         
         /* JL-procedure */
         //JL_exit(100);
@@ -172,22 +172,16 @@ public class EXIT {
     public static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile12.csv", "-max", "5", "-t", "0.0010000"};
+            String[] arggs = {"src/exit/inputfile6.csv", "-max", "5", "-t", "0.0010000"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
-            ExperimentalChainMiner e = new ExperimentalChainMiner(inputMatrix);
-            Timer timer = new Timer();
+            System.out.println(inputMatrix.importanceMatrix());
+            System.out.println(inputMatrix.summedImpactMatrix(0.01).importanceMatrix());
             
-            timer.startTime();
-            e.mineChains(0.25);
-            timer.stopTime("Experimental strategy time: ");
-            
-            timer.startTime();
-            System.out.println("Normal strategy: " + inputMatrix.indirectImpacts(null, null, 0.25).size() + " chains found");
-            timer.stopTime("Normal strategy time: ");
+
             
             
             

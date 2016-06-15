@@ -187,7 +187,7 @@ public class ImpactChain implements Comparable<ImpactChain>  {
         if(chain == null) { throw new NullPointerException("chain argument is null"); }
         if(chain.isEmpty()) return 1;
         if(chain.size()==1) return 1;
-        return (matrix.getImpact(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * impact(chain.subList(1, chain.size()));
+        return (matrix.getValue(chain.get(0),chain.get(1))/matrix.getMaxImpact()) * impact(chain.subList(1, chain.size()));
     }
     
     

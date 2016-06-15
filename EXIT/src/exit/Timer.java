@@ -6,7 +6,7 @@
 package exit;
 
 /**
- *
+ * Methods of this class are used for timing the EXIT calculation times.
  * @author jmpaon
  */
 public class Timer {

@@ -14,7 +14,8 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 /**
- *
+ * This class contains some more experimental methods for
+ * efficient mining the significant impact chains.
  * @author jmpaon
  */
 public class ExperimentalChainMiner {

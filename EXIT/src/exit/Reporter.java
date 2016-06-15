@@ -18,26 +18,56 @@ import java.util.Arrays;
 public class Reporter {
     
     /**
-     *
+     * <b>requiredReportingLevel</b> is the level that is required from
+     * progress messages to be printed. The higher the level, 
+     * the fewer progress messages will be printed.
+     * <b>output</b> is the <code>PrintStream</code> 
+     * the progress messages will be printed into.
+     * By default the messages are printed to <code>System.out</code>.
      */
     public static int requiredReportingLevel;
     public static PrintStream output = System.out;
         
+    
+    /**
+     * Prints a message indicating the progress of EXIT calculation.
+     * @param msg A message describing how the calculation procedure progresses.
+     * @param level The importance of this message. If <b>level</b> is lower than
+     * <b>requiredReportingLevel</b> the message will not be printed.
+     */
     public static void indicateProgress(final String msg, int level) {
         if (level >= Reporter.requiredReportingLevel) {
             output.print(msg);
         } 
     }
     
+    /**
+     * Prints a formatted message to <code>Reporter.output</code>.
+     * @param format String containing the format of the message.
+     * @param args Objects referenced in the format
+     */
     public static void msg(String format, Object... args) {
         output.print(String.format(format, (Object[]) args));
     }
     
+    /**
+     * Prints an error message to <code>Reporter.output</code> 
+     * and terminates program.
+     * @param msg 
+     */
+    @Deprecated
     public static void reportError(final String msg) {
         output.print(msg);
         System.exit(1);
     }
     
+    /**
+     * Prints the error message of <b>e</b>
+     * <code>Reporter.output</code>
+     * and terminates the program.
+     * @param e Exception
+     */
+    @Deprecated
     public static void reportError(Exception e) {
         output.println(e.getMessage());
         output.println(Arrays.toString(e.getStackTrace()));

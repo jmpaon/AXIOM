@@ -180,18 +180,21 @@ public class EXIT {
             CrossImpactMatrix impMatrix = inputMatrix.importanceMatrix();
             CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(0.001);
             CrossImpactMatrix diffMatrix = resultMatrix.importanceMatrix().differenceMatrix(impMatrix);
+            CrossImpactMatrix diffMatrix2 = resultMatrix.differenceMatrix(inputMatrix).importanceMatrix();
             
             System.out.println("Importance difference matrix:");
             System.out.println(diffMatrix);
+            
+            System.out.println("Importance difference matrix 2:");
+            System.out.println(diffMatrix2);
             
             
             System.out.println(inputMatrix);
             System.out.println(resultMatrix);
             System.out.println("Difference matrix:");
             System.out.println(resultMatrix.differenceMatrix(inputMatrix));
-
             
-            
+            System.out.println(inputMatrix.driverDriven());
             
         } catch (Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);

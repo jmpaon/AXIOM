@@ -237,7 +237,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * of absolute values for each variable.
      * @return 
      */
-    public Map<String, List<Double>> driverDrivenTable() {
+    Map<String, List<Double>> driverDrivenMap() {
         Map<String, List<Double>> driverDriven = new TreeMap<>();
         for (int i = 1; i <= this.varCount; i++) {
             String name = this.getName(i);
@@ -247,6 +247,17 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         }
         return driverDriven;
         
+    }
+    
+    public String driverDriven() {
+        String dd=String.format("%65s\tDriver\tDriven%n", "");
+        for(Map.Entry<String, List<Double>> entry : driverDrivenMap().entrySet()) {
+            String varName = entry.getKey();
+            Double driver = entry.getValue().get(0);
+            Double driven = entry.getValue().get(1);
+            dd += String.format("%65s:\t%3.1f\t%3.1f%n",  truncateName(varName, 65), driver, driven);  
+        }
+        return dd;
     }
     
     /**
@@ -267,9 +278,10 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
                 //int importance = (int) Math.round(shareOfAbsoluteSum * 3);
                 double absShare = Math.abs(shareOfAbsoluteSum);
                 int importance = 
-                          absShare > 0.5 ? 3
-                        : absShare > 0.25 ? 2
-                        : absShare > 0.10 ? 1
+                          absShare > 0.4 ? 4
+                        : absShare > 0.3 ? 3
+                        : absShare > 0.2 ? 2
+                        : absShare > 0.1 ? 1
                         : 0;
                 importance = shareOfAbsoluteSum < 0 ? -importance : importance ;
                 

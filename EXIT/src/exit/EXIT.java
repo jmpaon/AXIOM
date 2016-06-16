@@ -172,15 +172,23 @@ public class EXIT {
     public static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/inputfile6.csv", "-max", "5", "-t", "0.0010000"};
+            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
+            CrossImpactMatrix impMatrix = inputMatrix.importanceMatrix();
+            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(0.001);
+            CrossImpactMatrix diffMatrix = resultMatrix.importanceMatrix().differenceMatrix(impMatrix);
             
-            System.out.println(inputMatrix.importanceMatrix());
-            System.out.println(inputMatrix.summedImpactMatrix(0.01).importanceMatrix());
+            System.out.println("Importance difference matrix:");
+            System.out.println(diffMatrix);
             
+            
+            System.out.println(inputMatrix);
+            System.out.println(resultMatrix);
+            System.out.println("Difference matrix:");
+            System.out.println(resultMatrix.differenceMatrix(inputMatrix));
 
             
             

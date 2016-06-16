@@ -11,7 +11,9 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
@@ -230,8 +232,21 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         return new CrossImpactMatrix(Math.abs(scaleTo), this.varCount, this.onlyIntegers, this.names, scaledImpacts);
     }
     
-    public CrossImpactMatrix driverDriven() {
-        throw new UnsupportedOperationException("Not implemented");
+    /**
+     * Returns a <code>Map</code> containing the row and column sums
+     * of absolute values for each variable.
+     * @return 
+     */
+    public Map<String, List<Double>> driverDrivenTable() {
+        Map<String, List<Double>> driverDriven = new TreeMap<>();
+        for (int i = 1; i <= this.varCount; i++) {
+            String name = this.getName(i);
+            double driver = this.rowSum(i, true);
+            double driven = this.columnSum(i, true);
+            driverDriven.put(name, Arrays.asList(driver, driven));
+        }
+        return driverDriven;
+        
     }
     
     /**
@@ -262,6 +277,22 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             }
         }
         return importanceMatrix;
+    }
+    
+    /**
+     * Returns a matrix where values of <b>comparisonMatrix</b> have
+     * been subtracted from values of this matrix.
+     * @param comparisonMatrix Matrix whose values are subtracted from values of this matrix
+     * @return Difference matrix
+     */
+    public CrossImpactMatrix differenceMatrix(CrossImpactMatrix comparisonMatrix) {
+        if(this.varCount != comparisonMatrix.varCount) throw new IllegalArgumentException("comparison matrix is of different size");
+        boolean bothMatricesIntegral = this.onlyIntegers && comparisonMatrix.onlyIntegers;
+        CrossImpactMatrix differenceMatrix = new CrossImpactMatrix(this.maxImpact, this.varCount, bothMatricesIntegral, this.names, this.values);
+        for (int i = 0; i < differenceMatrix.values.length; i++) {
+            differenceMatrix.values[i] -= comparisonMatrix.values[i];
+        }
+        return differenceMatrix;
     }
     
     

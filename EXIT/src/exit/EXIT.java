@@ -176,25 +176,36 @@ public class EXIT {
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
-            CrossImpactMatrix impMatrix = inputMatrix.importanceMatrix();
-            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(0.001);
-            CrossImpactMatrix diffMatrix = resultMatrix.importanceMatrix().differenceMatrix(impMatrix);
-            CrossImpactMatrix diffMatrix2 = resultMatrix.differenceMatrix(inputMatrix).importanceMatrix();
             
-            System.out.println("Importance difference matrix:");
-            System.out.println(diffMatrix);
-            
-            System.out.println("Importance difference matrix 2:");
-            System.out.println(diffMatrix2);
+            Plot2D plot = new Plot2D();
+            plot.addPoint(10, 15, "Mem");
+            plot.addPoint(10, 12, "Mau");
+            plot.addPoint(5, 20, "Kur");
+            System.out.println(plot.plot(30, 30));
             
             
-            System.out.println(inputMatrix);
-            System.out.println(resultMatrix);
-            System.out.println("Difference matrix:");
-            System.out.println(resultMatrix.differenceMatrix(inputMatrix));
+//            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
+//            CrossImpactMatrix impMatrix = inputMatrix.importanceMatrix();
+//            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(0.001);
+//            CrossImpactMatrix diffMatrix = resultMatrix.importanceMatrix().differenceMatrix(impMatrix);
+//            CrossImpactMatrix diffMatrix2 = resultMatrix.differenceMatrix(inputMatrix).importanceMatrix();
+//            
+//            System.out.println("Importance difference matrix:");
+//            System.out.println(diffMatrix);
+//            
+//            System.out.println("Importance difference matrix 2:");
+//            System.out.println(diffMatrix2);
+//                        
+//            System.out.println(inputMatrix);
+//            System.out.println(resultMatrix);
+//            System.out.println("Difference matrix:");
+//            System.out.println(resultMatrix.differenceMatrix(inputMatrix));
+//            
+//            System.out.println(inputMatrix.driverDriven());
+//            
+//            System.out.println(inputMatrix.driverDrivenReport());
             
-            System.out.println(inputMatrix.driverDriven());
+            
             
         } catch (Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);

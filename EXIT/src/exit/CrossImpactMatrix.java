@@ -260,6 +260,46 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         return dd;
     }
     
+    public String driverDrivenReport() {
+        Map<String, List<Double>> driverDriven = driverDrivenMap();
+        double driverAverage=0, drivenAverage=0;
+        for(Map.Entry<String, List<Double>> entry : driverDriven.entrySet()) {
+            driverAverage += entry.getValue().get(0);
+            drivenAverage += entry.getValue().get(1);
+        }
+        driverAverage /= driverDriven.size();
+        drivenAverage /= driverDriven.size();
+        
+        String report="";
+        
+        for(Map.Entry<String, List<Double>> entry : driverDriven.entrySet()) {
+            
+            boolean dependent  = entry.getValue().get(0) > driverAverage;
+            boolean influental = entry.getValue().get(1) > drivenAverage; 
+            
+            String addition = dependent ?
+                      influental ? variableTypes().get(4) : variableTypes().get(2)
+                    : influental ? variableTypes().get(3) : variableTypes().get(1);
+            
+            report += String.format("%65s : %s%n", truncateName(entry.getKey(), 65), addition);
+            
+        }
+        
+        return report;
+        
+    }
+    
+    private Map<Integer, String> variableTypes() {
+        Map<Integer, String> types = new TreeMap<>();
+        types.put(1, "Stable variable");
+        types.put(2, "Reactive variable");
+        types.put(3, "Active driver");
+        types.put(4, "Critical key driver");
+        return types;
+    }
+    
+    
+    
     /**
      * Creates an importance matrix from the impact matrix.
      * Importance for each impact is calculated by comparing the
@@ -292,17 +332,17 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     }
     
     /**
-     * Returns a matrix where values of <b>comparisonMatrix</b> have
+     * Returns a matrix where values of <b>subtractMatrix</b> have
      * been subtracted from values of this matrix.
-     * @param comparisonMatrix Matrix whose values are subtracted from values of this matrix
+     * @param subtractMatrix Matrix whose values are subtracted from values of this matrix
      * @return Difference matrix
      */
-    public CrossImpactMatrix differenceMatrix(CrossImpactMatrix comparisonMatrix) {
-        if(this.varCount != comparisonMatrix.varCount) throw new IllegalArgumentException("comparison matrix is of different size");
-        boolean bothMatricesIntegral = this.onlyIntegers && comparisonMatrix.onlyIntegers;
+    public CrossImpactMatrix differenceMatrix(CrossImpactMatrix subtractMatrix) {
+        if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("comparison matrix is of different size");
+        boolean bothMatricesIntegral = this.onlyIntegers && subtractMatrix.onlyIntegers;
         CrossImpactMatrix differenceMatrix = new CrossImpactMatrix(this.maxImpact, this.varCount, bothMatricesIntegral, this.names, this.values);
         for (int i = 0; i < differenceMatrix.values.length; i++) {
-            differenceMatrix.values[i] -= comparisonMatrix.values[i];
+            differenceMatrix.values[i] -= subtractMatrix.values[i];
         }
         return differenceMatrix;
     }

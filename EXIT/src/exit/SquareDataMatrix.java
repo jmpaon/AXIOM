@@ -8,17 +8,18 @@ package exit;
 import java.util.NoSuchElementException;
 
 /**
- *
+ * 
  * @author jmpaon
  */
 public class SquareDataMatrix {
 
-    protected final int varCount;
-    protected final double[] values;
-    protected final boolean onlyIntegers;
-    protected final String[] names;
-    private boolean isLocked;
+    protected final int varCount;          /* Number of variables (and rows and columns) in this matrix */
+    protected final double[] values;       /* Matrix contents */
+    protected final boolean onlyIntegers;  /* Are only integers allowed as matrix values */
+    protected final String[] names;        /* Variable/row/column names */
+    private boolean isLocked;              /* Is the matrix locked? If locked, matrix contents cannot be changed */
 
+    
     public SquareDataMatrix(int varCount, boolean onlyIntegers, String[] names, double[] values) {
         if (varCount < 1) { throw new IllegalArgumentException("varCount cannot be smaller than 1"); }
         if(values == null) throw new NullPointerException("values array is null");

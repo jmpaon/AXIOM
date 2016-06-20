@@ -31,16 +31,16 @@ public class EXIT {
      */
     public static void main(String[] args) throws IOException, EXITexception {
         
-        String[] commandLineArguments = {"src/exit/inputfile5.csv", "-max", "5", "-t", "0.05"};
+        String[] commandLineArguments = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.005"};
         
         /* Normal calculation procedure */
-        // standard_exit_analysis(commandLineArguments);
+        standard_exit_analysis(commandLineArguments);
         
         /* JL-procedure */
         //JL_exit(100);
         
         /* test */
-        test_features(args);
+        //test_features(args);
     
     }
     
@@ -63,7 +63,7 @@ public class EXIT {
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
-            
+            output.println("Input matrix describing direct impacts:");
             output.println(inputMatrix.toString());
             
 
@@ -113,18 +113,21 @@ public class EXIT {
                 Timer timer = new Timer();
                 CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
+                
                 output.printf("%nResult impact matrix with summed direct and indirect impacts between variables, not scaled:%n");
                 output.printf("%s%n", resultMatrix);
+                
                 output.printf("Result impact matrix with summed direct and indirect impacts between variables, scaled to %f:%n", inputMatrix.getMaxImpact());
-                output.println(resultMatrix.scaleByMax(inputMatrix.getMaxImpact()));
+                output.println(resultMatrix.scale(inputMatrix.getMaxImpact()));
+                
+                output.println("Importance matrix derived from result matrix:");
+                output.println(resultMatrix.importanceMatrix());
+                output.println(resultMatrix.importanceMatrix().round(5));
+                
+                output.println("Difference matrix of result matrix and input matrix:");
+                output.println(resultMatrix.importanceMatrix().round(5).differenceMatrix(inputMatrix.round(5)));
             }
-            
-            
-
-
-            
-            
-            
+     
 
         }catch(EXITargumentException ex) {
             System.out.println("Argument error occurred: " + ex.getMessage());            
@@ -153,12 +156,12 @@ public class EXIT {
             System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());
             System.out.println("\nImpact matrix scaled to be similar in terms of impact sizes as the original matrix:");
-            System.out.println(result.scaleByMax(matrix.getMaxImpact()));
+            System.out.println(result.scale(matrix.getMaxImpact()));
 
             for(int iter = 1; iter <= iterations; iter++) {
                 result = result.summedImpactMatrix(0.005);
                 System.out.printf("%n%nIteration %d:%n", iter);
-                System.out.println(result.scaleByMax(result.getMaxImpact()));
+                System.out.println(result.scale(result.getMaxImpact()));
             }
             
             
@@ -176,12 +179,6 @@ public class EXIT {
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
-            
-            Plot2D plot = new Plot2D();
-            plot.addPoint(10, 15, "Mem");
-            plot.addPoint(10, 12, "Mau");
-            plot.addPoint(5, 20, "Kur");
-            System.out.println(plot.plot(30, 30));
             
             
 //            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);

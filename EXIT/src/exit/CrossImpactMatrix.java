@@ -36,9 +36,7 @@ import java.util.stream.Collectors;
  */
 public final class CrossImpactMatrix extends SquareDataMatrix {
     
-    private double maxImpact;
-
-    
+    private double maxImpact; /* maximum allowed absolute value in this matrix */
     
     public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names, double[] impacts) {
         super(varCount, onlyIntegers, names, impacts);
@@ -104,7 +102,8 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * @param impactTreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
      * See {@link ImpactChain#highImpactChainsIntermediary(double)}.
      * @return <code>CrossImpactMatrix</code> with the summed direct and indirect values between variables
-     * @deprecated This calculation strategy is highly inefficient.
+     * @deprecated This calculation strategy is inefficient. 
+     * @see CrossImpactMatrix#summedImpactMatrix(double) A more efficient method for getting the summed impact matrix
      */
     @Deprecated
     public CrossImpactMatrix summedImpactMatrix_slow(double impactTreshold) {
@@ -153,7 +152,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     /**
      * Calculates and returns 
      * a new <code>CrossImpactMatrix</code> that contains
- the summed direct and indirect values between the variables.
+     * the summed direct and indirect values between the variables.
      * In the returned matrix, 
      * impactor variables are in rows 
      * and impacted variables are in columns.
@@ -216,13 +215,14 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         return count;
     }
     
-
+    
     /**
-     * Scales an impact matrix to have its values within a certain range.
+     * Scales an impact matrix to have its greatest absolute value 
+     * to be equal to value of <b>scaleTo</b>.
      * @param scaleTo The value that the highest absolute impact value in the matrix will be scaled to
      * @return SquareDataMatrix scaled according to <b>scaleTo</b> argument.
      */
-    public CrossImpactMatrix scaleByMax(double scaleTo) {
+    public CrossImpactMatrix scale(double scaleTo) {
         if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
         double max = greatestValue();
         double[] scaledImpacts = this.values.clone();
@@ -232,10 +232,104 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         return new CrossImpactMatrix(Math.abs(scaleTo), this.varCount, this.onlyIntegers, this.names, scaledImpacts);
     }
     
+    
+    public CrossImpactMatrix round(int scaleTo) {
+        CrossImpactMatrix roundedMatrix = this.scale(scaleTo);
+        for (double value : roundedMatrix.values) {
+            value = Math.round(value);
+        }
+        return new CrossImpactMatrix(roundedMatrix.maxImpact, roundedMatrix.varCount, true, roundedMatrix.names, roundedMatrix.values);
+        //return roundedMatrix;
+        
+//        if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
+//        double max = greatestValue();
+//        double[] roundedImpacts = this.values.clone();
+//        for (int i = 0; i < values.length; i++) {
+//            roundedImpacts[i] = values[i] / max * 
+//        }
+    }
+    
+    
+    /**
+     * 
+     * @return 
+     */
+    public CrossImpactMatrix importanceMatrix() {
+        CrossImpactMatrix importanceMatrix = new CrossImpactMatrix(this.getMaxImpact()*this.varCount, this.varCount, this.onlyIntegers, this.names);
+        for (int impacted=1; impacted<=this.varCount; impacted++) {
+            for (int impactor=1; impactor <= this.varCount; impactor++) {
+                double shareOfAbsoluteSum = this.columnSum(impacted, true) != 0 ? 
+                        this.getValue(impactor, impacted) /  this.columnSum(impacted, true) 
+                        : 0;
+                double absShare = Math.abs(shareOfAbsoluteSum);
+                double importance = shareOfAbsoluteSum < 0 ? -absShare : absShare ;
+                
+                importanceMatrix.setImpact(impactor, impacted, importance);
+            }
+        }
+        return importanceMatrix;
+    }
+    
+    
+    /**
+     * Creates an importance matrix from the impact matrix.
+     * Importance for each impact is calculated by comparing the
+     * impact an impactor has on impacted relative to all the impacts on the impacted.
+     * <table><tr><th>Absolute impact</th><th>Importance</th></tr><tr><td>&gt;0.5</td><td>3/-3</td></tr><tr><td>&gt;0.25</td><td>2/-2</td></tr><tr><td>&gt;0.1</td><td>1/-1</td></tr><tr><td>&lt;=0.1</td><td>0</td></tr></table>
+     * 
+     * @return 
+     */
+    @Deprecated
+    public CrossImpactMatrix importanceMatrix_() {
+        CrossImpactMatrix importanceMatrix = new CrossImpactMatrix(4, this.varCount, true, this.names);
+        for (int impacted=1; impacted<=this.varCount; impacted++) {
+            for (int impactor=1; impactor <= this.varCount; impactor++) {
+                double shareOfAbsoluteSum = this.columnSum(impacted, true) != 0 ? 
+                        this.getValue(impactor, impacted) /  this.columnSum(impacted, true) 
+                        : 0;
+                //int importance = (int) Math.round(shareOfAbsoluteSum * 3);
+                double absShare = Math.abs(shareOfAbsoluteSum);
+                int importance = 
+                          absShare > 0.4 ? 4
+                        : absShare > 0.3 ? 3
+                        : absShare > 0.2 ? 2
+                        : absShare > 0.1 ? 1
+                        : 0;
+                importance = shareOfAbsoluteSum < 0 ? -importance : importance ;
+                
+                importanceMatrix.setImpact(impactor, impacted, importance);
+            }
+        }
+        return importanceMatrix;
+    }
+    
+    
+    /**
+     * Returns a matrix where values of <b>subtractMatrix</b> have
+     * been subtracted from values of this matrix.
+     * @param subtractMatrix Matrix whose values are subtracted from values of this matrix
+     * @return Difference matrix
+     */
+    public CrossImpactMatrix differenceMatrix(CrossImpactMatrix subtractMatrix) {
+        if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("comparison matrix is of different size");
+        boolean bothMatricesIntegral = this.onlyIntegers && subtractMatrix.onlyIntegers;
+        CrossImpactMatrix differenceMatrix = new CrossImpactMatrix(this.maxImpact, this.varCount, bothMatricesIntegral, this.names, this.values);
+        for (int i = 0; i < differenceMatrix.values.length; i++) {
+            differenceMatrix.values[i] -= subtractMatrix.values[i];
+        }
+        return differenceMatrix;
+    }    
+    
+    
     /**
      * Returns a <code>Map</code> containing the row and column sums
      * of absolute values for each variable.
-     * @return 
+     * The row sum is the <i>driver</i> value, 
+     * found in the first element of the <code>List<Double></code>.
+     * The column sum is the <i>driven</i> value,
+     * found in the second element of the <code>List<Double></code>.
+     * @return Map with the variable names as <u>key</u>
+     * and the driver and driven values as <u>value</u>.
      */
     Map<String, List<Double>> driverDrivenMap() {
         Map<String, List<Double>> driverDriven = new TreeMap<>();
@@ -300,57 +394,12 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     
     
-    /**
-     * Creates an importance matrix from the impact matrix.
-     * Importance for each impact is calculated by comparing the
-     * impact an impactor has on impacted relative to all the impacts on the impacted.
-     * <table><tr><th>Absolute impact</th><th>Importance</th></tr><tr><td>&gt;0.5</td><td>3/-3</td></tr><tr><td>&gt;0.25</td><td>2/-2</td></tr><tr><td>&gt;0.1</td><td>1/-1</td></tr><tr><td>&lt;=0.1</td><td>0</td></tr></table>
-     * 
-     * @return 
-     */
-    public CrossImpactMatrix importanceMatrix() {
-        CrossImpactMatrix importanceMatrix = new CrossImpactMatrix(10, this.varCount, true, this.names);
-        for (int impacted=1; impacted<=this.varCount; impacted++) {
-            for (int impactor=1; impactor <= this.varCount; impactor++) {
-                double shareOfAbsoluteSum = this.columnSum(impacted, true) != 0 ? 
-                        this.getValue(impactor, impacted) /  this.columnSum(impacted, true) 
-                        : 0;
-                //int importance = (int) Math.round(shareOfAbsoluteSum * 3);
-                double absShare = Math.abs(shareOfAbsoluteSum);
-                int importance = 
-                          absShare > 0.4 ? 4
-                        : absShare > 0.3 ? 3
-                        : absShare > 0.2 ? 2
-                        : absShare > 0.1 ? 1
-                        : 0;
-                importance = shareOfAbsoluteSum < 0 ? -importance : importance ;
-                
-                importanceMatrix.setImpact(impactor, impacted, importance);
-            }
-        }
-        return importanceMatrix;
-    }
-    
-    /**
-     * Returns a matrix where values of <b>subtractMatrix</b> have
-     * been subtracted from values of this matrix.
-     * @param subtractMatrix Matrix whose values are subtracted from values of this matrix
-     * @return Difference matrix
-     */
-    public CrossImpactMatrix differenceMatrix(CrossImpactMatrix subtractMatrix) {
-        if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("comparison matrix is of different size");
-        boolean bothMatricesIntegral = this.onlyIntegers && subtractMatrix.onlyIntegers;
-        CrossImpactMatrix differenceMatrix = new CrossImpactMatrix(this.maxImpact, this.varCount, bothMatricesIntegral, this.names, this.values);
-        for (int i = 0; i < differenceMatrix.values.length; i++) {
-            differenceMatrix.values[i] -= subtractMatrix.values[i];
-        }
-        return differenceMatrix;
-    }
+
     
     
     public String reportDrivingVariables() {
         String report = "";
-        CrossImpactMatrix m = this.scaleByMax(1);
+        CrossImpactMatrix m = this.scale(1);
         for(int i = 1 ; i<=varCount; i++) {
             report += String.format("Important drivers for %s:%n", m.getName(i));
             for(Integer imp : m.aboveAverageImpactors(i)) {
@@ -362,7 +411,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     List<Integer> aboveAverageImpactors(int varIndex) {
         List<Integer> impactors = new LinkedList<>();
-        CrossImpactMatrix normMatrix = this.scaleByMax(1);
+        CrossImpactMatrix normMatrix = this.scale(1);
         double average = normMatrix.columnAverage(varIndex);
         for(int i=1; i<=normMatrix.varCount; i++) {
             if(Math.abs(normMatrix.getValue(i, varIndex)) >= average)

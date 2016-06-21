@@ -38,6 +38,17 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     private double maxImpact; /* maximum allowed absolute value in this matrix */
     
+    /**
+     * Constructor for <code>CrossImpactMatrix</code>.
+     * @param maxImpact The maximum value values in the matrix can have.
+     * Minimum allowed value is negative <b>maxImpact</b> and maximum <b>maxImpact</b>.
+     * <b>maxImpact</b> must be greater than 0.
+     * @param varCount The number of variables in the matrix; 
+     * will be also the number of rows and the number of columns.
+     * @param onlyIntegers <b>true</b> if matrix contains only integers
+     * @param names <code>String</code> array of variable names
+     * @param impacts array containing matrix contents
+     */
     public CrossImpactMatrix(double maxImpact, int varCount, boolean onlyIntegers, String[] names, double[] impacts) {
         super(varCount, onlyIntegers, names, impacts);
         
@@ -46,6 +57,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         
         this.maxImpact = maxImpact;
     }
+    
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
@@ -88,10 +100,6 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     }
     
     
-
-    
-    
-    
     /**
      * Calculates and returns 
      * a new <code>CrossImpactMatrix</code> that contains
@@ -99,16 +107,16 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * In the returned matrix, 
      * impactor variables are in rows 
      * and impacted variables are in columns.
-     * @param impactTreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
+     * @param impactThreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
      * See {@link ImpactChain#highImpactChainsIntermediary(double)}.
      * @return <code>CrossImpactMatrix</code> with the summed direct and indirect values between variables
      * @deprecated This calculation strategy is inefficient. 
      * @see CrossImpactMatrix#summedImpactMatrix(double) A more efficient method for getting the summed impact matrix
      */
     @Deprecated
-    public CrossImpactMatrix summedImpactMatrix_slow(double impactTreshold) {
+    public CrossImpactMatrix summedImpactMatrix_variablePairs(double impactThreshold) {
         
-        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactTreshold), 3);
+        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactThreshold), 3);
         CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
         int chainsProcessedCount=0;
         
@@ -125,7 +133,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
                             truncateName(this.getName(impacted),10)
                     ), 3);
                     
-                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactTreshold);
+                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactThreshold);
                     
                     int counter = 0;
                     for (ImpactChain chain : chains) {
@@ -143,7 +151,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             }
         }
         
-        Reporter.indicateProgress(String.format("Total of %d significant (treshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactTreshold), 5);
+        Reporter.indicateProgress(String.format("Total of %d significant (threshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactThreshold), 5);
         Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is %s.%n", approximateChainCountString()),2);
         return iim;
     }
@@ -156,21 +164,21 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * In the returned matrix, 
      * impactor variables are in rows 
      * and impacted variables are in columns.
-     * @param impactTreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
+     * @param impactThreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
      * See {@link ImpactChain#highImpactChains(double)}.
      * @return <code>CrossImpactMatrix</code> with the summed direct and indirect values between variables
      */
-    public CrossImpactMatrix summedImpactMatrix(double impactTreshold) {
+    public CrossImpactMatrix summedImpactMatrix(double impactThreshold) {
         CrossImpactMatrix resultMatrix = new CrossImpactMatrix(maxImpact*varCount, varCount, false, names);
         double totalCount=0;
         for(int impactor=1; impactor<=this.varCount; impactor++) {
             Reporter.msg("Calculating significant indirect impacts of %s(%s)... ", getNameShort(impactor), truncateName(getName(impactor), 15));
             ImpactChain chain = new ImpactChain(this, Arrays.asList(impactor));
-            double count = sumImpacts(chain, impactTreshold, resultMatrix);
+            double count = sumImpacts(chain, impactThreshold, resultMatrix);
             totalCount += count;
-            Reporter.msg("%10.0f significant (treshold %1.4f) impact chains found%n", count, impactTreshold);
+            Reporter.msg("%10.0f significant (threshold %1.4f) impact chains found%n", count, impactThreshold);
         }
-        Reporter.msg("%s significant (treshold %1.4f) impact chains found in the matrix.%n", Math.round(totalCount), impactTreshold);
+        Reporter.msg("%s significant (threshold %1.4f) impact chains found in the matrix.%n", Math.round(totalCount), impactThreshold);
         Reporter.msg("The total number of possible chains in this matrix is %s.%n", approximateChainCountString());
         resultMatrix.setMaxImpact(resultMatrix.greatestValue());
         return resultMatrix;
@@ -178,19 +186,19 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     
     /**
-     * If impact of <b>chain</b> is higher than <b>impactTreshold</b>,
+     * If impact of <b>chain</b> is higher than <b>impactThreshold</b>,
      * it is added to <b>resultMatrix</b> and the possible immediate expansions of
      * <b>chain</b> are generated and their values added to <b>resultMatrix</b>
      * if appropriate.
      * @param chain <code>ImpactChain</code> to consider for addition to <b>resultMatrix</b>
-     * @param impactTreshold <b>chain</b> must have an impact of at least this value to be added to <b>resultMatrix</b>
+     * @param impactThreshold <b>chain</b> must have an impact of at least this value to be added to <b>resultMatrix</b>
      * @param resultMatrix <code>CrossImpactMatrix</code> where the significant values are summed
      * @return count of significant impact chains found in <b>chain</b> and its expansions.
      */
-    private double sumImpacts(ImpactChain chain, double impactTreshold, CrossImpactMatrix resultMatrix) {
+    private double sumImpacts(ImpactChain chain, double impactThreshold, CrossImpactMatrix resultMatrix) {
         
         double count = 0;
-        if(Math.abs(chain.impact()) >= impactTreshold) {
+        if(Math.abs(chain.impact()) >= impactThreshold) {
             count++;
             int impactor = chain.impactorIndex();
             int impacted = chain.impactedIndex();
@@ -208,7 +216,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             if(chain.hasExpansion()) {
                 Set<ImpactChain> expansions = chain.continuedByOne();
                 for(ImpactChain ic : expansions) {
-                    count += sumImpacts(ic, impactTreshold, resultMatrix);
+                    count += sumImpacts(ic, impactThreshold, resultMatrix);
                 }
             }
         }
@@ -217,10 +225,10 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     
     /**
-     * Scales an impact matrix to have its greatest absolute value 
+     * Scales the impact matrix to have its greatest absolute value 
      * to be equal to value of <b>scaleTo</b>.
-     * @param scaleTo The value that the highest absolute impact value in the matrix will be scaled to
-     * @return SquareDataMatrix scaled according to <b>scaleTo</b> argument.
+     * @param scaleTo The value that the greatest absolute impact value in the matrix will be scaled to
+     * @return <code>CrossImpactMatrix</code> scaled according to <b>scaleTo</b> argument.
      */
     public CrossImpactMatrix scale(double scaleTo) {
         if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
@@ -233,26 +241,40 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     }
     
     
+    /**
+     * Scales the impact matrix by calling {@link CrossImpactMatrix#scale} 
+     * and rounding the values of resulting <code>CrossImpactMatrix</code>
+     * to the nearest integer.
+     * The <code>onlyIntegers</code> property for the new <code>CrossImpactMatrix</code>
+     * will be true.
+     * @param scaleTo The value that the highest absolute impact value in the matrix will be scaled to
+     * @return 
+     */
     public CrossImpactMatrix round(int scaleTo) {
+        if(Math.abs(scaleTo) < 1) throw new IllegalArgumentException("scaleTo cannot be 0");
         CrossImpactMatrix roundedMatrix = this.scale(scaleTo);
         for (double value : roundedMatrix.values) {
             value = Math.round(value);
         }
         return new CrossImpactMatrix(roundedMatrix.maxImpact, roundedMatrix.varCount, true, roundedMatrix.names, roundedMatrix.values);
-        //return roundedMatrix;
-        
-//        if(scaleTo == 0) throw new IllegalArgumentException("scaleTo cannot be 0");
-//        double max = greatestValue();
-//        double[] roundedImpacts = this.values.clone();
-//        for (int i = 0; i < values.length; i++) {
-//            roundedImpacts[i] = values[i] / max * 
-//        }
     }
     
     
     /**
-     * 
-     * @return 
+     * Returns a new <code>CrossImpactMatrix</code>
+     * derived from this impact matrix 
+     * where impact values are rounded to the nearest integer
+     * @return New <code>CrossImpactMatrix</code> where impact values are rounded to the nearest integer
+     */
+    public CrossImpactMatrix round() {return this.round((int)Math.round(this.getMaxImpact()));}
+    
+    
+    /**
+     * Returns an importance matrix for the impact matrix.
+     * Importance for each impactor-impacted pair or matrix entry
+     * is calculated by dividing the impact 
+     * by the sum of the absolute impacts on the impacted variable.
+     * @return Importance matrix derived from this <code>CrossImpactMatrix</code>
      */
     public CrossImpactMatrix importanceMatrix() {
         CrossImpactMatrix importanceMatrix = new CrossImpactMatrix(this.getMaxImpact()*this.varCount, this.varCount, this.onlyIntegers, this.names);
@@ -263,39 +285,6 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
                         : 0;
                 double absShare = Math.abs(shareOfAbsoluteSum);
                 double importance = shareOfAbsoluteSum < 0 ? -absShare : absShare ;
-                
-                importanceMatrix.setImpact(impactor, impacted, importance);
-            }
-        }
-        return importanceMatrix;
-    }
-    
-    
-    /**
-     * Creates an importance matrix from the impact matrix.
-     * Importance for each impact is calculated by comparing the
-     * impact an impactor has on impacted relative to all the impacts on the impacted.
-     * <table><tr><th>Absolute impact</th><th>Importance</th></tr><tr><td>&gt;0.5</td><td>3/-3</td></tr><tr><td>&gt;0.25</td><td>2/-2</td></tr><tr><td>&gt;0.1</td><td>1/-1</td></tr><tr><td>&lt;=0.1</td><td>0</td></tr></table>
-     * 
-     * @return 
-     */
-    @Deprecated
-    public CrossImpactMatrix importanceMatrix_() {
-        CrossImpactMatrix importanceMatrix = new CrossImpactMatrix(4, this.varCount, true, this.names);
-        for (int impacted=1; impacted<=this.varCount; impacted++) {
-            for (int impactor=1; impactor <= this.varCount; impactor++) {
-                double shareOfAbsoluteSum = this.columnSum(impacted, true) != 0 ? 
-                        this.getValue(impactor, impacted) /  this.columnSum(impacted, true) 
-                        : 0;
-                //int importance = (int) Math.round(shareOfAbsoluteSum * 3);
-                double absShare = Math.abs(shareOfAbsoluteSum);
-                int importance = 
-                          absShare > 0.4 ? 4
-                        : absShare > 0.3 ? 3
-                        : absShare > 0.2 ? 2
-                        : absShare > 0.1 ? 1
-                        : 0;
-                importance = shareOfAbsoluteSum < 0 ? -importance : importance ;
                 
                 importanceMatrix.setImpact(impactor, impacted, importance);
             }
@@ -318,7 +307,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             differenceMatrix.values[i] -= subtractMatrix.values[i];
         }
         return differenceMatrix;
-    }    
+    }
     
     
     /**
@@ -343,15 +332,15 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         
     }
     
-    public String driverDriven() {
-        String dd=String.format("%65s\tDriver\tDriven%n", "");
-        for(Map.Entry<String, List<Double>> entry : driverDrivenMap().entrySet()) {
-            String varName = entry.getKey();
-            Double driver = entry.getValue().get(0);
-            Double driven = entry.getValue().get(1);
-            dd += String.format("%65s:\t%3.1f\t%3.1f%n",  truncateName(varName, 65), driver, driven);  
+    public VarInfoTable<Double> driverDriven() {
+        VarInfoTable<Double> info = new VarInfoTable<>(Arrays.asList("Driver", "Driven") );
+        for (int i = 1; i <= this.varCount; i++) {
+            String name = this.getName(i);
+            double driver = this.rowSum(i, true);
+            double driven = this.columnSum(i, true);
+            info.addInfo(name, Arrays.asList(driver, driven));
         }
-        return dd;
+        return info;
     }
     
     public String driverDrivenReport() {
@@ -419,27 +408,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         }
         return impactors;
     }
-    
- 
-    
-    /**
-     * Tests if impact values of this matrix deviate 
-     * from the impact values of <b>impactMatrix</b>
-     * at most by value of <b>maxDeviation</b>
-     * @param impactMatrix Cross-impact matrix to compare against this one in terms of impact sizes
-     * @param maxDeviation The maximum relative deviation allowed to still consider the matrices approximately same in terms of impact sizes
-     * @return <b>true</b> if 
-     */
-    boolean areImpactsApproximatelySame(CrossImpactMatrix impactMatrix, double maxDeviation) {
-        if(impactMatrix.values.length != this.values.length) throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");
-        for(int i=0; i<this.values.length; i++) {
-            double v1 = this.values[i], v2 = impactMatrix.values[i];
-            double rel = v1 > v2 ? v1 / v2 : v2 / v1;
-            if((1-rel) > maxDeviation) return false;
-        }
-        return true;
-    }
-    
+
     
     /**
      * Returns a String with information about 
@@ -467,6 +436,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
 
     }
     
+    
     /**
      * @return The number of possible impact chains in this matrix.
      */
@@ -490,6 +460,13 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         return n * factorial(n-1);
     }
     
+    
+    /**
+     * Sets an impact value for a variable pair (impactor-impacted pair).
+     * @param impactor Index of impactor variable
+     * @param impacted Index of impacted variable
+     * @param value New value for impact
+     */
     public void setImpact(int impactor, int impacted, double value) {
         
         // Absolute value of impact cannot be greater than maxImpact
@@ -508,7 +485,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      */
     public double getMaxImpact() {
         return maxImpact;
-    }       
+    }
     
     
     /**
@@ -529,25 +506,26 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     
     /**
-     * Generates a list of impact chains possible in this matrix 
-     * that have impact value greater than <b>treshold</b>.
+     * Generates and returns 
+     * a list of impact chains possible in this matrix 
+     * that have impact value greater than <b>threshold</b>.
      * @param impactOf Index of impactor variable. 
      * Only chains starting with this variable are included in returned list.
      * Can also be null; if null, chains starting with any variable 
-     * are generated and returned.
+     * are returned.
      * @param impactOn Index of impacted variable. 
      * Only chains ending in this variable are included in returned list.
      * Can also be null; if null, chains ending in any variable 
-     * are generated and returned.
-     * @param treshold The required minimum impact a chain must have to be included in returned list.
-     * @return A <code>List</code> of impact chains with impact higher than <i>treshold</i> and that have
+     * are returned.
+     * @param threshold The required minimum impact a chain must have to be included in returned list.
+     * @return A <code>List</code> of impact chains with impact higher than <i>threshold</i> and that have
      * the impactor and impacted variables specified in the <b>impactOf</b> and <b>impactOn</b> arguments.
      */
-    List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double treshold) {
+    List<ImpactChain> indirectImpacts(Integer impactOf, Integer impactOn, double threshold) {
         
         if(impactOf != null && (impactOf <1 || impactOf > varCount)) throw new IndexOutOfBoundsException("impactOf index is not present in the matrix");
         if(impactOn != null && (impactOn <1 || impactOn > varCount)) throw new IndexOutOfBoundsException("impactOn index is not present in the matrix");
-        if(treshold <=0 || treshold > 1) throw new IllegalArgumentException("treshold value is not in range ]0..1]");
+        if(threshold <=0 || threshold > 1) throw new IllegalArgumentException("threshold value is not in range ]0..1]");
         
         List<Integer> initialChain = null;
         if(impactOf != null) {
@@ -556,7 +534,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         
         ImpactChain ic = new ImpactChain(this, initialChain);
         
-        Set<ImpactChain> chains = ic.highImpactChains(treshold);
+        Set<ImpactChain> chains = ic.highImpactChains(threshold);
         
         if(impactOn != null) {
             chains = chains.stream()

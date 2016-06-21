@@ -34,7 +34,7 @@ class EXITargumentException extends EXITexception {
                 + "";
         
         System.out.printf(s);
-   
+        System.exit(1);
         
     }
    

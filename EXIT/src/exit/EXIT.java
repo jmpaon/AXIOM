@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,9 +28,12 @@ public class EXIT {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, EXITexception {
+    public static void main(String[] args)  {
         
-        String[] commandLineArguments = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.005"};
+        String[] commandLineArguments = {"src/exit/inputfile8.csv",   "-max", "5", "-t", "0.005"};
+        if(args.length <= 1) {
+            new EXITargumentException("").printUsage();
+        }
         
         /* Normal calculation procedure */
         standard_exit_analysis(commandLineArguments);
@@ -65,6 +67,7 @@ public class EXIT {
             
             output.println("Input matrix describing direct impacts:");
             output.println(inputMatrix.toString());
+            output.println(inputMatrix.round());
             
 
             
@@ -125,7 +128,13 @@ public class EXIT {
                 output.println(resultMatrix.importanceMatrix().round(5));
                 
                 output.println("Difference matrix of result matrix and input matrix:");
-                output.println(resultMatrix.importanceMatrix().round(5).differenceMatrix(inputMatrix.round(5)));
+                output.println(resultMatrix.differenceMatrix(inputMatrix));
+                
+                output.println("Difference matrix of result matrix and input matrix scaled to 5 and rounded:");
+                output.println(resultMatrix.differenceMatrix(inputMatrix).round(5));
+                
+                output.println(resultMatrix.driverDriven().toString());
+                
             }
      
 

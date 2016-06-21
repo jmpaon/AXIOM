@@ -343,4 +343,28 @@ public class SquareDataMatrix {
         return copy;
     }
 
+    /**
+     * Tests if impact values of this matrix deviate
+     * from the impact values of <b>matrix</b>
+     * at most by value of <b>maxDifference</b>
+     * @param matrix matrix to compare against this one in terms of impact sizes
+     * @param maxDifference The maximum relative difference allowed to still consider the matrices approximately same in terms of values
+     * @return <b>true</b> if
+     */
+    boolean areValuesApproximatelySame(SquareDataMatrix matrix, double maxDifference) {
+        if(maxDifference <= 0) throw new IllegalArgumentException("maxDifference must be greater than 0");
+        if (matrix.values.length != this.values.length) {
+            throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");
+        }
+        for (int i = 0; i < this.values.length; i++) {
+            double v1 = this.values[i];
+            double v2 = matrix.values[i];
+            double rel = v1 > v2 ? v1 / v2 : v2 / v1;
+            if ((rel - 1) > maxDifference) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

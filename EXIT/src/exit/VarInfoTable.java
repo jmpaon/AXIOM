@@ -31,6 +31,9 @@ public class VarInfoTable<T> {
         if(varName == null) throw new NullPointerException("varName is null");
         if(value == null) throw new NullPointerException("value list is null");
         if(value.isEmpty()) throw new IllegalArgumentException("value list is empty");
+        if(value.size() != this.valueHeadings.size() ) throw new IllegalArgumentException(
+                String.format("value list should have the same number of values (%d) as value heading list ", 
+                        this.valueHeadings.size()));
         this.varNames.add(varName);
         this.values.add(value);
     }
@@ -40,7 +43,14 @@ public class VarInfoTable<T> {
         Iterator<String> it_s = varNames.iterator();
         Iterator<List<T>> it_l = values.iterator();
         StringBuilder sb = new StringBuilder();
+        StringBuilder hsb = new StringBuilder();
+        Iterator<String> it_vhs = valueHeadings.iterator();
+        while(it_vhs.hasNext()) {
+            hsb.append(it_vhs.next());
+            if(it_vhs.hasNext()) hsb.append(String.format("\t"));
+        }
         
+        sb.append(String.format("%55s\t%s%n", " ", hsb.toString()));
         
         while( it_s.hasNext() && it_l.hasNext() ) {
             String varName = it_s.next();
@@ -59,7 +69,7 @@ public class VarInfoTable<T> {
                 
                 if (it.hasNext() ) lsb.append("\t");
             }
-            sb.append(String.format("%40s", varName)).append(":\t").append(lsb).append("\n");            
+            sb.append(String.format("%55s", varName)).append(":\t").append(lsb).append("\n");            
         }
         return sb.toString();
     }

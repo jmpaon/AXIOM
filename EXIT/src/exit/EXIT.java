@@ -31,9 +31,9 @@ public class EXIT {
     public static void main(String[] args)  {
         
         String[] commandLineArguments = {"src/exit/inputfile8.csv",   "-max", "5", "-t", "0.005"};
-        if(args.length <= 1) {
-            new EXITargumentException("").printUsage();
-        }
+//        if(args.length <= 1) {
+//            new EXITargumentException("").printUsage();
+//        }
         
         /* Normal calculation procedure */
         standard_exit_analysis(commandLineArguments);
@@ -133,6 +133,7 @@ public class EXIT {
                 output.println("Difference matrix of result matrix and input matrix scaled to 5 and rounded:");
                 output.println(resultMatrix.differenceMatrix(inputMatrix).round(5));
                 
+                output.println(inputMatrix.driverDriven().toString());
                 output.println(resultMatrix.driverDriven().toString());
                 
             }

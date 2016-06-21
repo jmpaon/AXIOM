@@ -335,7 +335,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     public VarInfoTable<Double> driverDriven() {
         VarInfoTable<Double> info = new VarInfoTable<>(Arrays.asList("Driver", "Driven") );
         for (int i = 1; i <= this.varCount; i++) {
-            String name = this.getName(i);
+            String name = this.getNamePrint(i);
             double driver = this.rowSum(i, true);
             double driven = this.columnSum(i, true);
             info.addInfo(name, Arrays.asList(driver, driven));

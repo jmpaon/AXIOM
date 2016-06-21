@@ -181,6 +181,31 @@ public class SquareDataMatrix {
         }
         return names[varIndex - 1];
     }
+    
+    
+    /**
+     * Returns the name of the variable with index <b>varIndex</b>,
+     * so that each name will have whitespace as much as is needed
+     * to make all variable names equal in length.
+     * The longest variable name will not have any whitespace.
+     * @param varIndex
+     * @return 
+     */
+    public String getNamePrint(int varIndex) {
+        String varName = getName(varIndex);
+        int longestNameLen = 0;
+        for(String name : names) {
+            longestNameLen = name.length() > longestNameLen ? name.length() : longestNameLen;
+        }
+        // String frmt = "%" + (longestNameLen-varName.length()) + "s";
+        int whitespaceChars = longestNameLen - varName.length();
+        StringBuilder sb = new StringBuilder();
+        while(whitespaceChars>0) {
+            sb.append(" ");
+        }
+        sb.append(varName);
+        return sb.toString();
+    } 
 
     /**
      * Get a short (Vx) name for variable <i>varIndex</i>

@@ -117,7 +117,8 @@ public class EXIT {
                 }
                 
                 
-            } else 
+            } else
+                
             /* Print full cross-impact matrix displaying direct and indirect impacts */
             {
                 Timer timer = new Timer();

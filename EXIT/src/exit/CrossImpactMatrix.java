@@ -308,84 +308,62 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         }
         return differenceMatrix;
     }
-    
+
     
     /**
-     * Returns a <code>Map</code> containing the row and column sums
-     * of absolute values for each variable.
-     * The row sum is the <i>driver</i> value, 
-     * found in the first element of the <code>List<Double></code>.
-     * The column sum is the <i>driven</i> value,
-     * found in the second element of the <code>List<Double></code>.
-     * @return Map with the variable names as <u>key</u>
-     * and the driver and driven values as <u>value</u>.
+     * Returns a <code>VarInfoTable</code>
+     * where for each variable, the sum of impacts on other variables
+     * and the sum of impacts of other variables have been calculated.
+     * Variables are classified into four classes on the basis of this information.
+     * <table><tr><th></th><th>driven &lt; average</th><th>driven &gt; average</th></tr><tr><td>driver &gt; average</td><td>Driver</td><td>Critical</td></tr><tr><td>driver &lt; average</td><td>Stable</td><td>Reactive</td></tr></table>
+     * 
+     * @return <code>CrossImpactMatrix</code> row and column sums for each variable and the classification in a <code>VarInfoTable</code>
      */
-    Map<String, List<Double>> driverDrivenMap() {
-        Map<String, List<Double>> driverDriven = new TreeMap<>();
-        for (int i = 1; i <= this.varCount; i++) {
-            String name = this.getName(i);
-            double driver = this.rowSum(i, true);
-            double driven = this.columnSum(i, true);
-            driverDriven.put(name, Arrays.asList(driver, driven));
+    public VarInfoTable<String> driverDriven() {
+        VarInfoTable<String> driverDrivenInfo = new VarInfoTable<>(Arrays.asList("Driver", "Driven", "Type"));
+        double driverAverage = rowSum(1, true), drivenAverage = columnSum(1, true);
+        for (int i = 2; i <= varCount; i++) {
+            driverAverage = ((i-1)*driverAverage + rowSum(i, true)) / i ;
+            drivenAverage = ((i-1)*drivenAverage + columnSum(i, true)) / i ;
         }
-        return driverDriven;
         
-    }
-    
-    public VarInfoTable<Double> driverDriven() {
-        VarInfoTable<Double> info = new VarInfoTable<>(Arrays.asList("Driver", "Driven") );
+        
         for (int i = 1; i <= this.varCount; i++) {
             String name = this.getNamePrint(i);
             double driver = this.rowSum(i, true);
             double driven = this.columnSum(i, true);
-            info.addInfo(name, Arrays.asList(driver, driven));
+            boolean isDriver = driver > driverAverage;
+            boolean isDriven = driven > drivenAverage;
+            String type = isDriver ?
+                    isDriven ? "Critical" : "Driver" :
+                    isDriven ? "Reactive" : "Stable" ;
+            String driver_s = String.format("%2.1f", driver);
+            String driven_s = String.format("%2.1f", driven);
+            driverDrivenInfo.put(name, Arrays.asList(driver_s, driven_s, type));
         }
-        return info;
-    }
-    
-    public String driverDrivenReport() {
-        Map<String, List<Double>> driverDriven = driverDrivenMap();
-        double driverAverage=0, drivenAverage=0;
-        for(Map.Entry<String, List<Double>> entry : driverDriven.entrySet()) {
-            driverAverage += entry.getValue().get(0);
-            drivenAverage += entry.getValue().get(1);
-        }
-        driverAverage /= driverDriven.size();
-        drivenAverage /= driverDriven.size();
-        
-        String report="";
-        
-        for(Map.Entry<String, List<Double>> entry : driverDriven.entrySet()) {
-            
-            boolean dependent  = entry.getValue().get(0) > driverAverage;
-            boolean influental = entry.getValue().get(1) > drivenAverage; 
-            
-            String addition = dependent ?
-                      influental ? variableTypes().get(4) : variableTypes().get(2)
-                    : influental ? variableTypes().get(3) : variableTypes().get(1);
-            
-            report += String.format("%65s : %s%n", truncateName(entry.getKey(), 65), addition);
-            
-        }
-        
-        return report;
-        
-    }
-    
-    private Map<Integer, String> variableTypes() {
-        Map<Integer, String> types = new TreeMap<>();
-        types.put(1, "Stable variable");
-        types.put(2, "Reactive variable");
-        types.put(3, "Active driver");
-        types.put(4, "Critical key driver");
-        return types;
+        return driverDrivenInfo;
     }
     
     
+    public VarInfoTable<String> drivingVariables() {
+        VarInfoTable<String> drivers = new VarInfoTable<>();
+        for (int i = 1; i <= varCount; i++) {
+            String varName = this.getNamePrint(i);
+            List<String> impactors = new LinkedList<>();
+            for(Integer imp : this.aboveAverageImpactors(i)) {
+                impactors.add(this.getNamePrint(imp));
+            }
+            drivers.put(varName, impactors);
+        }
+        return drivers;
+    }
     
-
     
-    
+    /**
+     * Lists for each variable the variables that have an above-average
+     * impact on the variable.
+     * @return String containing the report of important driving variables for each variable
+     */
     public String reportDrivingVariables() {
         String report = "";
         CrossImpactMatrix m = this.scale(1);
@@ -398,10 +376,16 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         return report;
     }
     
+    
+    /**
+     * 
+     * @param varIndex
+     * @return 
+     */
     List<Integer> aboveAverageImpactors(int varIndex) {
         List<Integer> impactors = new LinkedList<>();
         CrossImpactMatrix normMatrix = this.scale(1);
-        double average = normMatrix.columnAverage(varIndex);
+        double average = normMatrix.columnAverage(varIndex, true);
         for(int i=1; i<=normMatrix.varCount; i++) {
             if(Math.abs(normMatrix.getValue(i, varIndex)) >= average)
                 impactors.add(i);
@@ -595,13 +579,22 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     }
     
     
-
+    /**
+     * Tests equality of this <code>CrossImpactMatrix</code>
+     * with another based on {@link CrossImpactMatrix#hashCode()}.
+     * @param impactMatrix <code>CrossImpactMatrix</code> to be tested for equality
+     * @return 
+     */
     @Override
     public boolean equals(Object impactMatrix){
         if(! (impactMatrix instanceof CrossImpactMatrix)) return false;
         return this.hashCode() == impactMatrix.hashCode();
     }
-
+    
+    /**
+     * Returns hashcode based on varCount, maxImpact, values array and names array.
+     * @return Hashcode
+     */
     @Override
     public int hashCode() {
         int hash = 3;
@@ -610,6 +603,15 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         hash = 29 * hash + Arrays.hashCode(this.values);
         hash = 29 * hash + Arrays.deepHashCode(this.names);
         return hash;
+    }
+    
+    
+    /**
+     * Returns a clone of the cross-impact matrix.
+     * @return Clone of the matrix
+     */
+    public CrossImpactMatrix clone() {
+        return new CrossImpactMatrix(maxImpact, varCount, onlyIntegers, this.names.clone(), this.values.clone());
     }
 
     

@@ -28,6 +28,7 @@ public class EXITarguments {
     public final String impactOf;
     public final String impactOn;
     public final boolean onlyIntegers;
+    public final boolean extraReports;
     public final double treshold;
     public final Character separator;
     
@@ -40,7 +41,8 @@ public class EXITarguments {
                 "-on",     // Print impacts on
                 "-max",    // Maximum impact value
                 "-t",      // Impact treshold
-                "-sep"     // Separator character in input data
+                "-sep",    // Separator character in input data
+                "-extra"   // Extra reports
         ));
     }
     
@@ -58,7 +60,8 @@ public class EXITarguments {
         impactOn       = extractArgumentValue("-on");
         maxImpact      = hasFlag("-max") ? Double.valueOf(extractArgumentValue("-max")) : 5;
         onlyIntegers   = hasFlag("-int");
-        treshold       = hasFlag("-t") ? Double.valueOf(extractArgumentValue("-t")) : 0.20;
+        extraReports   = hasFlag("-extra");
+        treshold       = hasFlag("-t") ? Double.valueOf(extractArgumentValue("-t")) : 0.10;
         separator      = hasFlag("-sep") ? extractArgumentValue("-sep").charAt(0) : ';' ;
         
     }

@@ -6,6 +6,7 @@
 package exit;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.io.PrintStream;
@@ -30,19 +31,18 @@ public class EXIT {
      */
     public static void main(String[] args)  {
         
-        String[] commandLineArguments = {"src/exit/inputfile8.csv",   "-max", "5", "-t", "0.005"};
-//        if(args.length <= 1) {
-//            new EXITargumentException("").printUsage();
-//        }
+        /* String[] commandLineArguments = {"src/exit/eltran1.csv", "-extra",  "-max", "5", "-t", "0.005"}; */
+        
+        // 
+        if(args.length < 1) {
+            new EXITargumentException("").printUsage();
+        }
         
         /* Normal calculation procedure */
-        standard_exit_analysis(commandLineArguments);
+        standard_exit_analysis(args);
         
         /* JL-procedure */
-        //JL_exit(100);
-        
-        /* test */
-        //test_features(args);
+        //JL_exit(3500);
     
     }
     
@@ -58,7 +58,7 @@ public class EXIT {
                 output = new PrintStream(arguments.outputFilename);
             }
             
-            output.println( arguments );
+            /* output.println( arguments ); */
             Reporter.requiredReportingLevel = 0;
             Reporter.output = output;
             
@@ -67,7 +67,14 @@ public class EXIT {
             
             output.println("Input matrix describing direct impacts:");
             output.println(inputMatrix.toString());
-            output.println(inputMatrix.round());
+            if(arguments.extraReports) {
+                output.println("Importance matrix derived from input matrix; max value 5:");
+                output.println(inputMatrix.importanceMatrix().round(5));
+                
+                output.println("Input matrix driver-driven report");
+                output.println(inputMatrix.scale(1).driverDriven().toString());                
+                
+            }
             
 
             
@@ -117,28 +124,33 @@ public class EXIT {
                 CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
                 
-                output.printf("%nResult impact matrix with summed direct and indirect impacts between variables, not scaled:%n");
-                output.printf("%s%n", resultMatrix);
-                
                 output.printf("Result impact matrix with summed direct and indirect impacts between variables, scaled to %f:%n", inputMatrix.getMaxImpact());
                 output.println(resultMatrix.scale(inputMatrix.getMaxImpact()));
                 
-                output.println("Importance matrix derived from result matrix:");
-                output.println(resultMatrix.importanceMatrix());
-                output.println(resultMatrix.importanceMatrix().round(5));
+                if(arguments.extraReports) {
+                    output.println("Importance matrix derived from result matrix; max value 5:");
+                    output.println(resultMatrix.importanceMatrix().round(5));
+                }
                 
-                output.println("Difference matrix of result matrix and input matrix:");
-                output.println(resultMatrix.differenceMatrix(inputMatrix));
+                output.println("Difference matrix of result matrix and input matrix, both scaled to max value 5:");
+                output.println(resultMatrix.scale(5).differenceMatrix(inputMatrix.scale(5)));
                 
-                output.println("Difference matrix of result matrix and input matrix scaled to 5 and rounded:");
-                output.println(resultMatrix.differenceMatrix(inputMatrix).round(5));
+                if(arguments.extraReports) {
+                    output.println("Difference matrix of result matrix and input matrix scaled to 5 and rounded:");
+                    output.println(resultMatrix.scale(inputMatrix.getMaxImpact()).differenceMatrix(inputMatrix).round(5));                    
                 
-                output.println(inputMatrix.driverDriven().toString());
-                output.println(resultMatrix.driverDriven().toString());
+                    output.println("Result matrix driver-driven report");
+                    output.println(resultMatrix.scale(1).driverDriven().toString());
+                
+                    // output.println(resultMatrix.reportDrivingVariables());
+                }
                 
             }
      
-
+        }catch(FileNotFoundException ex) {
+            System.out.printf("Input file not found: %s%n", ex.getMessage());
+        }catch(IOException ex) {
+            System.out.printf("Error reading input file: %s%n", ex.getMessage());
         }catch(EXITargumentException ex) {
             System.out.println("Argument error occurred: " + ex.getMessage());            
         } catch(EXITexception ex) {
@@ -151,10 +163,10 @@ public class EXIT {
     
 
     
-    public static void JL_exit(int iterations) {
+    static void JL_exit(int iterations) {
         try {
             InputFileReader ifr = new InputFileReader();
-            String[] args = {"src/exit/test5.csv", "-max", "5"};
+            String[] args = {"src/exit/eltran1.csv", "-max", "5"};
             EXITarguments arguments = new EXITarguments(args);            
             CrossImpactMatrix matrix = ifr.readInputFile(arguments);
             
@@ -167,12 +179,25 @@ public class EXIT {
             System.out.println(result.toString());
             System.out.println("\nImpact matrix scaled to be similar in terms of impact sizes as the original matrix:");
             System.out.println(result.scale(matrix.getMaxImpact()));
-
+            
+            
+            CrossImpactMatrix co1=null;
+            int sameIt = -1;
+            
+            
             for(int iter = 1; iter <= iterations; iter++) {
+                co1 = result.clone();
                 result = result.summedImpactMatrix(0.005);
+                if(sameIt==-1) if(result.areValuesApproximatelySame(co1, 0.005)) sameIt = iter;
                 System.out.printf("%n%nIteration %d:%n", iter);
                 System.out.println(result.scale(result.getMaxImpact()));
             }
+            
+            System.out.printf("Importance matrix for iteration %d%n", iterations);
+            System.out.println(result.importanceMatrix());
+            System.out.println(result.importanceMatrix().round(5));
+            System.out.println("Iteration results in a noticeably different matrix until iteration " + sameIt);
+            
             
             
         } catch (IOException | EXITexception ex) {
@@ -182,37 +207,13 @@ public class EXIT {
     }    
     
     
-    public static void test_features(String[] args) {
+    private static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
             String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
-            
-            
-//            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
-//            CrossImpactMatrix impMatrix = inputMatrix.importanceMatrix();
-//            CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(0.001);
-//            CrossImpactMatrix diffMatrix = resultMatrix.importanceMatrix().differenceMatrix(impMatrix);
-//            CrossImpactMatrix diffMatrix2 = resultMatrix.differenceMatrix(inputMatrix).importanceMatrix();
-//            
-//            System.out.println("Importance difference matrix:");
-//            System.out.println(diffMatrix);
-//            
-//            System.out.println("Importance difference matrix 2:");
-//            System.out.println(diffMatrix2);
-//                        
-//            System.out.println(inputMatrix);
-//            System.out.println(resultMatrix);
-//            System.out.println("Difference matrix:");
-//            System.out.println(resultMatrix.differenceMatrix(inputMatrix));
-//            
-//            System.out.println(inputMatrix.driverDriven());
-//            
-//            System.out.println(inputMatrix.driverDrivenReport());
-            
-            
             
         } catch (Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);

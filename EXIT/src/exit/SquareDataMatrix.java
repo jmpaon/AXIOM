@@ -106,8 +106,8 @@ public class SquareDataMatrix {
      * @return Average of values of variable with index <b>row</b> on other
      * variables
      */
-    protected double rowAverage(int row) {
-        return rowSum(row, true) / varCount;
+    protected double rowAverage(int row, boolean absoluteValues) {
+        return rowSum(row, absoluteValues) / varCount;
     }
 
     /**
@@ -117,8 +117,8 @@ public class SquareDataMatrix {
      * @return Average of values of other variables on variable with index
  <b>column</b>
      */
-    protected double columnAverage(int column) {
-        return columnSum(column, true) / varCount;
+    protected double columnAverage(int column, boolean absoluteValues) {
+        return columnSum(column, absoluteValues) / varCount;
     }
     
     /**
@@ -197,11 +197,11 @@ public class SquareDataMatrix {
         for(String name : names) {
             longestNameLen = name.length() > longestNameLen ? name.length() : longestNameLen;
         }
-        // String frmt = "%" + (longestNameLen-varName.length()) + "s";
         int whitespaceChars = longestNameLen - varName.length();
         StringBuilder sb = new StringBuilder();
         while(whitespaceChars>0) {
             sb.append(" ");
+            whitespaceChars--;
         }
         sb.append(varName);
         return sb.toString();

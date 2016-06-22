@@ -31,7 +31,7 @@ public class InputFileReader {
     
     CrossImpactMatrix readCSVfile(EXITarguments args) throws IOException, EXITexception {
         
-        Reporter.indicateProgress(String.format("Reading impact matrix data from file %25s%n", args.inputFilename),5);
+        Reporter.indicateProgress(String.format("Reading impact matrix data from file %s%n", args.inputFilename),5);
         
         if(! fileExists(args.inputFilename)) throw new FileNotFoundException(String.format("Input file %s not found", args.inputFilename));
         

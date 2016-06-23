@@ -18,6 +18,8 @@ can be helpful in interpreting and analysing the results.
 ## Usage
 
     java -jar exit.jar inputfile.csv [options...]
+    
+Inputfile name is a mandatory argument.
 
 ## Options
 
@@ -30,6 +32,16 @@ See EXIT method section for details.
 `-t` Treshold value used in mining the indirect impacts from the impact chains.
 The lower the treshold value, the longer the calculation will take 
 and the more indirect impacts through the impact network will be discovered.
+
+`-sep` Separator character used in input data
+
+`-of` Print impact chains starting with variable with this index
+
+`-on` Print impact chains ending in variable with this index
+
+`-int` If this flag is present, input matrix values are assumed to be integers
+
+`-extra` If this flag is present, extra reports are printed
 
 ## Input file
 

@@ -59,6 +59,21 @@ This means that each row should, in addition to the variable name,
 have as many impacts as there are variables (or rows) in the input file.
 Empty rows in the file will be ignored.
 
+### Example of a valid input file
+
+        V1;0;0;-1;-4;-3;5;-2;1;0;-3;0;-1
+        V2;1;0;-1;3;-4;-3;-1;-4;-3;-2;5;-3
+        V3;-4;-1;0;-1;-5;-4;1;1;-2;-1;1;-2
+        V4;-4;4;0;0;2;-5;-2;3;1;-3;-5;3
+        V5;3;5;-1;4;0;-2;4;-3;5;5;-3;3
+        V6;-3;2;0;-2;-3;0;2;5;-4;-3;1;5
+        V7;5;3;2;1;-2;-4;0;0;-3;-4;1;0
+        V8;-1;-5;0;5;4;0;3;0;-5;5;5;-3
+        V9;-2;4;-1;3;-1;4;-1;-1;0;-3;1;-4
+        V10;0;1;0;-3;2;-5;0;-3;-3;0;-4;-3
+        V11;3;5;3;-5;5;-1;1;2;3;-1;0;-5
+        V12;4;-3;-5;0;3;5;-1;5;-4;5;4;0
+
 ## EXIT method
 
 

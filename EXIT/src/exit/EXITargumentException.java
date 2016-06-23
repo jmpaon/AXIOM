@@ -5,6 +5,8 @@
  */
 package exit;
 
+import java.util.Map;
+
 /**
  *
  * @author jmpaon
@@ -42,6 +44,26 @@ class EXITargumentException extends EXITexception {
         System.exit(1);
         
     }
+    
+    public void alternativePrintUsage() {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(String.format("Usage:%nexit-cia inputfile [options...]%n" ));
+        sb.append(String.format("e.g.:%n" ));
+        sb.append(String.format("exit-cia inputfile.csv -o savefile.txt -max 5 -t 0.05 -extra%n" ));
+        sb.append(String.format("%n"));
+        
+        sb.append(String.format("AVAILABLE OPTIONS:%n"));
+        for(Map.Entry<String, String> option : EXITarguments.knownOptions().entrySet()) {
+            sb.append(option.getKey()).append(": ").append(option.getValue());
+            sb.append(String.format("%n"));
+        }
+        
+        System.out.printf(sb.toString());
+        System.exit(1);
+    }
+    
+    
    
 }
                 

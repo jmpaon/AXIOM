@@ -3,8 +3,10 @@ package exit;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class EXITarguments {
     
-    public final List<String> knownOptions = initializeKnownOptions();
+    
     public final List<String> args;
     public final String inputFilename;
     public final Double maxImpact;
@@ -33,17 +35,25 @@ public class EXITarguments {
     public final Character separator;
     
     
-    private List<String> initializeKnownOptions() {
-        return new ArrayList<>(Arrays.asList(
-                "-o",      // Output file name
-                "-int",    // All impacts are integers
-                "-of",     // Print impacts of 
-                "-on",     // Print impacts on
-                "-max",    // Maximum impact value
-                "-t",      // Impact treshold
-                "-sep",    // Separator character in input data
-                "-extra"   // Extra reports
-        ));
+    /**
+     * Returns a map that contains the 
+     * accepted options that can be passed to the cross-impact analysis
+     * and meanings of options
+     * @return Map where legal options are keys and their explanations are values
+     */
+    public static Map<String, String> knownOptions() {
+        Map<String, String> options = new LinkedHashMap<>();
+        
+        options.put("-o",     "Output file name");
+        options.put("-max",   "Maximum impact value in the impact matrix");
+        options.put("-t",     "Impact treshold used in impact chain mining");
+        options.put("-sep",   "Separator character used in input data");
+        options.put("-of",    "Print impacts of variable with index");
+        options.put("-on",    "Print impacts on variable with index");
+        options.put("-int",   "Flag if all impacts in input matrix are integers");
+        options.put("-extra", "Flag to print extra reports");
+        
+        return options;
     }
     
     
@@ -51,8 +61,10 @@ public class EXITarguments {
         
         this.args = Arrays.asList(args);
         if(hasUnknownOptions()) {
-            throw new EXITargumentException(String.format("Unknown options %s used. Known options are the following: %s%n", unknownOptionsUsed(),  knownOptions.toString()));
+            throw new EXITargumentException(String.format("Unknown options %s used. Known options are the following: %s%n", unknownOptionsUsed(),  knownOptions().keySet().toString()));
         }
+        
+        if(args.length < 1) throw new EXITargumentException("No input file specified.");
         
         inputFilename  = this.args.get(0);
         outputFilename = extractArgumentValue("-o");
@@ -70,12 +82,12 @@ public class EXITarguments {
     /**
      * Tests if args list contains flags (entries that have '-' character in front of them) 
      * that are not in the known options list.
-     * @return <i>true</i> if args list contains flags not in <b>knownOptions</b> list, false otherwise.
+     * @return <i>true</i> if args list contains flags not in list returned by <b>knownOptions()</b>, false otherwise.
      */
     private boolean hasUnknownOptions() {
         for(String arg : args) {
             if(arg.startsWith("-")) {
-                if(!knownOptions.contains(arg)) {
+                if(!knownOptions().keySet().contains(arg)) {
                     return true;
                 } 
             }
@@ -83,10 +95,16 @@ public class EXITarguments {
         return false;
     }
     
+    /**
+     * Tests whether arguments contain unknown options.
+     * @return <i>true</i> if arguments contain options that are unknown
+     * (not in the known options list
+     * @see EXITarguments#knownOptions() 
+     */
     private List<String> unknownOptionsUsed() {
         List<String> unknown = new LinkedList<>();
         for(String arg : args) {
-            if(arg.startsWith("-") && !knownOptions.contains(arg))
+            if(arg.startsWith("-") && !knownOptions().keySet().contains(arg))
                 unknown.add(arg);
         }
         return unknown;
@@ -96,7 +114,7 @@ public class EXITarguments {
      * Extracts a value than follows a specific flag in the args list.
      * @param id flag to search from the args list
      * @return The value that is in the args list at the succeeding index of <b>id</b>
-     * @throws EXITargumentException 
+     * @throws EXITargumentException
      */
     private String extractArgumentValue(String id) throws EXITargumentException {
         int idPos = args.indexOf(id);

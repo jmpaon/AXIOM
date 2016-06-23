@@ -31,12 +31,10 @@ public class EXIT {
      */
     public static void main(String[] args)  {
         
-        /* String[] commandLineArguments = {"src/exit/eltran1.csv", "-extra",  "-max", "5", "-t", "0.005"}; */
+        String[] commandLineArguments = {"src/exit/eltran1.csv", "-extra", "-max", "7", "-t", "0.0005"};
+        String[] emptyArgs = {};
+        args = commandLineArguments;
         
-        // 
-        if(args.length < 1) {
-            new EXITargumentException("").printUsage();
-        }
         
         /* Normal calculation procedure */
         standard_exit_analysis(args);
@@ -48,7 +46,7 @@ public class EXIT {
     
     public static void standard_exit_analysis(String[] args) {
         try {
-
+            
             EXITarguments arguments = new EXITarguments(args);
             PrintStream output;
             
@@ -71,7 +69,7 @@ public class EXIT {
                 output.println("Importance matrix derived from input matrix; max value 5:");
                 output.println(inputMatrix.importanceMatrix().round(5));
                 
-                output.println("Input matrix driver-driven report");
+                output.println("Input matrix driver-driven report:");
                 output.println(inputMatrix.scale(1).driverDriven().toString());                
                 
             }

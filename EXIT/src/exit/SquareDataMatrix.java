@@ -8,6 +8,8 @@ package exit;
 import java.util.NoSuchElementException;
 
 /**
+ * <code>SquareDataMatrix</code> represents a square data matrix,
+ * or a matrix where row and column counts are equal.
  * 
  * @author jmpaon
  */
@@ -20,6 +22,13 @@ public class SquareDataMatrix {
     private boolean isLocked;              /* Is the matrix locked? If locked, matrix contents cannot be changed */
 
     
+    /**
+     * Constructor for <code>SquareDataMatrix</code>
+     * @param varCount Number of rows, columns and variables in the matrix
+     * @param onlyIntegers Are only integers allowed?
+     * @param names Array of row/column/variable names or labels, length must be equal to varCount
+     * @param values Array of values, length must be equal to varCount^2
+     */
     public SquareDataMatrix(int varCount, boolean onlyIntegers, String[] names, double[] values) {
         if (varCount < 1) { throw new IllegalArgumentException("varCount cannot be smaller than 1"); }
         if(values == null) throw new NullPointerException("values array is null");
@@ -234,6 +243,11 @@ public class SquareDataMatrix {
     }    
     
 
+    /**
+     * Returns the index of variable with name <b>varName</b>.
+     * @param varName Name/label of variable
+     * @return Index of variable with name <b>varName</b>
+     */
     public int getIndex(String varName) {
         for (int i = 0; i < names.length; i++) {
             if (names[i].equals(varName)) {
@@ -246,7 +260,6 @@ public class SquareDataMatrix {
     
     /**
      * Sets the variable name for variable at <i>varIndex</i>.
-     *
      * @param varIndex Index of a variable in <i>matrix</i>
      * @param varName New name for variable
      * @throws IllegalArgumentException
@@ -349,12 +362,11 @@ public class SquareDataMatrix {
     }
 
     /**
-     * Returns a copy of the matrix contents (the values) in a
-     * 2-dimensional array.
-     *
+     * Returns a copy of the matrix contents (the values) 
+     * in a 2-dimensional array.
      * @return Matrix contents in a 2-dimensional array.
      */
-    public double[][] copyMatrix() {
+    public double[][] valuesToArray() {
         double[][] copy = new double[varCount][varCount];
         int i = 0;
         int r = 0;
@@ -367,6 +379,31 @@ public class SquareDataMatrix {
         }
         return copy;
     }
+    
+    
+    /**
+     * "Flattens" a square 2-dimensional array 
+     * (array with equal number of rows and columns) 
+     * into a 1-dimensional array.
+     * @param array Array to be flattened
+     * @return Flattened array
+     */
+    static double[] flattenArray(double[][] array) {
+        double[] flatArray = new double[array.length * array.length];
+        
+        int pos=0;
+        int rowIndex=0;
+        
+        for(double[] row : array) {
+            if(row.length != array.length) throw new IllegalArgumentException("array has unequal number of rows and columns");
+            for (int i = 0; i < row.length; i++, pos++) {
+                flatArray[pos] = array[rowIndex][i];
+            }
+            rowIndex++;
+        }
+        return flatArray;
+    }
+    
 
     /**
      * Tests if impact values of this matrix deviate

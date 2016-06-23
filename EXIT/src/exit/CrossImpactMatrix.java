@@ -19,19 +19,33 @@ import java.util.stream.Collectors;
 
 
 /**
- * <code>CrossImpactMatrix</code> represents a table of values 
- variables have on each other in EXIT cross-impact analysis.
+ * <p><code>CrossImpactMatrix</code> represents 
+ * a set of impacts variables have on each other 
+ * in EXIT cross-impact analysis.
  * Impacts are usually integers, ranging from 
  * negative <b>maxImpact</b> to positive <b>maxImpact</b>.
- Negative impact of variable X on variable Y represents
- probability-decreasing effect of X on Y; 
- Positive impact of variable X on variable Y represents
- probability-increasing effect of X on Y.
- Cross-impact matrix can be used both for representing the direct values
- that are inputs for the EXIT calculation 
- and the summed direct and indirect values that are the result of the
- EXIT calculation.
+ * Negative impact of variable X on variable Y represents
+ * probability-decreasing effect of X on Y; 
+ * Positive impact of variable X on variable Y represents
+ * probability-increasing effect of X on Y.</p>
  * 
+ * <p>Cross-impact matrix can be used both for representing 
+ * the matrix of direct impact values
+ * that are inputs for the EXIT calculation 
+ * and the matrix of summed direct and indirect values 
+ * that are the result of the EXIT calculation.
+ * It is also used for presenting the many transformations 
+ * that can be performed on
+ * both input matrices and summed matrices,
+ * to facilitate interpretation and analysis of the impact matrices.
+ * These transformations include
+ * <ul>
+ * <li>scaling the matrix {@link CrossImpactMatrix#scale(double) }</li>
+ * <li>rounding the matrix {@link CrossImpactMatrix#round(int) }</li>
+ * <li>deriving importance matrix {@link CrossImpactMatrix#importanceMatrix() }</li>
+ * <li>deriving difference matrix {@link CrossImpactMatrix#differenceMatrix(exit.CrossImpactMatrix) }</li>
+ * </ul>
+ * </p>
  * @author jmpaon
  */
 public final class CrossImpactMatrix extends SquareDataMatrix {
@@ -345,6 +359,12 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     }
     
     
+    /**
+     * Returns information about the most important drivers of each variable.
+     * Extracts the same information as {@link CrossImpactMatrix#reportDrivingVariables()}
+     * in a <code>VarInfoTable</code>.
+     * @return Information about the most important drivers for each variable.
+     */
     public VarInfoTable<String> drivingVariables() {
         VarInfoTable<String> drivers = new VarInfoTable<>();
         for (int i = 1; i <= varCount; i++) {
@@ -378,9 +398,12 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     
     /**
-     * 
-     * @param varIndex
-     * @return 
+     * Returns a list of indices of the variables
+     * that have a greater than average impact on variable
+     * with index <b>varIndex</b>.
+     * @param varIndex Variable index for variable whose above-average impactors
+     * are returned
+     * @return List of above-average impactors for variable <b>varIndex</b>
      */
     List<Integer> aboveAverageImpactors(int varIndex) {
         List<Integer> impactors = new LinkedList<>();

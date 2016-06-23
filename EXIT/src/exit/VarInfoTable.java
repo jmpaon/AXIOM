@@ -37,9 +37,6 @@ public class VarInfoTable<T> {
         if(varName == null) throw new NullPointerException("varName is null");
         if(value == null) throw new NullPointerException("value list is null");
         if(value.isEmpty()) throw new IllegalArgumentException("value list is empty");
-//        if(value.size() != this.valueHeadings.size() ) throw new IllegalArgumentException(
-//                String.format("value list should have the same number of values (%d) as value heading list ", 
-//                        this.valueHeadings.size()));
         this.varNames.add(varName);
         this.values.add(value);
     }

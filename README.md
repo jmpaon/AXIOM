@@ -29,15 +29,19 @@ Inputfile name is a mandatory argument.
 This value is also used in the EXIT calculation. 
 See EXIT method section for details.
 
-`-t` Treshold value used in mining the indirect impacts from the impact chains.
-The lower the treshold value, the longer the calculation will take 
+`-t` Threshold value used in mining the indirect impacts from the impact chains.
+The lower the threshold value, the longer the calculation will take 
 and the more indirect impacts through the impact network will be discovered.
+Default threshold is 0.1.
 
-`-sep` Separator character used in input data
+`-sep` Separator character used in input data. Default is ';'.
 
 `-of` Print impact chains starting with variable with this index
 
 `-on` Print impact chains ending in variable with this index
+
+NOTE: If neither `-of` or `-on` options are present, a cross-impact matrix describing 
+all summed direct and indirect impacts between variables is calculated.
 
 `-int` If this flag is present, input matrix values are assumed to be integers
 
@@ -45,7 +49,18 @@ and the more indirect impacts through the impact network will be discovered.
 
 ## Input file
 
+The input file should contain an impact matrix that describes 
+the direct impacts between the variables included in the cross-impact analysis.
+The file should have as many rows as there are variables.
+Each row should have the variable name 
+followed by the impacts of that variable on all other variables, 
+all data separated by the separator character.
+This means that each row should, in addition to the variable name, 
+have as many impacts as there are variables (or rows) in the input file.
+Empty rows in the file will be ignored.
+
 ## EXIT method
+
 
 
 ## Interpretation of results

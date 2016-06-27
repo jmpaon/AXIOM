@@ -5,8 +5,6 @@
  */
 package exit;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,8 +25,13 @@ import java.util.LinkedList;
  */
 public class ImpactChain implements Comparable<ImpactChain>  {
     
+    /** The cross-impact matrix from whose variables the impact chain is formed from */
     public final CrossImpactMatrix matrix;
+    
+    /** Indices of the variables that are present in this chain */
     public final List<Integer> chainMembers;
+    
+    /** Number of chain members / variables in this chain */
     public final int memberCount;
     
     

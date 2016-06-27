@@ -6,14 +6,11 @@ package exit;
 
 
 import java.math.BigDecimal;
-
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
@@ -40,17 +37,19 @@ import java.util.stream.Collectors;
  * to facilitate interpretation and analysis of the impact matrices.
  * These transformations include
  * <ul>
- * <li>scaling the matrix {@link CrossImpactMatrix#scale(double) }</li>
- * <li>rounding the matrix {@link CrossImpactMatrix#round(int) }</li>
- * <li>deriving importance matrix {@link CrossImpactMatrix#importanceMatrix() }</li>
- * <li>deriving difference matrix {@link CrossImpactMatrix#differenceMatrix(exit.CrossImpactMatrix) }</li>
+ *  <li>scaling the matrix {@link CrossImpactMatrix#scale(double) }</li>
+ *  <li>rounding the matrix {@link CrossImpactMatrix#round(int) }</li>
+ *  <li>deriving an importance matrix {@link CrossImpactMatrix#importanceMatrix() }</li>
+ *  <li>deriving a difference matrix {@link CrossImpactMatrix#differenceMatrix(exit.CrossImpactMatrix) }</li>
  * </ul>
  * </p>
  * @author jmpaon
+ * @version 0.9
  */
 public final class CrossImpactMatrix extends SquareDataMatrix {
     
-    private double maxImpact; /* maximum allowed absolute value in this matrix */
+    /** The maximum absolute value allowed in this matrix */
+    private double maxImpact; 
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
@@ -185,7 +184,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     public CrossImpactMatrix summedImpactMatrix(double impactThreshold) {
         CrossImpactMatrix resultMatrix = new CrossImpactMatrix(maxImpact*varCount, varCount, false, names);
         double totalCount=0;
-        for(int impactor=1; impactor<=this.varCount; impactor++) {
+        for (int impactor=1; impactor<=this.varCount; impactor++) {
             Reporter.msg("Calculating significant indirect impacts of %s(%s)... ", getNameShort(impactor), truncateName(getName(impactor), 15));
             ImpactChain chain = new ImpactChain(this, Arrays.asList(impactor));
             double count = sumImpacts(chain, impactThreshold, resultMatrix);
@@ -202,8 +201,9 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     /**
      * If impact of <b>chain</b> is higher than <b>impactThreshold</b>,
      * it is added to <b>resultMatrix</b> and the possible immediate expansions of
-     * <b>chain</b> are generated and their values added to <b>resultMatrix</b>
-     * if appropriate.
+     * <b>chain</b> are generated 
+     * and {@link CrossImpactMatrix#sumImpacts(exit.ImpactChain, double, exit.CrossImpactMatrix)}
+     * is called recursively on the expansion chains.
      * @param chain <code>ImpactChain</code> to consider for addition to <b>resultMatrix</b>
      * @param impactThreshold <b>chain</b> must have an impact of at least this value to be added to <b>resultMatrix</b>
      * @param resultMatrix <code>CrossImpactMatrix</code> where the significant values are summed
@@ -262,7 +262,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * The <code>onlyIntegers</code> property for the new <code>CrossImpactMatrix</code>
      * will be true.
      * @param scaleTo The value that the highest absolute impact value in the matrix will be scaled to
-     * @return 
+     * @return <code>CrossImpactMatrix</code> that has its values scaled to <b>scaleTo</b> and rounded to nearest integers
      */
     public CrossImpactMatrix round(int scaleTo) {
         if(Math.abs(scaleTo) < 1) throw new IllegalArgumentException("scaleTo cannot be 0");
@@ -415,7 +415,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         }
         return impactors;
     }
-
+    
     
     /**
      * Returns a String with information about 
@@ -440,7 +440,6 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             }
             return String.format("approximately %1.2f x 10^%d", chainCount, exp);
         }
-
     }
     
     

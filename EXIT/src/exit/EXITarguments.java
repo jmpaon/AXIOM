@@ -1,14 +1,13 @@
 package exit;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,7 +16,8 @@ import java.util.logging.Logger;
  */
 
 /**
- *
+ * Instance of this class stores the command line arguments
+ * passed to EXIT.
  * @author jmpaon
  */
 public class EXITarguments {
@@ -89,7 +89,7 @@ public class EXITarguments {
             if(arg.startsWith("-")) {
                 if(!knownOptions().keySet().contains(arg)) {
                     return true;
-                } 
+                }
             }
         }
         return false;

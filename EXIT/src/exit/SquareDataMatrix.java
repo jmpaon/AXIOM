@@ -8,22 +8,29 @@ package exit;
 import java.util.NoSuchElementException;
 
 /**
- * <code>SquareDataMatrix</code> represents a square data matrix,
- * or a matrix where row and column counts are equal.
+ * <code>SquareDataMatrix</code> represents 
+ * a square numeric data matrix,
+ * square matrix being a matrix 
+ * where row and column counts are equal.
  * 
  * @author jmpaon
  */
 public class SquareDataMatrix {
-
-    protected final int varCount;          /* Number of variables (and rows and columns) in this matrix */
-    protected final double[] values;       /* Matrix contents */
-    protected final boolean onlyIntegers;  /* Are only integers allowed as matrix values */
-    protected final String[] names;        /* Variable/row/column names */
-    private boolean isLocked;              /* Is the matrix locked? If locked, matrix contents cannot be changed */
+    
+    /** Number of variables (and rows and columns) in this matrix */
+    protected final int varCount;
+    /** Matrix contents */
+    protected final double[] values;
+    /** Are only integers allowed as matrix values? */
+    protected final boolean onlyIntegers; 
+    /** Variable/row/column names */
+    protected final String[] names;
+    /** Is the matrix locked? If locked, matrix contents cannot be changed */
+    private boolean isLocked;
 
     
     /**
-     * Constructor for <code>SquareDataMatrix</code>
+     * Constructor for <code>SquareDataMatrix</code>.
      * @param varCount Number of rows, columns and variables in the matrix
      * @param onlyIntegers Are only integers allowed?
      * @param names Array of row/column/variable names or labels, length must be equal to varCount
@@ -51,39 +58,53 @@ public class SquareDataMatrix {
 
     }
     
+    
+    /**
+     * Constructor for <code>SquareDataMatrix</code>.
+     * @param varCount Number of rows, columns and variables in the matrix
+     * @param onlyIntegers Are only integers allowed?
+     * @param names Array of row/column/variable names or labels, length must be equal to varCount
+     */
     public SquareDataMatrix(int varCount, boolean onlyIntegers, String[] names) {
         this(varCount, onlyIntegers, names, new double[varCount*varCount]);
     }
     
+    
+    /**
+     * Constructor for <code>SquareDataMatrix</code>
+     * @param varCount Number of rows, columns and variables in the matrix
+     * @param onlyIntegers Are only integers allowed?
+     */    
     public SquareDataMatrix(int varCount, boolean onlyIntegers) {
         this(varCount, onlyIntegers, createNames(varCount), new double[varCount*varCount]);
     }
     
 
     /**
-     * Returns true if <code>SquareDataMatrix</code> is locked, false
-     * otherwise. SquareDataMatrix being locked means that impact values cannot
-     * be changed anymore.
-     *
-     * @return <b>true</b> if matrix is locked, <b>false</b> otherwise.
+     * Returns true if <code>SquareDataMatrix</code> is locked, false otherwise. 
+     * SquareDataMatrix being locked means 
+     * that impact values cannot be changed anymore.
+     * @return <i>true</i> if matrix is locked, <i>false</i> otherwise.
      */
     protected boolean isLocked() {
         return isLocked;
     }
 
+    
     /**
      * Locks the matrix so that contents cannot be changed.
      */
-    protected void lock() {
+    public void lock() {
         this.isLocked = true;
     }
 
+    
     /**
      * Returns the sum of the values in a specific row of the matrix.
-     * @param row index of the row which values are summed
+     * @param row index of the row whose values are summed
      * @param absoluteValues if <i>true</i>, sum of absolute values is returned;
      * otherwise sum of values is returned
-     * @return Sum of values on row with index <b>row</b>
+     * @return Sum of values in row with index <b>row</b>
      */
     protected double rowSum(int row, boolean absoluteValues) {
         double sum = 0;
@@ -92,13 +113,14 @@ public class SquareDataMatrix {
         }
         return sum;
     }
-
+    
+    
     /**
      * Returns the sum of the values in a specific column of the matrix.
-     * @param column index of the column which values are summed
+     * @param column index of the column whose values are summed
      * @param absoluteValues if <i>true</i>, sum of absolute values is
      * returned; otherwise sum of values is returned
-     * @return Sum of values of other variables on variable with index <b>column</b>
+     * @return Sum of values in column with index <b>column</b>
      */
     protected double columnSum(int column, boolean absoluteValues) {
         double sum = 0;
@@ -108,33 +130,35 @@ public class SquareDataMatrix {
         return sum;
     }
 
+    
     /**
-     * Returns the average of values of specific row
-     *
+     * Returns the average of values of specific row.
      * @param row Index of the variable which values are averaged
-     * @return Average of values of variable with index <b>row</b> on other
-     * variables
+     * @param absoluteValues If <i>true</i> average of absolute values is returned
+     * @return Average of values in row with index <b>row</b>
      */
     protected double rowAverage(int row, boolean absoluteValues) {
         return rowSum(row, absoluteValues) / varCount;
     }
 
+    
     /**
-     * Returns the average of values on specific column
-     *
+     * Returns the average of values on specific column.
      * @param column Index of the variable which values are averaged
-     * @return Average of values of other variables on variable with index
- <b>column</b>
+     * @param absoluteValues If <i>true</i> average of absolute values is returned
+     * @return Average of values in column with index <b>column</b>
+     * <b>column</b>
      */
     protected double columnAverage(int column, boolean absoluteValues) {
         return columnSum(column, absoluteValues) / varCount;
     }
     
+    
     /**
      * Returns the maximum value in a specific row of the matrix.
      * @param row Row index
      * @param absolute if true, maximum of absolute values is returned; else maximum of values is returned
-     * @return the maximum value in row <i>row</i>
+     * @return the maximum value in row <b>row</b>
      */
     protected double rowMax(int row, boolean absolute) {
         double max = absolute ? Math.abs(this.getValue(row, 1)) : this.getValue(row, 1);
@@ -145,11 +169,12 @@ public class SquareDataMatrix {
         return max;
     }
 
+    
     /**
      * Returns the maximum value in a specific column of the matrix
      * @param column Column index
-     * @param absolute if true, maximum of absolute values is returned; else maximum of values is returned
-     * @return the maximum value in column <i>column</i>
+     * @param absolute if <i>true</i>, maximum of absolute values is returned; else maximum of values is returned
+     * @return the maximum value in column <b>column</b>
      */
     protected double columnMax(int column, boolean absolute) {
         double max = absolute ? Math.abs(this.getValue(1, column)) : this.getValue(1, column);
@@ -160,11 +185,12 @@ public class SquareDataMatrix {
         return max;
     }
 
+    
     /**
      * Creates variable names for the matrix. Variable names are
      * numbered from 1 to <b>nameCount</b>.
      * @param nameCount How many names will be generated
-     * @return String array containing variable names
+     * @return Array containing variable names
      */
     protected static String[] createNames(int nameCount) {
         int i = 0;
@@ -176,12 +202,12 @@ public class SquareDataMatrix {
         return n;
     }
 
+    
     /**
      * Returns the name of variable with index <b>varIndex</b>.
-     *
      * @param varIndex Index of variable in question
      * @return Name of variable with index <b>varIndex</b>.
-     * @throws IllegalArgumentException
+     * @throws IndexOutOfBoundsException
      */
     public String getName(int varIndex) throws IndexOutOfBoundsException {
         if (varIndex < 1 || varIndex > varCount) {
@@ -217,7 +243,7 @@ public class SquareDataMatrix {
     } 
 
     /**
-     * Get a short (Vx) name for variable <i>varIndex</i>
+     * Get a short (V1, V2, V3 ...) name for variable <i>varIndex</i>
      * @param varIndex Variable index
      * @return A short name for variable <i>varIndex</i>
      */
@@ -428,5 +454,7 @@ public class SquareDataMatrix {
         }
         return true;
     }
+    
+
 
 }

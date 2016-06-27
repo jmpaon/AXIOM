@@ -10,7 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * Objects of this class are used to store and display information
+ * about variables in the cross-impact matrix.
  * @author jmpaon
  */
 public class VarInfoTable<T> {
@@ -19,6 +20,10 @@ public class VarInfoTable<T> {
     public final List<String> valueHeadings;
     public final List<List<T>> values;
     
+    /**
+     * Constructor for <code>VarInfoTable</code>
+     * @param valueHeadings A list containing headings for the value columns of the table
+     */
     public VarInfoTable(List<String> valueHeadings) {
         if(valueHeadings == null) throw new NullPointerException("Value headings list null");
         if(valueHeadings.isEmpty()) throw new IllegalArgumentException("Value headings list empty");
@@ -33,6 +38,11 @@ public class VarInfoTable<T> {
         this.valueHeadings = null;
     }
     
+    /**
+     * Adds a row of information about a variable to the table
+     * @param varName Name of the variable / row heading
+     * @param value List of values related to the variable (or row heading)
+     */
     public void put(String varName, List<T> value) {
         if(varName == null) throw new NullPointerException("varName is null");
         if(value == null) throw new NullPointerException("value list is null");

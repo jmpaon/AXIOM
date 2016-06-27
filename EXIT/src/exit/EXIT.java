@@ -31,7 +31,7 @@ public class EXIT {
      */
     public static void main(String[] args)  {
         
-        String[] commandLineArguments = {"src/exit/eltran1.csv", "-extra", "-max", "7", "-t", "0.0005"};
+        String[] commandLineArguments = {"src/exit/eltran1.csv", "-extra", "-max", "5", "-t", "0.0005"};
         String[] emptyArgs = {};
         args = commandLineArguments;
         

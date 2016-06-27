@@ -6,7 +6,6 @@
 package exit;
 
 import java.io.PrintStream;
-import java.text.Format;
 import java.util.Arrays;
 
 /**
@@ -35,10 +34,10 @@ public class Reporter {
      * @param level The importance of this message. If <b>level</b> is lower than
      * <b>requiredReportingLevel</b> the message will not be printed.
      */
-    public static void indicateProgress(final String msg, int level) {
+    public static void msg(final String msg, int level) {
         if (level >= Reporter.requiredReportingLevel) {
             output.print(msg);
-        } 
+        }
     }
     
     /**
@@ -49,28 +48,6 @@ public class Reporter {
     public static void msg(String format, Object... args) {
         output.print(String.format(format, (Object[]) args));
     }
-    
-    /**
-     * Prints an error message to <code>Reporter.output</code> 
-     * and terminates program.
-     * @param msg 
-     */
-    @Deprecated
-    public static void reportError(final String msg) {
-        output.print(msg);
-        System.exit(1);
-    }
-    
-    /**
-     * Prints the error message of <b>e</b>
-     * <code>Reporter.output</code>
-     * and terminates the program.
-     * @param e Exception
-     */
-    @Deprecated
-    public static void reportError(Exception e) {
-        output.println(e.getMessage());
-        output.println(Arrays.toString(e.getStackTrace()));
-    }
+
     
 }

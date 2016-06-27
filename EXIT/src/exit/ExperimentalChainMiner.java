@@ -7,15 +7,14 @@ package exit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
 /**
  * This class contains some more experimental methods for
  * efficient mining the significant impact chains.
+ * Can be removed.
  * @author jmpaon
  */
 public class ExperimentalChainMiner {

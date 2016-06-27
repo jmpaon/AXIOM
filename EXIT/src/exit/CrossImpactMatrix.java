@@ -129,7 +129,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     @Deprecated
     public CrossImpactMatrix summedImpactMatrix_variablePairs(double impactThreshold) {
         
-        Reporter.indicateProgress(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactThreshold), 3);
+        Reporter.msg(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactThreshold), 3);
         CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
         int chainsProcessedCount=0;
         
@@ -138,7 +138,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
                 double impactSum = 0;
                 if(impactor != impacted) {
                     
-                    Reporter.indicateProgress(String.format(
+                    Reporter.msg(String.format(
                             "Calculating impacts of %4s (%10s) on %4s (%10s)...", 
                             "V"+impactor, 
                             truncateName(this.getName(impactor),10), 
@@ -153,7 +153,7 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
                         impactSum += chain.impact();
                         counter++;
                     }
-                    Reporter.indicateProgress(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum), 3);
+                    Reporter.msg(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum), 3);
                     chainsProcessedCount += counter;
                 }
                 if(iim.maxImpact < Math.abs(impactSum)) {
@@ -164,8 +164,8 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             }
         }
         
-        Reporter.indicateProgress(String.format("Total of %d significant (threshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactThreshold), 5);
-        Reporter.indicateProgress(String.format("The total number of possible chains in this matrix is %s.%n", approximateChainCountString()),2);
+        Reporter.msg(String.format("Total of %d significant (threshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactThreshold), 5);
+        Reporter.msg(String.format("The total number of possible chains in this matrix is %s.%n", approximateChainCountString()),2);
         return iim;
     }
     

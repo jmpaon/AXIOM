@@ -13,6 +13,7 @@ import java.util.List;
  * Objects of this class are used to store and display information
  * about variables in the cross-impact matrix.
  * @author jmpaon
+ * @param <T> Type of the values stored in the table
  */
 public class VarInfoTable<T> {
     

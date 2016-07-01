@@ -444,14 +444,19 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     
     
     /**
+     * Calculates the approximate number of possible impact chains
+     * that can be formed from this cross-impact matrix.
+     * Impact chains must have a varCount of at least 2 to be included.
+     * Chains of only one variable are not real impact chains,
+     * so they aren't included in the count.
      * @return The number of possible impact chains in this matrix.
      */
     private double approximateChainCount() {
-        int n = this.varCount-1;
+        int n = 0;
         double count = 0;
-        while(n >= 0) {
+        while(n <= this.varCount-2) {
             count += (factorial(varCount) / factorial(n));
-            n--;
+            n++;
         }
         return count;
     }

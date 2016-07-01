@@ -31,16 +31,14 @@ public class EXIT {
      */
     public static void main(String[] args)  {
         
-        String[] commandLineArguments = {"src/exit/eltran1.csv", "-extra", "-max", "5", "-t", "0.0005"};
-        String[] emptyArgs = {};
-        args = commandLineArguments;
-        
-        
         /* Normal calculation procedure */
         standard_exit_analysis(args);
         
         /* JL-procedure */
         //JL_exit(3500);
+        
+        /* Test features */
+        //test_features(args);
     
     }
     
@@ -213,6 +211,10 @@ public class EXIT {
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
+            CrossImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
+            System.out.println(directImpactMatrix.approximateChainCountString());
+            
+            
             
         } catch (Exception ex) {
             Logger.getLogger(EXIT.class.getName()).log(Level.SEVERE, null, ex);

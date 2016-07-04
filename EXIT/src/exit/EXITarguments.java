@@ -73,7 +73,7 @@ public class EXITarguments {
         maxImpact      = hasFlag("-max") ? Double.valueOf(extractArgumentValue("-max")) : 5;
         onlyIntegers   = hasFlag("-int");
         extraReports   = hasFlag("-extra");
-        treshold       = hasFlag("-t") ? Double.valueOf(extractArgumentValue("-t")) : 0.10;
+        treshold       = hasFlag("-t") ? Double.valueOf(extractArgumentValue("-t")) : 0.01;
         separator      = hasFlag("-sep") ? extractArgumentValue("-sep").charAt(0) : ';' ;
         
     }

@@ -11,7 +11,7 @@ is a new cross-impact matrix which describes
 the summed direct and indirect impacts
 that are mined in the EXIT calculation process
 on the basis of the input matrix.
-A number of transformations 
+Certain transformations 
 on both input and result matrices
 can be helpful in interpreting and analysing the results.
 

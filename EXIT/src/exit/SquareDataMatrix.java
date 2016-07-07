@@ -5,6 +5,7 @@
  */
 package exit;
 
+import java.text.DecimalFormat;
 import java.util.NoSuchElementException;
 
 /**
@@ -341,10 +342,7 @@ public class SquareDataMatrix {
             String s = String.format("Impact for index [%d:%d] cannot be set, varCount for the matrix is %d.", row, column, varCount);
             throw new IndexOutOfBoundsException(s);
         }
-        // Variables cannot have an impact on themselves
-        if (row == column && value != 0) {
-            throw new IllegalArgumentException(String.format("Attempt to set an impact (%s) of variable (%s) on itself", value, row));
-        }
+        
         // If onlyIntegers is true for the matrix, only integral impact values can be set in the matrix
         if (this.onlyIntegers && value != (int) value) {
             throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
@@ -455,6 +453,88 @@ public class SquareDataMatrix {
         return true;
     }
     
-
+    
+    /**
+     * Returns a info table about the MICMAC rankings of the variables.
+     * @return 
+     */
+    public VarInfoTable<String> MICMACranking() {
+        
+        throw new UnsupportedOperationException("Not implemented");
+    }
+    
+    /**
+     * Multiplies the matrix by itself (resulting in power matrix).
+     * This functionality is provided to implement the MICMAC method
+     * inside EXIT for comparisons.
+     * @return 
+     */
+    public SquareDataMatrix power() {
+        
+        SquareDataMatrix powerMatrix = new SquareDataMatrix(this.varCount, this.onlyIntegers, this.names);
+        
+        for (int row = 1; row <= varCount; row++) {
+            for (int col = 1; col <= varCount; col++) {
+                powerMatrix.setValue(row, col, matrixMultiplication(row, col));
+            }
+        }
+        return powerMatrix;
+    }
+    
+    
+    /**
+     * Sums the products of each entry in <b>row</b> and corresponding entry in <b>col</b>.
+     * Used in {@link SquareDataMatrix#power()} calculation.
+     * @param row Index of row
+     * @param col Index of col
+     * @return Sum of pairwise products of entries in row <b>row</b> and column <b>col</b>.
+     */
+    private double matrixMultiplication(int row, int col) {
+        double result=0;
+        for (int i = 1; i <= varCount; i++) {
+            result += getValue(row, i) * getValue(i, col);
+        }
+        return result;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        int labelWidth = 55;
+        int i=0, c, n=0;
+        
+        
+        sb.append(String.format("%"+labelWidth+"s     \t", " "));
+        for(c=0; c<varCount;c++) {
+            sb.append(String.format("%s\t", "V"+(c+1)));
+        }
+        sb.append(String.format("%n"));
+        
+        while( i < values.length) {
+            sb.append(String.format("%"+labelWidth+"s (%s)\t", truncateName(names[n], labelWidth), ("V"+(n+1))));
+            n++;
+            c=0;
+            while(c < varCount) {
+                if(this.onlyIntegers) {
+                    DecimalFormat fmt = new DecimalFormat("+#,##0;-#");
+                    if(values[i] == 0) 
+                        {sb.append(" 0\t");} 
+                    else 
+                        {sb.append(fmt.format((int)values[i])).append("\t");}
+                    
+                } else {
+                    DecimalFormat fmt = new DecimalFormat("+#,##0.00;-#");
+                    sb.append(fmt.format(values[i])).append("\t");
+                    
+                }
+                
+                c++;
+                i++;
+            }
+            sb.append(String.format("%n"));
+        }
+        return sb.toString();
+    }
 
 }

@@ -32,13 +32,13 @@ public class EXIT {
     public static void main(String[] args)  {
         
         /* Normal calculation procedure */
-        standard_exit_analysis(args);
+        //standard_exit_analysis(args);
         
         /* JL-procedure */
         //JL_exit(3500);
         
         /* Test features */
-        //test_features(args);
+        test_features(args);
     
     }
     
@@ -212,7 +212,14 @@ public class EXIT {
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
-            System.out.println(directImpactMatrix.approximateChainCountString());
+            double mem[] = {0,1,0,1,0,1,1,0,0};
+            String names[] = {"A","B","C"};
+            SquareDataMatrix mm = new SquareDataMatrix(3, true, names, mem );
+            
+            System.out.println(mm);
+            System.out.println(mm.power().power().power().power().power());
+            
+            //System.out.println(directImpactMatrix.approximateChainCountString());
             
             
             

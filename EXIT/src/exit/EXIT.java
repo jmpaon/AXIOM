@@ -45,7 +45,8 @@ public class EXIT {
     public static void standard_exit_analysis(String[] args) {
         try {
             
-            EXITarguments arguments = new EXITarguments(args);
+            String[] arggs = {"src/exit/testinput5.csv", "-max", "5", "-t", "0.00000000001", "-of", "1", "-on", "2" };
+            EXITarguments arguments = new EXITarguments(arggs);
             PrintStream output;
             
             if(arguments.outputFilename == null) {
@@ -207,12 +208,12 @@ public class EXIT {
     private static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.0010000"};
+            String[] arggs = {"src/exit/testinput5.csv", "-max", "5", "-t", "0.00000000001" };
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
-            System.out.println(directImpactMatrix.approximateChainCountString());
+            // directImpactMatrix.indirectImpacts(1, 2, 0.00000000000000001);
             
             
             

@@ -5,6 +5,7 @@
  */
 package exit;
 
+import java.text.DecimalFormat;
 import java.util.NoSuchElementException;
 
 /**
@@ -27,7 +28,7 @@ public class SquareDataMatrix {
     protected final String[] names;
     /** Is the matrix locked? If locked, matrix contents cannot be changed */
     private boolean isLocked;
-
+    
     
     /**
      * Constructor for <code>SquareDataMatrix</code>.
@@ -341,10 +342,7 @@ public class SquareDataMatrix {
             String s = String.format("Impact for index [%d:%d] cannot be set, varCount for the matrix is %d.", row, column, varCount);
             throw new IndexOutOfBoundsException(s);
         }
-        // Variables cannot have an impact on themselves
-        if (row == column && value != 0) {
-            throw new IllegalArgumentException(String.format("Attempt to set an impact (%s) of variable (%s) on itself", value, row));
-        }
+        
         // If onlyIntegers is true for the matrix, only integral impact values can be set in the matrix
         if (this.onlyIntegers && value != (int) value) {
             throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
@@ -454,7 +452,46 @@ public class SquareDataMatrix {
         }
         return true;
     }
-    
 
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        int labelWidth = 55;
+        int i=0, c, n=0;
+        
+        
+        sb.append(String.format("%"+labelWidth+"s     \t", " "));
+        for(c=0; c<varCount;c++) {
+            sb.append(String.format("%s\t", "V"+(c+1)));
+        }
+        sb.append(String.format("%n"));
+        
+        while( i < values.length) {
+            sb.append(String.format("%"+labelWidth+"s (%s)\t", truncateName(names[n], labelWidth), ("V"+(n+1))));
+            n++;
+            c=0;
+            while(c < varCount) {
+                if(this.onlyIntegers) {
+                    DecimalFormat fmt = new DecimalFormat("+#,##0;-#");
+                    if(values[i] == 0) 
+                        {sb.append(" 0\t");} 
+                    else 
+                        {sb.append(fmt.format((int)values[i])).append("\t");}
+                    
+                } else {
+                    DecimalFormat fmt = new DecimalFormat("+#,##0.00;-#");
+                    sb.append(fmt.format(values[i])).append("\t");
+                    
+                }
+                
+                c++;
+                i++;
+            }
+            sb.append(String.format("%n"));
+        }
+        return sb.toString();
+    }
 
 }

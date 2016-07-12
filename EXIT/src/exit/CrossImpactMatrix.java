@@ -485,6 +485,12 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
             throw new IllegalArgumentException(String.format("Value %2.2f is bigger than max value %2.2f", value, maxImpact));
         }
         
+        // Variables cannot have an impact on themselves
+        if (impactor == impacted && value != 0) {
+            throw new IllegalArgumentException(String.format("Attempt to set an impact (%s) of variable (%s) on itself", value, impactor));
+        }        
+        
+        
         super.setValue(impactor, impacted, value);
     }
     

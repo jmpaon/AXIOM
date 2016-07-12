@@ -32,13 +32,13 @@ public class EXIT {
     public static void main(String[] args)  {
         
         /* Normal calculation procedure */
-        standard_exit_analysis(args);
+        //standard_exit_analysis(args);
         
         /* JL-procedure */
         //JL_exit(3500);
         
         /* Test features */
-        //test_features(args);
+        test_features(args);
     
     }
     
@@ -213,7 +213,23 @@ public class EXIT {
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
-            // directImpactMatrix.indirectImpacts(1, 2, 0.00000000000000001);
+            double mem[] = {0,1,0,1,0,1,1,0,0};
+            String names[] = {"A","B","C"};
+            double mem2[] = {0,3,-1,-2,1,-1,0,3,-3,2,3,2,0,2,-2,1,0,-1,0,2,-3,-2,0,-1,0};
+            String names2[] = {"A","B","C","D","E"};
+            double mem3[] = {0,3,0,4,0,0,4,0,1,2,0,3,4,0,4,0};
+            String names3[] = {"A","B","C","D"};
+
+            
+            SquareDataMatrix sm = new SquareDataMatrix(4, false, names3, mem3);
+            MicmacMatrix mm = new MicmacMatrix(sm);
+            
+            System.out.println(mm.MICMACranking(MicmacMatrix.Orientation.byDependency).toString());
+            System.out.println(mm);
+            System.out.println(mm.simplify(1));
+            
+            
+            //System.out.println(directImpactMatrix.approximateChainCountString());
             
             
             

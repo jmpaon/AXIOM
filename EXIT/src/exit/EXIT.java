@@ -221,16 +221,10 @@ public class EXIT {
             String names3[] = {"A","B","C","D"};
 
             
-            SquareDataMatrix sm = new SquareDataMatrix(4, false, names3, mem3);
+            SquareDataMatrix sm = new SquareDataMatrix(3, false, names, mem);
             MicmacMatrix mm = new MicmacMatrix(sm);
             
-            System.out.println(mm.MICMACranking(MicmacMatrix.Orientation.byDependency).toString());
-            System.out.println(mm);
-            System.out.println(mm.simplify(1));
-            
-            
-            //System.out.println(directImpactMatrix.approximateChainCountString());
-            
+            System.out.println(mm.MICMACranking(MicmacMatrix.Orientation.byInfluence).toString());
             
             
         } catch (Exception ex) {

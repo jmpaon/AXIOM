@@ -60,8 +60,9 @@ public class MicmacMatrix extends SquareDataMatrix {
     
     /**
      * Returns a info table about the MICMAC rankings of the variables.
-     * @param orientation
-     * @return 
+     * @param orientation [byInfluence|byDependency]
+     * @return <code>VarInfoTable</code> containing initial and MICMAC rankings of the matrix variables
+     * @see MicmacMatrix#altMICMAC(exit.MicmacMatrix.Orientation) alternative implementation
      */
     public VarInfoTable<String> MICMACranking(Orientation orientation) {
         
@@ -103,7 +104,7 @@ public class MicmacMatrix extends SquareDataMatrix {
             
         }
         
-        VarInfoTable<String> rankings = new VarInfoTable<>(Arrays.asList("Initial", "MICMAC"));
+        VarInfoTable<String> rankings = new VarInfoTable<>(String.format("Initial ranking and MICMAC ranking of variables %s", orientation.toString()), Arrays.asList("Initial", "MICMAC"));
         
         Collections.sort(initialOrdering.ordering, initialOrdering.getVariableIndexComparator());
         Collections.sort(iterOrdering.ordering, iterOrdering.getVariableIndexComparator());
@@ -127,7 +128,6 @@ public class MicmacMatrix extends SquareDataMatrix {
      */
     public MicmacMatrix power() {
         
-        //MicmacMatrix powerMatrix = new MicmacMatrix(this.varCount, this.onlyIntegers, this.names);
         MicmacMatrix powerMatrix = new MicmacMatrix(this);
         
         for (int row = 1; row <= varCount; row++) {
@@ -167,6 +167,82 @@ public class MicmacMatrix extends SquareDataMatrix {
      */
     Ordering getOrdering(Orientation orientation) {
         return new Ordering(this, orientation);
+    }
+    
+    
+    /**
+     * Returns the ranking of a variable in an ordering of the variables
+     * in the matrix by row or column sum.
+     * <b>orientation</b> determines whether row or column sum is used.
+     * For example, if the variable has 2 variables that have a 
+     * higher absolute row/column sum, the sumRanking for that variable will be
+     * 3 (2+1). The variable with the highest row/column sum will have ranking 1.
+     * @param varIndex Index of the variable for which the sumRanking is calculated
+     * @param orientation <i>[byInfluence|byDependency]</i> 
+     * if <i>byInfluence</i>, row sums are used;
+     * if <i>byDependency</i>, column sums are used;
+     * @return the ranking of the variable with index <b>varIndex</b>
+     */
+    public int sumRanking(int varIndex, Orientation orientation) {
+        if(varIndex < 1 || varIndex > this.varCount) 
+            throw new IndexOutOfBoundsException(String.format("varIndex %d is out of bounds (varCount %d)", varIndex, this.varCount));
+        
+        double sum = orientation == Orientation.byInfluence ? rowSum(varIndex, true) : columnSum(varIndex, true);
+        int greaterCount=0;
+        
+        for(int i=1 ; i<=this.varCount ; i++) {
+            double comparedSum = orientation == Orientation.byInfluence ? rowSum(i, true) : columnSum(i, true);
+            if(comparedSum > sum) greaterCount++;
+        }
+        
+        return greaterCount+1;
+        
+    }
+    
+    
+    /**
+     * Returns the initial ranking
+     * and the MICMAC ranking
+     * of the variables in this matrix
+     * in a <code>VarInfoTable</code>.
+     * Variable with rank 1 has the highest score
+     * by influence/dependency, rank 2 has the second highest score etc.
+     * @param orientation <i>[byInfluence|byDependency]</i> is the ranking based on row or column sums?
+     * Summing absolute row values gives a score indicating influence in the cross-impact system,
+     * summing absolute column values gives a score indicating dependency.
+     * @return Initial and MICMAC rankings of the matrix variables
+     * @see MicmacMatrix#MICMACranking(exit.MicmacMatrix.Orientation) Alternative implementation
+     */
+    public VarInfoTable altMICMAC(Orientation orientation) {
+        AltOrdering ord = new AltOrdering(this, orientation);
+        MicmacMatrix powerMatrix = this.power();
+        
+        /**
+         * Square the matrix and derive a new ordering from that 
+         * as long as the ordering changes.
+         * Iteration is stopped when the ordering isn't different from
+         * the ordering of the previous power matrix.
+         */
+        while(!ord.equals(powerMatrix.getAltOrdering(orientation))) {
+            ord = powerMatrix.getAltOrdering(orientation);
+            powerMatrix = powerMatrix.power();
+        }
+        
+        VarInfoTable<Integer> rankings = new VarInfoTable<>(String.format("Initial ranking and MICMAC ranking of variables %s (alternative method):", orientation), Arrays.asList("Initial","MICMAC"));
+        
+        for(int i = 0; i < ord.positions.length; i++) {
+            String varname = this.getNameShort(i+1);
+            int micmacpos = ord.positions[i];
+            int initpos = this.getAltOrdering(orientation).positions[i];
+            
+            rankings.put(varname, Arrays.asList(initpos, micmacpos));
+            
+        }
+        return rankings;
+    }
+    
+    private AltOrdering getAltOrdering(Orientation orientation) {
+        return new AltOrdering(this, orientation);
     }
     
     
@@ -305,10 +381,60 @@ public class MicmacMatrix extends SquareDataMatrix {
         
     }
     
+    class AltOrdering {
+        
+        public final MicmacMatrix matrix;
+        public final Orientation orientation;
+        public final int[] positions;
+        public final double[] sums;
+        
+        
+        public AltOrdering(MicmacMatrix matrix, Orientation orientation) {
+            
+            if(matrix==null) throw new NullPointerException("matrix argument is null");
+            this.matrix = matrix;
+            this.orientation = orientation;
+            this.positions = new int[this.matrix.varCount];
+            this.sums = new double[this.matrix.varCount];
+            
+            for (int i = 0; i < this.matrix.varCount; i++) {
+                positions[i] = this.matrix.sumRanking(i+1, orientation);
+                sums[i] = this.orientation == Orientation.byInfluence ?
+                        this.matrix.rowSum(i+1, true) :
+                        this.matrix.columnSum(i+1, true);
+            }
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if(! (o instanceof AltOrdering)) return false;
+            AltOrdering ao = (AltOrdering) o;
+            if(!ao.orientation.equals(this.orientation)) return false;
+            if(!Arrays.equals(ao.positions, this.positions)) return false;
+            return true;
+        }
 
-    
-
-    
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 89 * hash + Objects.hashCode(this.orientation);
+            hash = 89 * hash + Arrays.hashCode(this.positions);
+            return hash;
+        }
+        
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for(int i=0;i<positions.length;i++) {
+                sb.append(String.format("%s: %d (%2.1f)", this.matrix.getNameShort(i+1), positions[i], sums[i] ));
+                if(i < positions.length) sb.append(", ");
+            }
+            return sb.toString();
+        }
+        
+        
+    }
     
     
 }

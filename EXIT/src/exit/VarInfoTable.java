@@ -20,6 +20,25 @@ public class VarInfoTable<T> {
     public final List<String> varNames;
     public final List<String> valueHeadings;
     public final List<List<T>> values;
+    public final String title;
+
+    
+    /**
+     * Constructor for <code>VarInfoTable</code>
+     * @param title A title for the table
+     * @param valueHeadings A list containing headings for the value columns of the table
+     * 
+     */
+    public VarInfoTable(String title, List<String> valueHeadings) {
+        if(valueHeadings == null) throw new NullPointerException("Value headings list null");
+        if(valueHeadings.isEmpty()) throw new IllegalArgumentException("Value headings list empty");
+        if(title == null) throw new NullPointerException("Title is null");
+        this.valueHeadings = valueHeadings;
+        this.varNames = new LinkedList<>();
+        this.values = new LinkedList<>();
+        this.title = title;
+    }
+
     
     /**
      * Constructor for <code>VarInfoTable</code>
@@ -31,13 +50,17 @@ public class VarInfoTable<T> {
         this.valueHeadings = valueHeadings;
         this.varNames = new LinkedList<>();
         this.values = new LinkedList<>();
+        this.title = null;
     }
     
     public VarInfoTable() {
         this.varNames = new LinkedList<>();
         this.values = new LinkedList<>();
         this.valueHeadings = null;
+        this.title = null;
     }
+    
+
     
     /**
      * Adds a row of information about a variable to the table
@@ -57,6 +80,11 @@ public class VarInfoTable<T> {
         Iterator<String> it_s = varNames.iterator();
         Iterator<List<T>> it_l = values.iterator();
         StringBuilder sb = new StringBuilder();
+        
+        if(title != null) {
+            sb.append(String.format("%s%n", this.title));
+        }
+        
         if(valueHeadings != null) {
             StringBuilder hsb = new StringBuilder();
             Iterator<String> it_vhs = valueHeadings.iterator();
@@ -77,7 +105,11 @@ public class VarInfoTable<T> {
             while(it.hasNext()) {
                 T t = it.next();
                 if(t instanceof Number) {
-                    lsb.append(String.format("%3.2f", ((Double) t)));
+                    if(t instanceof Integer) {
+                        lsb.append(String.format("%d", ((Integer) t).intValue()));
+                    } else {
+                        lsb.append(String.format("%3.2f", (((Number) t).doubleValue())));
+                    }
                 } else {
                     lsb.append(t.toString());
                 }

@@ -6,6 +6,7 @@
 package exit;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
@@ -186,6 +187,41 @@ public class SquareDataMatrix {
         return max;
     }
 
+    /**
+     * Returns the average of values in the matrix.
+     * @param absolute If <i>true</i>, average of absolute values is returned, otherwise average is returned
+     * @return Average of values in the matrix
+     */
+    protected double matrixAverage(boolean absolute) {
+        double sum =0;
+        for(Double val : this.values) {
+            sum = absolute ? Math.abs(val) : val ;
+        }
+        return sum / (varCount*varCount);
+    }
+    
+    /**
+     * Returns the median of matrix values
+     * @param absolute If <i>true</i> median of absolute values is returned
+     * @return The median of matrix values
+     */
+    protected double matrixMedian(boolean absolute) {
+        
+        double[] sortedValues = this.values.clone();
+        if(absolute) {
+            for(int i=0;i<sortedValues.length;i++) 
+                sortedValues[i] = Math.abs(sortedValues[i]);
+        }
+        
+        Arrays.sort(sortedValues);
+        int n = sortedValues.length;
+        if(n % 2 == 0) {
+            return sortedValues[(n/2)] + sortedValues[(n/2-1)] / 2;
+        } else {
+            return sortedValues[((n-1)/2)];
+        }
+    }
+    
     
     /**
      * Creates variable names for the matrix. Variable names are

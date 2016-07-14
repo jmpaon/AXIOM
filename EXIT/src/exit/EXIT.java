@@ -204,27 +204,41 @@ public class EXIT {
         
     }    
     
+
+    
     
     private static void test_features(String[] args) {
         try {
             Reporter.requiredReportingLevel = 0;
-            String[] arggs = {"src/exit/testinput5.csv", "-max", "5", "-t", "0.00000000001" };
+            String[] arggs = {"src/exit/eltran1.csv", "-max", "5", "-t", "0.00000000001" };
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
             CrossImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
-            double mem[] = {0,1,0,1,0,1,1,0,0};
-            String names[] = {"A","B","C"};
-            double mem2[] = {0,3,-1,-2,1,-1,0,3,-3,2,3,2,0,2,-2,1,0,-1,0,2,-3,-2,0,-1,0};
-            String names2[] = {"A","B","C","D","E"};
-            double mem3[] = {0,3,0,4,0,0,4,0,1,2,0,3,4,0,4,0};
-            String names3[] = {"A","B","C","D"};
+//            double mem[] = {0,1,0,1,0,1,1,0,0};
+//            String names[] = {"A","B","C"};
+//            double mem2[] = {0,3,-1,-2,1,-1,0,3,-3,2,3,2,0,2,-2,1,0,-1,0,2,-3,-2,0,-1,0};
+//            String names2[] = {"A","B","C","D","E"};
+//            double mem3[] = {0,3,0,4,0,0,4,0,1,2,0,3,4,0,4,0};
+//            String names3[] = {"A","B","C","D"};
+
+
+            System.out.println(directImpactMatrix);
+            //CrossImpactMatrix sm = directImpactMatrix.summedImpactMatrix(0.0000001);
+            //MicmacMatrix emm = new MicmacMatrix(sm);
+            MicmacMatrix mm = new MicmacMatrix(directImpactMatrix);
+            
+            System.out.println(mm.MICMACranking(MicmacMatrix.Orientation.byInfluence));
+            System.out.println(mm.booleanImpactMatrix_byDensity(0.4).MICMACranking(MicmacMatrix.Orientation.byInfluence));
+            
 
             
-            SquareDataMatrix sm = new SquareDataMatrix(3, false, names, mem);
-            MicmacMatrix mm = new MicmacMatrix(sm);
-            
-            System.out.println(mm.MICMACranking(MicmacMatrix.Orientation.byInfluence).toString());
+
+            //MicmacMatrix mm = new MicmacMatrix(directImpactMatrix).booleanImpactMatrix(0.5);
+//            CrossImpactMatrix sm = directImpactMatrix.summedImpactMatrix(0.0000001).scale(directImpactMatrix.getMaxImpact());
+//            MicmacMatrix mm2 = new MicmacMatrix(sm).booleanImpactMatrix(0.6);
+//            System.out.println(mm.altMICMAC(MicmacMatrix.Orientation.byInfluence));
+//            System.out.println(mm2.altMICMAC(MicmacMatrix.Orientation.byInfluence));
             
             
         } catch (Exception ex) {

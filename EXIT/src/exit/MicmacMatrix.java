@@ -138,6 +138,34 @@ public class MicmacMatrix extends SquareDataMatrix {
         return powerMatrix;
     }
     
+    
+    /**
+     * 
+     * @param orientation
+     * @return 
+     */
+    public MicmacMatrix iteratedPowerMatrix(Orientation orientation) {
+        AltOrdering initialOrdering = new AltOrdering(this, orientation);
+        AltOrdering powerOrdering = new AltOrdering(this.power(), orientation);
+        
+        MicmacMatrix powerMatrix = new MicmacMatrix(this);
+        
+        /**
+         * Square the matrix and derive a new ordering from that 
+         * as long as the ordering changes.
+         * Iteration is stopped when the ordering isn't different from
+         * the ordering of the previous power matrix.
+         */
+        while(!initialOrdering.equals(powerOrdering)) {
+            initialOrdering = powerMatrix.getAltOrdering(orientation);
+            powerMatrix     = powerMatrix.power();            
+            powerOrdering   = powerMatrix.getAltOrdering(orientation);
+        }
+        
+        return powerMatrix;
+    }
+    
+    
     /**
      * Returns a representation of the matrix where 
      * only the presence of impacts are described.
@@ -149,12 +177,68 @@ public class MicmacMatrix extends SquareDataMatrix {
      * @return Matrix representing presence of impacts in a boolean fashion
      */
     public MicmacMatrix booleanImpactMatrix(double threshold) {
+        if(threshold<=0) throw new IllegalArgumentException("Threshold value must be greater than 0");
+        if(threshold>this.greatestValue()) 
+            throw new IllegalStateException(String.format("Threshold value is %2.2f when the greatest value in the matrix is %2.2f", threshold, greatestValue()));
+        
         MicmacMatrix transformedMatrix = new MicmacMatrix(this);
         for (int i = 0; i < transformedMatrix.values.length ; i++) {
             transformedMatrix.values[i] = Math.abs(transformedMatrix.values[i]) >= threshold ? 1 : 0;
         }
         return transformedMatrix;
     }
+    
+    
+    /**
+     * Returns a representation of the matrix where 
+     * only the presence of impacts are described.
+     * 
+     * @param factor Values greater than or equal to factor * median will be transformed to 1,
+     * smaller will be transformed to 0.
+     * @return Matrix representing presence of impacts in a boolean fashion
+     */
+    public MicmacMatrix booleanImpactMatrix_byMedian(double factor) {
+        if(factor<=0) throw new IllegalArgumentException(String.format("Factor (value=%2.2f) must be greater than 0", factor));
+        double threshold = this.matrixMedian(true) * factor;
+        return booleanImpactMatrix(threshold);
+    }
+    
+    
+    /**
+     * Returns a representation of the matrix where 
+     * only the presence of impacts are described.
+     * This method returns a boolean impact matrix with desired
+     * density (share of entries with impacts per total entries).
+     * If density is <i>0.5</i>, about 50% of the entries will have value 1 
+     * indicating presence of impact and the rest will have value 0.
+     * @param density Desired share of matrix entries which should have an impact
+     * @return Matrix representing presence of impacts in a boolean fashion
+     */
+    public MicmacMatrix booleanImpactMatrix_byDensity(double density) {
+        if(density <= 0 || density >= 1) throw new IllegalArgumentException(String.format("Density value (%2.2f) must be in range ]0..1[", density));
+        
+        double[] sortedValues = this.values.clone();
+        for(int i=0;i<sortedValues.length;i++) 
+            sortedValues[i] = Math.abs(sortedValues[i]);
+        
+        double threshold = sortedValues[(int)(Math.round(sortedValues.length * density)-1)];
+        return booleanImpactMatrix(threshold);
+    }
+    
+    
+    
+    /**
+     * Tests if matrix is "boolean", i.e.contains only values 0 and 1.
+     * Boolean matrices are useful in MICMAC-style cross-impact analysis.
+     * @return 
+     */
+    public boolean isMatrixBoolean() {
+        for(Double val : values) {
+            if(!(val == 1 || val == 0)) return false;
+        }
+        return true;
+    }
+    
     
     
     /**
@@ -223,7 +307,7 @@ public class MicmacMatrix extends SquareDataMatrix {
          * Iteration is stopped when the ordering isn't different from
          * the ordering of the previous power matrix.
          */
-        while(!ord.equals(powerMatrix.getAltOrdering(orientation))) {
+        while(!ord.equals(powerMatrix.getAltOrdering(orientation)) || !ord.isUnambiguous()  ) {
             ord = powerMatrix.getAltOrdering(orientation);
             powerMatrix = powerMatrix.power();
         }
@@ -241,7 +325,12 @@ public class MicmacMatrix extends SquareDataMatrix {
         return rankings;
     }
     
-    private AltOrdering getAltOrdering(Orientation orientation) {
+    /**
+     * 
+     * @param orientation
+     * @return 
+     */
+    public AltOrdering getAltOrdering(Orientation orientation) {
         return new AltOrdering(this, orientation);
     }
     
@@ -405,12 +494,24 @@ public class MicmacMatrix extends SquareDataMatrix {
             }
         }
         
+        public boolean isUnambiguous() {
+            List<Integer> usedPositions = new ArrayList<>();
+            for(Integer i : this.positions) {
+                if(usedPositions.contains(i)) return false;
+                usedPositions.add(i);
+                System.out.println(usedPositions);
+            }
+            return true;
+        }
+        
         @Override
         public boolean equals(Object o) {
             if(! (o instanceof AltOrdering)) return false;
             AltOrdering ao = (AltOrdering) o;
+            
             if(!ao.orientation.equals(this.orientation)) return false;
             if(!Arrays.equals(ao.positions, this.positions)) return false;
+            
             return true;
         }
 

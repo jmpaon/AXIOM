@@ -268,9 +268,11 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
     public CrossImpactMatrix round(int scaleTo) {
         if(Math.abs(scaleTo) < 1) throw new IllegalArgumentException("scaleTo cannot be 0");
         CrossImpactMatrix roundedMatrix = this.scale(scaleTo);
-        for (double value : roundedMatrix.values) {
-            value = Math.round(value);
+        
+        for(int i = 0; i < roundedMatrix.values.length; i++) {
+            roundedMatrix.values[i] = Math.round(roundedMatrix.values[i]);
         }
+
         return new CrossImpactMatrix(roundedMatrix.maxImpact, roundedMatrix.varCount, true, roundedMatrix.names, roundedMatrix.values);
     }
     
@@ -608,6 +610,9 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
         int labelWidth = 55;
         int i=0, c, n=0;
         String stringRepresentation="";
+        
+        // String representation "label" 
+        stringRepresentation += String.format("Cross-impact matrix with maximum impact %1.2f (greatest impact %1.2f)%n", this.maxImpact, this.greatestValue());
         
         stringRepresentation += String.format("%"+labelWidth+"s     \t", " ");
         for(c=0; c<varCount;c++) {

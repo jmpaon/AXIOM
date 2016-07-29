@@ -307,12 +307,19 @@ public class MicmacMatrix extends SquareDataMatrix {
          * Iteration is stopped when the ordering isn't different from
          * the ordering of the previous power matrix.
          */
-        while(!ord.equals(powerMatrix.getAltOrdering(orientation)) || !ord.isUnambiguous()  ) {
+        while(! ord.equals(powerMatrix.getAltOrdering(orientation))  ) {
+            System.out.println(powerMatrix);
+            System.out.println(ord);
+            System.out.println(ord.isUnambiguous());
+            
             ord = powerMatrix.getAltOrdering(orientation);
             powerMatrix = powerMatrix.power();
         }
         
-        VarInfoTable<Integer> rankings = new VarInfoTable<>(String.format("Initial ranking and MICMAC ranking of variables %s (alternative method):", orientation), Arrays.asList("Initial","MICMAC"));
+        VarInfoTable<Integer> rankings = new VarInfoTable<>(
+                String.format("Initial ranking and MICMAC ranking of variables %s (alternative method):", orientation), 
+                Arrays.asList("Initial","MICMAC")
+        );
         
         for(int i = 0; i < ord.positions.length; i++) {
             String varname = this.getNameShort(i+1);
@@ -494,12 +501,26 @@ public class MicmacMatrix extends SquareDataMatrix {
             }
         }
         
+        
+        /**
+         * Tests if the ordering is unambiguous:
+         * returns <i>true</i> if no ranking is shared.
+         * It would be ideal that the MICMAC iteration would 
+         * continue even after the first stable ranking, 
+         * if some rankings are shared between variables at that point.
+         * It is however possible that iteration will not ever result
+         * in an unambiguous ranking 
+         * and the termination condition for the iteration
+         * is never reached.
+         * This will also happen if the double values in the iteratively
+         * squared matrix overflow to infinity, causing them all to rank equally.
+         * @return 
+         */
         public boolean isUnambiguous() {
             List<Integer> usedPositions = new ArrayList<>();
             for(Integer i : this.positions) {
                 if(usedPositions.contains(i)) return false;
                 usedPositions.add(i);
-                System.out.println(usedPositions);
             }
             return true;
         }

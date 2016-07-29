@@ -8,6 +8,7 @@ package exit;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -281,6 +282,35 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * @return New <code>CrossImpactMatrix</code> where impact values are rounded to the nearest integer
      */
     public CrossImpactMatrix round() {return this.round((int)Math.round(this.getMaxImpact()));}
+    
+    
+    /**
+     * Normalizes this matrix by dividing each impact value
+     * by the average distance of values from zero.
+     * The maximum impact value will be the greatest value in the normalized matrix.
+     * @return Normalized matrix
+     */
+    public CrossImpactMatrix normalize() {
+        
+        double[] normalizedValues = this.values.clone();
+        double averageDistanceFromZero = this.matrixAverage(true);
+        
+        for(int i = 0; i < normalizedValues.length; i++) {
+            normalizedValues[i] /= averageDistanceFromZero;
+        }
+        
+        double[] sorted = normalizedValues.clone();
+        Arrays.sort(sorted);
+        double arrmax = sorted[sorted.length-1];
+        
+        return new CrossImpactMatrix(arrmax, this.varCount, false, this.names, normalizedValues);
+        
+    }
+    
+    public CrossImpactMatrix normalize(double scaleTo) {
+        return this.normalize().scale(scaleTo);
+    }
+    
     
     
     /**

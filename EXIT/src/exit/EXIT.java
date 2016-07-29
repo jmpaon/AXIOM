@@ -45,7 +45,7 @@ public class EXIT {
     public static void standard_exit_analysis(String[] args) {
         try {
             
-            String[] arggs = {"src/exit/testinput5.csv", "-max", "5", "-t", "0.00000000001", "-of", "1", "-on", "2" };
+            String[] arggs = {"src/exit/eltran1.csv", "-max", "4", "-t", "0.0001", "-extra"};
             EXITarguments arguments = new EXITarguments(arggs);
             PrintStream output;
             
@@ -65,8 +65,8 @@ public class EXIT {
             output.println("Input matrix describing direct impacts:");
             output.println(inputMatrix.toString());
             if(arguments.extraReports) {
-                output.println("Importance matrix derived from input matrix; max value 5:");
-                output.println(inputMatrix.importanceMatrix().round(5));
+                output.printf("Importance matrix derived from input matrix; max value %f:%n", arguments.maxImpact);
+                output.println(inputMatrix.importanceMatrix().round(arguments.maxImpact.intValue()));
                 
                 output.println("Input matrix driver-driven report:");
                 output.println(inputMatrix.scale(1).driverDriven().toString());                
@@ -122,23 +122,28 @@ public class EXIT {
                 CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
                 
+                
+                output.printf("Result impact matrix with summed direct and indirect impacts between variables, not scaled%n");
+                output.println(resultMatrix);
+                
                 output.printf("Result impact matrix with summed direct and indirect impacts between variables, scaled to %f:%n", inputMatrix.getMaxImpact());
                 output.println(resultMatrix.scale(inputMatrix.getMaxImpact()));
                 
+                
                 if(arguments.extraReports) {
-                    output.println("Importance matrix derived from result matrix; max value 5:");
-                    output.println(resultMatrix.importanceMatrix().round(5));
+                    output.printf("Importance matrix derived from result matrix; max value %f:%n", arguments.maxImpact);
+                    output.println(resultMatrix.importanceMatrix().scale(arguments.maxImpact));
                 }
                 
-                output.println("Difference matrix of result matrix and input matrix, both scaled to max value 5:");
-                output.println(resultMatrix.scale(5).differenceMatrix(inputMatrix.scale(5)));
+                output.printf("Difference matrix of result matrix and input matrix, both scaled to max value %f:%n", arguments.maxImpact);
+                output.println(resultMatrix.scale(arguments.maxImpact).differenceMatrix(inputMatrix.scale(arguments.maxImpact)));
                 
                 if(arguments.extraReports) {
-                    output.println("Difference matrix of result matrix and input matrix scaled to 5 and rounded:");
-                    output.println(resultMatrix.scale(inputMatrix.getMaxImpact()).differenceMatrix(inputMatrix).round(5));                    
+                    output.printf("Difference matrix of result matrix and input matrix scaled to %f and rounded:%n", inputMatrix.getMaxImpact());
+                    output.println(resultMatrix.scale(inputMatrix.getMaxImpact()).differenceMatrix(inputMatrix).round( (int) inputMatrix.getMaxImpact()  ));                    
                 
                     output.println("Result matrix driver-driven report");
-                    output.println(resultMatrix.scale(1).driverDriven().toString());
+                    output.println(resultMatrix.driverDriven().toString());
                 
                     // output.println(resultMatrix.reportDrivingVariables());
                 }
@@ -224,12 +229,23 @@ public class EXIT {
 
 
             System.out.println(directImpactMatrix);
+            CrossImpactMatrix resultMatrix = directImpactMatrix.summedImpactMatrix(0.0001);
+            
+            System.out.println(directImpactMatrix.normalize(5));
+            System.out.println(resultMatrix.normalize(5));
+            System.out.println(resultMatrix.normalize(5).differenceMatrix(directImpactMatrix.normalize(5)));
+            
+            
             //CrossImpactMatrix sm = directImpactMatrix.summedImpactMatrix(0.0000001);
             //MicmacMatrix emm = new MicmacMatrix(sm);
-            MicmacMatrix mm = new MicmacMatrix(directImpactMatrix);
+            //MicmacMatrix mm = new MicmacMatrix(directImpactMatrix);
+            //mm.booleanImpactMatrix_byDensity(0.6).altMICMAC(MicmacMatrix.Orientation.byInfluence);
             
-            System.out.println(mm.MICMACranking(MicmacMatrix.Orientation.byInfluence));
-            System.out.println(mm.booleanImpactMatrix_byDensity(0.4).MICMACranking(MicmacMatrix.Orientation.byInfluence));
+            
+            //System.out.println(mm.getAltOrdering(MicmacMatrix.Orientation.byInfluence).isUnambiguous());
+            //System.out.println(mm.iteratedPowerMatrix(MicmacMatrix.Orientation.byInfluence));
+            //System.out.println(mm.iteratedPowerMatrix(MicmacMatrix.Orientation.byInfluence).getAltOrdering(MicmacMatrix.Orientation.byInfluence).isUnambiguous()  );
+            
             
 
             

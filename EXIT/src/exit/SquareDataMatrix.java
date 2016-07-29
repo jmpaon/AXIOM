@@ -193,9 +193,9 @@ public class SquareDataMatrix {
      * @return Average of values in the matrix
      */
     protected double matrixAverage(boolean absolute) {
-        double sum =0;
+        double sum = 0;
         for(Double val : this.values) {
-            sum = absolute ? Math.abs(val) : val ;
+            sum += absolute ? Math.abs(val) : val ;
         }
         return sum / (varCount*varCount);
     }

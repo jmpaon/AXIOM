@@ -13,13 +13,13 @@ import axiom.probabilityAdjusters.*;
  */
 public class Impact {
     public final ProbabilityAdjustmentFunction f;
-    public final Option owner;
-    public final Option target;
+    public final Option fromOption;
+    public final Option toOption;
 
     Impact(ProbabilityAdjustmentFunction f, Option owner, Option target) {
         this.f = f;
-        this.owner = owner;
-        this.target = target;
+        this.fromOption = owner;
+        this.toOption = target;
     }
     
     

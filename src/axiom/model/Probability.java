@@ -12,7 +12,7 @@ import java.math.RoundingMode;
  *
  * @author juha
  */
-public class Probability implements Comparable<Probability>{
+public class Probability implements Comparable<Probability> {
 
 
     

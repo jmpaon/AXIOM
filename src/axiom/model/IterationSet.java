@@ -5,16 +5,10 @@
  */
 package axiom.model;
 
-import java.util.List;
-
 /**
  *
- * @author juha
+ * @author jmpaon
  */
-public class Option {
-    Label label;
-    Statement statement;
-    List<Impact> impacts;
-    
+public class IterationSet {
     
 }

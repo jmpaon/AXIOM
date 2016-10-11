@@ -21,6 +21,7 @@ public abstract class ProbabilityAdjustmentFunction {
      * @param probability
      * @return
      * @throws ProbabilityAdjustmentException 
+     * @throws axiom.model.ArgumentException 
      */
     public abstract Probability map(Probability probability) throws ProbabilityAdjustmentException, ArgumentException;
     

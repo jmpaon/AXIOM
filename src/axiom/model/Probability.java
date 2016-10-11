@@ -7,6 +7,7 @@ package axiom.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 
 /**
  *
@@ -14,58 +15,64 @@ import java.math.RoundingMode;
  */
 public class Probability implements Comparable<Probability> {
 
-
-    
     private double value;
     private final int precision;
+
+
+    public Probability(Probability p) {
+        this(p.value, p.precision);
+    }
     
-    public Probability(double value) throws ArgumentException {
+    public Probability(double value) {
         this(value, 4);
     }
     
-    /**
-     *
-     * @param value
-     * @param precision
-     * @throws ArgumentException
-     */
-    public Probability(double value, int precision) throws ArgumentException {
-        if(value < 0 || value > 1) throw new ArgumentException("Invalid probability value");
+
+    public Probability(double value, int precision) {
+        if(value < 0 || value > 1) throw new IllegalArgumentException("Invalid probability value");
         this.value = value;
         this.precision = precision;        
     }
     
     /**
+     * Returns a <code>Probability</code> identical to this <code>Probability</code>.
+     * @return Copy of the <code>Probability</code>.
+     */
+    public Probability get() {
+        return new Probability(this);
+    }
+    
+    
+    /**
      * Returns the value of this probability
      * @return 
      */
-    public double get() { return round(value, precision); }
+    public double getValue() { return round(value, precision); }
     
-    public void set(double value) throws ArgumentException {
-        if(value < 0 || value > 1) throw new ArgumentException("Invalid probability value ("+value+")");
-        this.value = round(value, 4);
+    public void setValue(double value)  {
+        if(value < 0 || value > 1) throw new IllegalArgumentException("Invalid probability value ("+value+")");
+        this.value = round(value, precision);
     }
     
     /**
      * Sets the probability value.
      * @param newProbability The probability value will be equal to value of <code>newProbability</code>.
      */
-    public void set(Probability newProbability) {
-        this.value = newProbability.get();
+    public void setValue(Probability newProbability) {
+        this.value = newProbability.getValue();
     }
     
     /**
      * Returns the complement of the probability.
      * @return Complement of this probability
-     * @throws ArgumentException 
      */
-    public Probability getComplement() throws ArgumentException {
+    public Probability getComplement()  {
         return new Probability(1-value);
     }
     
     @Override
     public String toString() {
-        return String.valueOf(get());
+        return String.valueOf(getValue());
     }
     
     
@@ -74,7 +81,23 @@ public class Probability implements Comparable<Probability> {
         if(this.value < p.value) return -1;
         if(this.value > p.value) return  1;
         return 0;
-    }    
+    }
+
+    public void add(Probability p) {
+        this.setValue(new Probability(this.value + p.value, this.precision));
+    }
+    
+    public void add(Collection<Probability> ps) {
+        double summed_p=0;
+        for(Probability p : ps) {
+            summed_p += p.getValue();
+        }
+        this.setValue(new Probability(this.value + summed_p, this.precision));
+    }
+    
+    public void subtract(Probability p) {
+        this.setValue(this.value - p.value);
+    }
     
     
     /**
@@ -86,10 +109,6 @@ public class Probability implements Comparable<Probability> {
     private double round(double value, int places) {
         return new BigDecimal(value).setScale(places, RoundingMode.HALF_UP).doubleValue();
     }
-
-
-    
-    
     
     
 }

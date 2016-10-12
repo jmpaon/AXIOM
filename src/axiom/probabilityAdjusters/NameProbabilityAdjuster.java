@@ -22,15 +22,6 @@ public class NameProbabilityAdjuster extends ProbabilityAdjuster {
         adjustmentFunctions = new HashMap<>();
     }
     
-    @Override
-    public Probability adjustedProbability(Probability probability, String name) throws ProbabilityAdjustmentException, ArgumentException {
-        return adjustmentFunctions.get(name).map(probability);
-    }
-    
-    @Override
-    public Probability adjustedProbability(double probability, String id) throws ProbabilityAdjustmentException, ArgumentException {
-        return adjustedProbability(new Probability(probability), id);
-    }    
     
     /**
      * Adds a new adjustment function with a specific name to the probability adjuster.
@@ -47,6 +38,7 @@ public class NameProbabilityAdjuster extends ProbabilityAdjuster {
         adjustmentFunctions.put(name, f);
     }
     
+    
     /**
      * Adds a new adjustment function with an index number for identification to the probability adjuster.
      * Integer index is converted to <code>String</code> representation.
@@ -57,7 +49,21 @@ public class NameProbabilityAdjuster extends ProbabilityAdjuster {
     public void addAdjustmentFunction(int index, ProbabilityAdjustmentFunction f) throws ProbabilityAdjustmentException {
         String name = index > 0 ? "+" + String.valueOf(index) : String.valueOf(index);
         addAdjustmentFunction(name, f);
+    }    
+    
+    
+    
+    @Override
+    public Probability adjustedProbability(Probability probability, String name) throws ProbabilityAdjustmentException, ArgumentException {
+        return adjustmentFunctions.get(name).map(probability);
     }
+    
+    @Override
+    public Probability adjustedProbability(double probability, String id) throws ProbabilityAdjustmentException, ArgumentException {
+        return adjustedProbability(new Probability(probability), id);
+    }
+
+
     
     @Override
     public boolean adjusterExists(String name) {
@@ -70,6 +76,17 @@ public class NameProbabilityAdjuster extends ProbabilityAdjuster {
         return adjusterExists(name);
     }
 
+
+    @Override
+    public ProbabilityAdjustmentFunction getFunction(String name) {
+        assert adjusterExists(name);
+        return adjustmentFunctions.get(name);
+    }
+
+    @Override
+    public int adjustmentFunctionCount() {
+        return adjustmentFunctions.size();
+    }
 
     
     

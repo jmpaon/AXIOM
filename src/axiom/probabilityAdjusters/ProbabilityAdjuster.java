@@ -19,6 +19,14 @@ import axiom.model.Probability;
  */
 public abstract class ProbabilityAdjuster {
 
+    /**
+     * Returns the probability adjustment function with name <b>name</b>
+     * @param name Name of the probability adjustment function
+     * @return The probability adjustment function with name <b>name</b>
+     */
+    public abstract ProbabilityAdjustmentFunction getFunction(String name);
+    
+    public abstract int adjustmentFunctionCount();
 
     /**
      * Returns an adjusted probability, evaluated by the adjustment function

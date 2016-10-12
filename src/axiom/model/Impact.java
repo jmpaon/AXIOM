@@ -12,14 +12,44 @@ import axiom.probabilityAdjusters.*;
  * @author juha
  */
 public class Impact {
-    public final ProbabilityAdjustmentFunction f;
-    public final Option owner;
-    public final Option target;
+    final ProbabilityAdjustmentFunction adjustmentFunction;
+    final Option fromOption;
+    final Option toOption;
+    private boolean executed;
 
-    Impact(ProbabilityAdjustmentFunction f, Option owner, Option target) {
-        this.f = f;
-        this.owner = owner;
-        this.target = target;
+    Impact(ProbabilityAdjustmentFunction function, Option fromOption, Option toOption) {
+        assert function != null;
+        assert fromOption != null;
+        assert toOption != null;
+        assert fromOption != toOption;
+        
+        this.adjustmentFunction = function;
+        this.fromOption = fromOption;
+        this.toOption = toOption;
+    }
+    
+    boolean isExecuted() {
+        return executed;
+    }
+    
+    void execute() {
+        assert !executed;
+        
+        // TODO logic
+        System.out.println("Impact " + this + " executed");
+        
+        this.executed = true;
+    }
+    
+    void reset() {
+        assert executed;
+        this.executed = false;
+    }
+    
+    
+    @Override
+    public String toString() {
+        return String.format("Impact from %20s to %20s by %s\n", fromOption, toOption, adjustmentFunction);
     }
     
     

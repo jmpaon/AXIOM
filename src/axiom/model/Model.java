@@ -126,7 +126,7 @@ public class Model implements LabelNamespace {
     }
     
     void reset() {
-        
+        for(Statement s : statements) s.reset();
     }
     
     /**

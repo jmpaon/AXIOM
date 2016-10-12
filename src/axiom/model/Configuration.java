@@ -26,7 +26,9 @@ public class Configuration {
         }
     }
     
-    
+    public boolean isOptionTrue(int index){
+        return this.states[index-1];
+    }
     
     public boolean isOptionTrue(Option option) {
         assert option != null;
@@ -42,13 +44,10 @@ public class Configuration {
         for(Option o : optionSet) if(! isOptionTrue(o)) return false;
         return true;
     }
-    
-    public Option getStateOfStatement(Statement statement) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
 
-    public Option getStateOfStatement(Label statementLabel) {
-        throw new UnsupportedOperationException("Not implemented");
+    public boolean isOptionSetTrue(int[] optionSet) {
+        for(int i : optionSet) if(! states[i-1]==true) return false;
+        return true;
     }
     
     public String toStringAsOptionValues() {
@@ -65,7 +64,7 @@ public class Configuration {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int i=0;
-        for(boolean b : states) sb.append(++i).append(":").append(b).append(" ");
+        for(boolean b : states) sb.append(++i).append("=> ").append(model.getOption(i).label).append("::").append(b).append(" ");
         return sb.toString();
     }
     

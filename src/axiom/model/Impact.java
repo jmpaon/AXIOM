@@ -32,11 +32,16 @@ public class Impact {
         return executed;
     }
     
-    void execute() {
+    void execute() throws ProbabilityAdjustmentException {
         assert !executed;
         
         // TODO logic
-        System.out.println("Impact " + this + " executed");
+        Probability oldProbability = this.toOption.adjusted.get();
+        Probability newProbability = adjustmentFunction.map(oldProbability);
+        this.toOption.adjustOptionProbability(newProbability);
+        
+        System.out.println(this + " executed");
+        System.out.println(oldProbability + " to " + newProbability);
         
         this.executed = true;
     }
@@ -49,7 +54,7 @@ public class Impact {
     
     @Override
     public String toString() {
-        return String.format("Impact from %20s to %20s by %s\n", fromOption, toOption, adjustmentFunction);
+        return String.format("Impact from %s to %s by %s\n", fromOption, toOption, adjustmentFunction);
     }
     
     

@@ -48,15 +48,17 @@ public class AXIOM {
             m.add.option("E", "3", 0.1);
             m.add.option("F", "1", 0.45);
             m.add.option("F", "2", 0.55);
+            m.add.impact("A", "1", "B", "1", "+1");
+            m.add.impact("B", "2", "A", "1", "+2");
+            m.add.impact("C", "1", "A", "1", "+3");
+            m.add.impact("D", "2", "A", "2", "-1");
+            m.add.impact("E", "1", "C", "1", "-2");
+            m.add.impact("F", "2", "C", "2", "-3");
             System.out.println(m.optionCount());
             System.out.println(m.getOption(1));
             Configuration c = m.evaluate();
             System.out.println(c.toStringAsOptionValues());
-            for(int i = 1; i <= m.optionCount(); i++) {
-                Option o = m.getOption(i);
-                System.out.print(i + " " + o + "  ");
-                System.out.println(c.isOptionTrue(o));
-            }
+
             System.out.println(c);
             
             //System.out.println(m.statementsByTimestep().toString());

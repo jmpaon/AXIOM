@@ -16,8 +16,8 @@ import java.util.Collection;
 public class Probability implements Comparable<Probability> {
 
     private double value;
-    private final int precision;
-
+    final int precision;
+    
 
     public Probability(Probability p) {
         this(p.value, p.precision);
@@ -34,6 +34,20 @@ public class Probability implements Comparable<Probability> {
         this.precision = precision;        
     }
     
+    public Probability(Probability numerator, Probability denominator) {
+        assert numerator.value <= denominator.value;
+        assert numerator != denominator;
+        this.value = numerator.value / denominator.value;
+        this.precision = numerator.precision;
+    }
+    
+    public Probability(Collection<Probability> probabilityItems, int precision) {
+        Probability sum = new Probability(0);
+        for(Probability p : probabilityItems) sum.add(p);
+        this.value = sum.value;
+        this.precision = precision;
+    }
+    
     /**
      * Returns a <code>Probability</code> identical to this <code>Probability</code>.
      * @return Copy of the <code>Probability</code>.
@@ -41,7 +55,14 @@ public class Probability implements Comparable<Probability> {
     public Probability get() {
         return new Probability(this);
     }
-    
+
+    /**
+     * Sets the probability value.
+     * @param newProbability The probability value will be equal to value of <code>newProbability</code>.
+     */
+    public void set(Probability newProbability) {
+        this.value = newProbability.getValue();
+    }
     
     /**
      * Returns the value of this probability
@@ -54,13 +75,7 @@ public class Probability implements Comparable<Probability> {
         this.value = round(value, precision);
     }
     
-    /**
-     * Sets the probability value.
-     * @param newProbability The probability value will be equal to value of <code>newProbability</code>.
-     */
-    public void setValue(Probability newProbability) {
-        this.value = newProbability.getValue();
-    }
+
     
     /**
      * Returns the complement of the probability.
@@ -84,7 +99,7 @@ public class Probability implements Comparable<Probability> {
     }
 
     public void add(Probability p) {
-        this.setValue(new Probability(this.value + p.value, this.precision));
+        this.set(new Probability(this.value + p.value, this.precision));
     }
     
     public void add(Collection<Probability> ps) {
@@ -92,7 +107,7 @@ public class Probability implements Comparable<Probability> {
         for(Probability p : ps) {
             summed_p += p.getValue();
         }
-        this.setValue(new Probability(this.value + summed_p, this.precision));
+        this.set(new Probability(this.value + summed_p, this.precision));
     }
     
     public void subtract(Probability p) {

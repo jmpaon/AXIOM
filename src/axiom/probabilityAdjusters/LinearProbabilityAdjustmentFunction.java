@@ -47,7 +47,7 @@ public class LinearProbabilityAdjustmentFunction extends ProbabilityAdjustmentFu
     }
 
     @Override
-    public Probability map(Probability probability) throws ProbabilityAdjustmentException, ArgumentException {
+    public Probability map(Probability probability) throws ProbabilityAdjustmentException {
         
         if(probability.getValue() == 1) probability.setValue(0.999999999999);
         if(probability.getValue() == 0) probability.setValue(0.000000000001);
@@ -67,7 +67,7 @@ public class LinearProbabilityAdjustmentFunction extends ProbabilityAdjustmentFu
      * @param probability Unadjusted probability
      * @return "Linearly" adjusted probability
      */
-    private Probability adjustByDistance(Probability probability) throws ArgumentException {
+    private Probability adjustByDistance(Probability probability) {
         double d = Math.abs(this.distance);
         double ap = probability.getValue() * (1 / (1-d) );
         

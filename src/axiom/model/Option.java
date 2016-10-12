@@ -5,6 +5,7 @@
  */
 package axiom.model;
 
+import axiom.probabilityAdjusters.ProbabilityAdjustmentException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +21,8 @@ public class Option implements Comparable<Option> {
     
     final Label label;
     final Statement statement;
-    Probability apriori;
-    Probability adjusted;
+    final Probability apriori;
+    final Probability adjusted;
     final String description;
     final List<Impact> impacts;
     
@@ -43,14 +44,43 @@ public class Option implements Comparable<Option> {
         this.impacts = new LinkedList<>();
     }
     
-    void executeImpacts() {
+    private List<Option> complementOptions() {
+        List<Option> otherOptions = new LinkedList<>();
+        for(Option o : this.statement.options) {
+            if(!o.equals(this)) otherOptions.add(o);
+        }
+        return otherOptions;
+    }
+    
+    private Probability complementProbability() {
+        Probability complement = new Probability(0);
+        for(Option o : complementOptions()) complement.add(o.adjusted);
+        return complement;
+    }
+    
+    void adjustOptionProbability(Probability newProbability) {
+        Probability oldComplement = complementProbability();
+        Probability newComplement = newProbability.getComplement();
+        for(Option o : complementOptions()) {
+            o.adjusted.setValue(o.adjusted.getValue()/oldComplement.getValue()*newComplement.getValue());
+        }
+        this.adjusted.setValue(1-complementProbability().getValue());
+        
+        double adjustedSum = 0;
+        for(Option o : this.statement.options) adjustedSum += o.adjusted.getValue();
+        assert adjustedSum == 1 : "Adjusted sum is : " + adjustedSum;
+        
+    }
+    
+    
+    void executeImpacts() throws ProbabilityAdjustmentException {
         for(Impact i : this.impactsInRandomOrder()) {
             i.execute();
         }
     }
     
     void reset() {
-        this.adjusted.setValue(apriori);
+        this.adjusted.set(apriori);
         for(Impact i : impacts) i.reset();
     }
     

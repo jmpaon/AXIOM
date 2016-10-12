@@ -23,7 +23,7 @@ public abstract class ProbabilityAdjustmentFunction {
      * @throws ProbabilityAdjustmentException 
      * @throws axiom.model.ArgumentException 
      */
-    public abstract Probability map(Probability probability) throws ProbabilityAdjustmentException, ArgumentException;
+    public abstract Probability map(Probability probability) throws ProbabilityAdjustmentException;
     
     /**
      * 
@@ -32,7 +32,7 @@ public abstract class ProbabilityAdjustmentFunction {
      * @throws ProbabilityAdjustmentException 
      * @throws axiom.model.ArgumentException 
      */
-    public Probability map(double probability) throws ProbabilityAdjustmentException, ArgumentException {
+    public Probability map(double probability) throws ProbabilityAdjustmentException {
         return(map(new Probability(probability)));
     }
     

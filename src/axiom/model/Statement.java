@@ -5,6 +5,7 @@
  */
 package axiom.model;
 
+import axiom.probabilityAdjusters.ProbabilityAdjustmentException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,9 +54,10 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         return this.evaluatedState;
     }
     
-    void evaluate() {
+    void evaluate() throws ProbabilityAdjustmentException {
         this.evaluatedState = this.optionsInRandomOrder().get(0);
         System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
+        this.evaluatedState.executeImpacts();
     }
     
     void reset() {

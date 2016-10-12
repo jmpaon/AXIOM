@@ -5,6 +5,8 @@
  */
 package axiom.model;
 
+import java.util.Objects;
+
 /**
  *
  * @author juha
@@ -54,6 +56,47 @@ public class Label implements Comparable<Label> {
         
         this.namespace = null;
         this.value = label;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) return false;
+        if(!Label.class.isAssignableFrom(o.getClass())) return false;
+        final Label l = (Label) o;
+        if(l.namespace != null && this.namespace != null) {
+            if(!this.namespace.equals(l.namespace)) return false;
+        }
+        if(!this.value.equalsIgnoreCase(l.value)) return false;
+        return true;
+    }
+
+    
+//public boolean equals(Object obj) {
+//    if (obj == null) {
+//        return false;
+//    }
+//    if (!Person.class.isAssignableFrom(obj.getClass())) {
+//        return false;
+//    }
+//    final Person other = (Person) obj;
+//    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+//        return false;
+//    }
+//    if (this.age != other.age) {
+//        return false;
+//    }
+//    return true;
+//}    
+    
+    
+    
+    
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.value.toLowerCase());
+        hash = 67 * hash + Objects.hashCode(this.namespace);
+        return hash;
     }
     
 

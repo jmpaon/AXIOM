@@ -7,12 +7,14 @@ package axiom.model;
 
 import axiom.probabilityAdjusters.ProbabilityAdjuster;
 import axiom.probabilityAdjusters.ProbabilityAdjustmentFunction;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,17 +24,20 @@ import java.util.TreeSet;
  */
 public class Model implements LabelNamespace {
     
-    public ComponentAdder add;
-    public ProbabilityAdjuster probabilityAdjuster;
+    public final ComponentAdder add;
+    public final ProbabilityAdjuster probabilityAdjuster;
     public final String name;
     private final Set<Statement> statements;
     
     
-    public Model(String modelName) {
+    public Model(String modelName, ProbabilityAdjuster probabilityAdjuster) {
+        assert modelName != null;
+        assert probabilityAdjuster != null : "Null probabilityAdjuster";
+        
         this.statements = new TreeSet<>();
         this.add = new ComponentAdder(this);
         this.name = modelName;
-        
+        this.probabilityAdjuster = probabilityAdjuster;
     }
     
     Statement findStatement(Label label) throws LabelNotFoundException {
@@ -43,8 +48,32 @@ public class Model implements LabelNamespace {
     }
     
     boolean statementExists(Label label) {
-        for(Statement s : statements) if(s.compareTo(label)==0) return true;
+        for(Statement s : statements) if(s.label.equals(label)) return true;
         return false;
+    }
+    
+    /**
+     * Collect the statements in the model into a map of lists ordered by the 
+     * temporal category (timestep value);
+     * The statements in the lists are in random order (shuffled).
+     * @return Map of lists of statements in the model.
+     */
+    public Map<Integer, List<Statement>> statementsByTimestep() { // FIXME remove public
+        Map<Integer, List<Statement>> org = new TreeMap<>();
+        
+        // Collect the statements into timestep categories
+        for(Statement s : this.statements) {
+            if(!org.containsKey(s.timestep)) {
+                org.put(s.timestep, new LinkedList<>());
+            }
+            org.get(s.timestep).add(s);
+        }
+        
+        // Shuffle the statement lists in each timestep category
+        for(Map.Entry<Integer, List<Statement>> e : org.entrySet()) {
+            java.util.Collections.shuffle(e.getValue());
+        }
+        return org;
     }
     
     
@@ -52,7 +81,7 @@ public class Model implements LabelNamespace {
      * Returns the number of <code>Option</code>fromStatement in the model.
      * @return The model option count
      */
-    int optionCount() {
+    public int optionCount() {
         int optionCount = 0;
         for (Statement s : statements) {
             optionCount += s.optionCount();
@@ -60,8 +89,40 @@ public class Model implements LabelNamespace {
         return optionCount;
     }
     
+    List<Option> getOptions() {
+        List<Option> list = new ArrayList<>();
+        for(Statement s : statements) list.addAll(s.options);
+        return list;
+    }
+    
+    public Option getOption(int index) { // FIXME non public
+        assert index > 0 && index <= this.optionCount() : "index " + index + " is out of bounds [1," + this.optionCount()+"]" ;
+        return this.getOptions().get(index-1);
+    }
+    
+    public Option getOption(String label) throws LabelNotFoundException {
+        for(Option o : getOptions()) if(o.label.value.equals(label)) return o;
+        throw new LabelNotFoundException("Option with label " + label + " not found");
+    }
+    
+    public int getOptionIndex(Option o) {
+        assert o != null;
+        assert o.statement.model == this;
+        int i = 1;
+        for(Option op : getOptions()) {
+            if(op.equals(o)) return i;
+            i++;
+        }
+        throw new IllegalArgumentException("Option " + o + " not found");
+    }
+    
     public Configuration evaluate() {
-        throw new UnsupportedOperationException("Not implemented");
+        for(Map.Entry<Integer, List<Statement>> e : this.statementsByTimestep().entrySet()) {
+            for(Statement s : e.getValue()) {
+                s.evaluate();
+            }
+        }
+        return new Configuration(this);
     }
     
     void reset() {
@@ -103,24 +164,37 @@ public class Model implements LabelNamespace {
             this.model = model;
         }
         
-        public void statement(String statementLabel, String description, boolean intervention, int timestep) {
+        public final void statement(String statementLabel, String description, boolean intervention, int timestep) {
+            assert statementLabel != null;
             Label label = new Label(statementLabel, model);
-            Statement s = new Statement(label, description, intervention, timestep);
+            Statement s = new Statement(this.model, label, description, intervention, timestep);
             model.statements.add(s);
+            
         }
         
-        public void option(String statementLabel, String optionLabel, double aprioriProbability) throws LabelNotFoundException {
+        public final void option(String statementLabel, String optionLabel, double aprioriProbability) throws LabelNotFoundException {
+            assert statementLabel != null;
+            assert optionLabel != null;
+            assert aprioriProbability >= 0 && aprioriProbability <= 1;
+            
             Statement s = model.findStatement(new Label(statementLabel));
             Option o = new Option(new Label(optionLabel, s), s, new Probability(aprioriProbability));
             s.options.add(o);
         }
         
-        public void impact(String fromStatementLabel, 
+        public final void impact(
+                String fromStatementLabel, 
                 String fromOptionLabel, 
                 String toStatementLabel, 
                 String toOptionLabel, 
                 String adjustmentFunctionName) 
                 throws LabelNotFoundException, AXIOMException {
+            
+            assert fromStatementLabel != null;
+            assert toStatementLabel != null;
+            assert fromOptionLabel != null;
+            assert toOptionLabel != null;
+            assert adjustmentFunctionName != null;
             
             Statement fromStatement = model.findStatement(new Label(fromStatementLabel));
             Option fromOption = fromStatement.findOption(new Label(fromOptionLabel));
@@ -134,11 +208,6 @@ public class Model implements LabelNamespace {
             assert f != null;
             
             fromOption.impacts.add(new Impact(f, fromOption, toOption));
-        }
-        
-        public void probabilityAdjuster(ProbabilityAdjuster probabilityAdjuster) throws ArgumentException {
-            if(probabilityAdjuster == null) throw new ArgumentException("probability adjuster is null");
-            model.probabilityAdjuster = probabilityAdjuster;
         }
         
     }

@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,27 +17,30 @@ import java.util.TreeSet;
  *
  * @author juha
  */
-public class Statement implements LabelNamespace, Comparable<Label> {
+public class Statement implements LabelNamespace, Comparable<Statement> {
     
     public static final String DEFAULT_DESCRIPTION = "(No description)";
     
-    Label label;
-    String description;
-    boolean intervention;
-    int timestep;
+    final Model model;
+    final Label label;
+    final String description;
+    final boolean intervention;
+    final int timestep;
     final Set<Option> options;
     
     private Option evaluatedState;
     
     
-    Statement(Label label, boolean intervention, int timestep) {
-        this(label, null, intervention, timestep);
+    Statement(Model model, Label label, boolean intervention, int timestep) {
+        this(model, label, null, intervention, timestep);
     }
     
-    Statement(Label label, String description, boolean intervention, int timestep) {
+    Statement(Model model, Label label, String description, boolean intervention, int timestep) {
         
+        assert model != null;
         assert label != null;
         
+        this.model = model;
         this.label = label;
         this.description = description != null ? description : DEFAULT_DESCRIPTION;
         this.intervention = intervention;
@@ -50,7 +54,8 @@ public class Statement implements LabelNamespace, Comparable<Label> {
     }
     
     void evaluate() {
-        
+        this.evaluatedState = this.optionsInRandomOrder().get(0);
+        System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
     }
     
     void reset() {
@@ -63,6 +68,15 @@ public class Statement implements LabelNamespace, Comparable<Label> {
     
     public int optionCount() {
         return options.size();
+    }
+    
+    Option getOptionAtIndex(int index) {
+        assert index <= this.optionCount();
+        for(Option o : options) {
+            if(index <= 1) return o;
+            index--;
+        }
+        throw new IllegalArgumentException("Option with index " + index + " not found");
     }
     
     List<Option> optionsInRandomOrder() {
@@ -79,7 +93,7 @@ public class Statement implements LabelNamespace, Comparable<Label> {
     }
     
     boolean optionExists(Label label) {
-        for(Option o : options) if(o.compareTo(label) == 0) return true;
+        for(Option o : options) if(o.label.equals(label)) return true;
         return false;
     }
     
@@ -95,12 +109,35 @@ public class Statement implements LabelNamespace, Comparable<Label> {
     }
 
     @Override
-    public int compareTo(Label l) {
-        return this.label.compareTo(l);
+    public boolean equals(Object o) {
+        if(o == null) return false;
+        if(!Statement.class.isAssignableFrom(o.getClass())) return false;
+        final Statement s = (Statement) o;
+        if(!this.model.equals(s.model)) return false;
+        if(!this.intervention==s.intervention) return false;
+        if(!(this.timestep==s.timestep)) return false;
+        return this.label.equals(s.label);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.model);
+        hash = 97 * hash + Objects.hashCode(this.label);
+        hash = 97 * hash + (this.intervention ? 1 : 0);
+        hash = 97 * hash + this.timestep;
+        return hash;
+    }
+
+    
+    @Override
+    public int compareTo(Statement s) {
+        return this.label.compareTo(s.label);
     }
     
-    public int compareTo(String s) {
-        return this.label.value.compareTo(s);
+    @Override
+    public String toString() {
+        return String.format("Statement %s with options %s", this.label, this.options.toString());
     }
     
 }

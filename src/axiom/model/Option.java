@@ -8,20 +8,21 @@ package axiom.model;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author juha
  */
-public class Option implements Comparable<Label> {
+public class Option implements Comparable<Option> {
     
     public static final String DEFAULT_DESCRIPTION = "(No description)";
     
-    Label label;
-    Statement statement;
+    final Label label;
+    final Statement statement;
     Probability apriori;
     Probability adjusted;
-    String description;
+    final String description;
     final List<Impact> impacts;
     
     
@@ -42,9 +43,9 @@ public class Option implements Comparable<Label> {
         this.impacts = new LinkedList<>();
     }
     
-    void evaluate() {
+    void executeImpacts() {
         for(Impact i : this.impactsInRandomOrder()) {
-            i.evaluate();
+            i.execute();
         }
     }
     
@@ -63,13 +64,34 @@ public class Option implements Comparable<Label> {
         return impacts_shuffled;
     }
 
+    
     @Override
-    public int compareTo(Label l) {
-        return this.label.compareTo(l);
+    public boolean equals(Object o) {
+        if(o == null) return false;
+        if(!Option.class.isAssignableFrom(o.getClass())) return false;
+        final Option op = (Option) o;
+        return this.label.equals(op.label);
     }
     
-    public int compareTo(String s) {
-        return this.label.value.compareTo(s);
+    
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.label);
+        //hash = 37 * hash + Objects.hashCode(this.statement);
+        //hash = 37 * hash + Objects.hashCode(this.apriori);
+        //hash = 37 * hash + Objects.hashCode(this.description);
+        return hash;
+    }
+
+    
+    @Override
+    public int compareTo(Option o) {
+        return this.label.compareTo(o.label);
+    }    
+    
+    public String getLongLabel() {
+        return this.statement.label + ":" + this.label;
     }
     
     @Override
@@ -81,8 +103,10 @@ public class Option implements Comparable<Label> {
             value = this.adjusted.toString();
         }
         String concatenatedLabel = this.statement.label + ":" + this.label;
-        return String.format("%40s = %5s", concatenatedLabel, value);
+        return String.format("%s = %s", concatenatedLabel, value);
     }
+
+
 
 
     

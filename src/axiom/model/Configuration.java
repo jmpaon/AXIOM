@@ -64,7 +64,7 @@ public class Configuration {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int i=0;
-        for(boolean b : states) sb.append(++i).append("=> ").append(model.getOption(i).label).append("::").append(b).append(" ");
+        for(boolean b : states) sb.append(++i).append(") ").append(model.getOption(i).getLongLabel()).append("=").append(b).append(" ");
         return sb.toString();
     }
     

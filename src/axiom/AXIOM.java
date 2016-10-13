@@ -25,7 +25,6 @@ public class AXIOM {
             NameProbabilityAdjuster adj = new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster();
             Model m = new Model("Testmodel", adj);
             
-            System.out.println(m.optionCount());
             m.add.statement("B", "B-description", false, 1);
             m.add.statement("C", "C-description", false, 1);
             m.add.statement("A", "A-description", false, 1);
@@ -48,22 +47,17 @@ public class AXIOM {
             m.add.option("E", "3", 0.1);
             m.add.option("F", "1", 0.45);
             m.add.option("F", "2", 0.55);
-            m.add.impact("A", "1", "B", "1", "+1");
-            m.add.impact("B", "2", "A", "1", "+2");
-            m.add.impact("C", "1", "A", "1", "+3");
+            m.add.impact("A", "1", "B", "1", "+2");
+            m.add.impact("B", "2", "A", "1", "+3");
+            m.add.impact("C", "1", "A", "1", "+5");
             m.add.impact("D", "2", "A", "2", "-1");
-            m.add.impact("E", "1", "C", "1", "-2");
-            m.add.impact("F", "2", "C", "2", "-3");
-            System.out.println(m.optionCount());
-            System.out.println(m.getOption(1));
-            Configuration c = m.evaluate();
-            System.out.println(c.toStringAsOptionValues());
-
-            System.out.println(c);
+            m.add.impact("E", "1", "C", "1", "-4");
+            m.add.impact("F", "2", "C", "2", "-2");
+            System.out.println("Option count : " + m.optionCount());
             
-            SafeProbability ppp = new SafeProbability(1d/2);
-            System.out.println(ppp.toString());
-            System.out.println(ppp.toString_fraction());
+            Configuration c = m.evaluate();
+            //System.out.println(c.toStringAsOptionValues());
+            //System.out.println(c);
             
             
             
@@ -96,7 +90,7 @@ public class AXIOM {
             
         } catch (ProbabilityAdjustmentException ex) {
             Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ArgumentException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }

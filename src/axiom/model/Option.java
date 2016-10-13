@@ -44,7 +44,7 @@ public class Option implements Comparable<Option> {
         this.impacts = new LinkedList<>();
     }
     
-    private List<Option> complementOptions() {
+    List<Option> complementOptions() {
         List<Option> otherOptions = new LinkedList<>();
         for(Option o : this.statement.options) {
             if(!o.equals(this)) otherOptions.add(o);
@@ -52,30 +52,12 @@ public class Option implements Comparable<Option> {
         return otherOptions;
     }
     
-    private Probability complementProbability() {
-        Probability complement = new Probability(0);
-        for(Option o : complementOptions()) complement.add(o.adjusted);
-        return complement;
-    }
-    
-    void adjustOptionProbability(Probability newProbability) {
-        Probability oldComplement = complementProbability();
-        Probability newComplement = newProbability.getComplement();
-        for(Option o : complementOptions()) {
-            o.adjusted.setValue(o.adjusted.getValue()/oldComplement.getValue()*newComplement.getValue());
-        }
-        this.adjusted.setValue(1-complementProbability().getValue());
-        
-        double adjustedSum = 0;
-        for(Option o : this.statement.options) adjustedSum += o.adjusted.getValue();
-        assert adjustedSum == 1 : "Adjusted sum is : " + adjustedSum;
-        
-    }
-    
-    
     void executeImpacts() throws ProbabilityAdjustmentException {
         for(Impact i : this.impactsInRandomOrder()) {
-            i.execute();
+            if(i.toOption.statement.getEvaluatedState() == null) {
+                System.out.println("Executing impact " + i);
+                i.execute();
+            }
         }
     }
     
@@ -88,7 +70,7 @@ public class Option implements Comparable<Option> {
      * Returns the <code>Impact</code>s of the <code>Option</code> in random order.
      * @return List of <code>Impact</code>s in random order.
      */
-    List<Impact> impactsInRandomOrder() {
+    private List<Impact> impactsInRandomOrder() {
         List impacts_shuffled = new LinkedList<>(impacts);
         java.util.Collections.shuffle(impacts_shuffled);
         return impacts_shuffled;
@@ -107,18 +89,14 @@ public class Option implements Comparable<Option> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.label);
-        //hash = 37 * hash + Objects.hashCode(this.statement);
-        //hash = 37 * hash + Objects.hashCode(this.apriori);
-        //hash = 37 * hash + Objects.hashCode(this.description);
-        return hash;
+        return 37 * hash + Objects.hashCode(this.label);
     }
 
     
     @Override
     public int compareTo(Option o) {
         return this.label.compareTo(o.label);
-    }    
+    }
     
     public String getLongLabel() {
         return this.statement.label + ":" + this.label;
@@ -133,7 +111,7 @@ public class Option implements Comparable<Option> {
             value = this.adjusted.toString();
         }
         String concatenatedLabel = this.statement.label + ":" + this.label;
-        return String.format("%s = %s", concatenatedLabel, value);
+        return String.format("%s(%s)", concatenatedLabel, value);
     }
 
 

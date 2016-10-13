@@ -6,6 +6,8 @@
 package axiom.model;
 
 import axiom.probabilityAdjusters.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -34,17 +36,16 @@ public class Impact {
     
     void execute() throws ProbabilityAdjustmentException {
         assert !executed;
-        
-        // TODO logic
-        Probability oldProbability = this.toOption.adjusted.get();
-        Probability newProbability = adjustmentFunction.map(oldProbability);
-        this.toOption.adjustOptionProbability(newProbability);
-        
-        System.out.println(this + " executed");
-        System.out.println(oldProbability + " to " + newProbability);
+        Probability newProbability = adjustmentFunction.map(this.toOption.adjusted.get());
+        List<Probability> secondaryProbabilities = new LinkedList<>();
+        for(Option o : toOption.complementOptions()) secondaryProbabilities.add(o.adjusted);
+        this.toOption.adjusted.setWithSecondaryAdjustment(newProbability, secondaryProbabilities);
         
         this.executed = true;
     }
+    
+    
+    
     
     void reset() {
         assert executed;

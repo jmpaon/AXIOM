@@ -9,8 +9,8 @@ import axiom.model.ArgumentException;
 import axiom.model.Probability;
 
 /**
- * Probability adjuster is a collection of probability adjustment functions
- * with an identifying name or index.
+ * UnsafeProbability adjuster is a collection of probability adjustment functions
+ with an identifying name or index.
  * It mainly returns the value the probability adjustment functions map for
  * the non-adjusted probability value passed to <code>adjustedProbability</code>
  * method.
@@ -36,9 +36,9 @@ public abstract class ProbabilityAdjuster {
      * @return Adjusted probability
      * @throws ProbabilityAdjustmentException
      */
-    public abstract Probability adjustedProbability(Probability probability, String id) throws ProbabilityAdjustmentException, ArgumentException;
+    public abstract Probability adjustedProbability(Probability probability, String id) throws ProbabilityAdjustmentException;
     
-    public Probability adjustedProbability(double probability, String id) throws ProbabilityAdjustmentException, ArgumentException {
+    public Probability adjustedProbability(double probability, String id) throws ProbabilityAdjustmentException {
         return this.adjustedProbability(new Probability(probability), id);
     }
     

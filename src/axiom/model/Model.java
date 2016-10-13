@@ -6,6 +6,7 @@
 package axiom.model;
 
 import axiom.probabilityAdjusters.ProbabilityAdjuster;
+import axiom.probabilityAdjusters.ProbabilityAdjustmentException;
 import axiom.probabilityAdjusters.ProbabilityAdjustmentFunction;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,7 +117,7 @@ public class Model implements LabelNamespace {
         throw new IllegalArgumentException("Option " + o + " not found");
     }
     
-    public Configuration evaluate() {
+    public Configuration evaluate() throws ProbabilityAdjustmentException {
         for(Map.Entry<Integer, List<Statement>> e : this.statementsByTimestep().entrySet()) {
             for(Statement s : e.getValue()) {
                 s.evaluate();

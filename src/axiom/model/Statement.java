@@ -58,6 +58,7 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         this.evaluatedState = this.optionsInRandomOrder().get(0);
         System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
         this.evaluatedState.executeImpacts();
+        System.out.println(this.model.getModelStates());
     }
     
     void reset() {
@@ -140,6 +141,19 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
     @Override
     public String toString() {
         return String.format("Statement %s with options %s", this.label, this.options.toString());
+    }
+    
+    public String optionProbabilityDistribution() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Statement ").append(this.label).append("\n");
+        for(Option o : this.options) sb.append(o.label).append(" : ").append(o.adjusted.toStringAsFraction()).append("\n");
+        return sb.toString();
+    }
+    
+    Collection<Probability> optionProbabilities() {
+        LinkedList<Probability> ps = new LinkedList<>();
+        for(Option o : this.options) ps.add(o.adjusted);
+        return ps;
     }
     
 }

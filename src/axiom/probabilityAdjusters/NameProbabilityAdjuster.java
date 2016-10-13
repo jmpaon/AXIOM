@@ -54,12 +54,12 @@ public class NameProbabilityAdjuster extends ProbabilityAdjuster {
     
     
     @Override
-    public Probability adjustedProbability(Probability probability, String name) throws ProbabilityAdjustmentException, ArgumentException {
+    public Probability adjustedProbability(Probability probability, String name) throws ProbabilityAdjustmentException {
         return adjustmentFunctions.get(name).map(probability);
     }
     
     @Override
-    public Probability adjustedProbability(double probability, String id) throws ProbabilityAdjustmentException, ArgumentException {
+    public Probability adjustedProbability(double probability, String id) throws ProbabilityAdjustmentException {
         return adjustedProbability(new Probability(probability), id);
     }
 

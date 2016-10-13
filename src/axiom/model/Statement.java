@@ -55,7 +55,25 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
     }
     
     void evaluate() throws ProbabilityAdjustmentException {
-        this.evaluatedState = this.optionsInRandomOrder().get(0);
+        assert this.intervention || this.evaluatedState == null : "Non-intervention statement has state before evaluation";
+        assert Probability.isValidDistribution(this.optionProbabilities());
+        
+        Probability rnd = Probability.random();
+        System.out.println("random is " + rnd);
+        Probability sum = new Probability(0);
+        for(Option o : optionsInRandomOrder()) { 
+            sum.add(o.adjusted);
+            System.out.println("p sum is now "+  sum);
+            if(sum.compareTo(rnd) >= 0) {
+                System.out.println("sum " + sum + " is now bigger than " + rnd);
+                this.evaluatedState = o;
+                break;
+            }
+        }
+        
+        assert this.evaluatedState != null;
+        
+        //this.evaluatedState = this.optionsInRandomOrder().get(0);
         System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
         this.evaluatedState.executeImpacts();
         System.out.println(this.model.getModelStates());
@@ -75,6 +93,7 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
     
     Option getOptionAtIndex(int index) {
         assert index <= this.optionCount();
+        assert index > 0;
         for(Option o : options) {
             if(index <= 1) return o;
             index--;
@@ -150,7 +169,7 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         return sb.toString();
     }
     
-    Collection<Probability> optionProbabilities() {
+    private Collection<Probability> optionProbabilities() {
         LinkedList<Probability> ps = new LinkedList<>();
         for(Option o : this.options) ps.add(o.adjusted);
         return ps;

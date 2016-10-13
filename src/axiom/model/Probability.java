@@ -25,18 +25,15 @@ public class Probability implements Comparable<Probability> {
         this.numerator = (int)(value * DENOMINATOR);
     }
     
-    
     public Probability(Probability p) {
         this.numerator = p.numerator;
     }
-    
     
     Probability(int numerator) {
         assert numerator >= 0 && numerator <= DENOMINATOR
                 : "numerator is " + numerator;
         this.numerator = numerator;
     }
-    
     
     
     public Probability get() {
@@ -69,7 +66,6 @@ public class Probability implements Comparable<Probability> {
         }
         
         int residual = DENOMINATOR - (this.numerator + sumNumerators(secondaryProbabilities)) ;
-        System.out.println("Residual is " +residual);
         this.correct(residual);
         assert this.numerator + sumNumerators(secondaryProbabilities) == DENOMINATOR;
         

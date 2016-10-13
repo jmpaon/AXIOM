@@ -25,10 +25,10 @@ import java.util.TreeSet;
  */
 public class Model implements LabelNamespace {
     
-    public final ComponentAdder add;
-    public final ProbabilityAdjuster probabilityAdjuster;
     public final String name;
-    private final Set<Statement> statements;
+    public final ComponentAdder add;
+    final ProbabilityAdjuster probabilityAdjuster;
+    final Set<Statement> statements;
     
     
     public Model(String modelName, ProbabilityAdjuster probabilityAdjuster) {

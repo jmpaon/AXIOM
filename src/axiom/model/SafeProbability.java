@@ -22,7 +22,6 @@ public class SafeProbability {
     
     public SafeProbability(double value) {
         assert value >= 0 && value <= 1;
-        System.out.println(value * DENOMINATOR);
         this.numerator = (int)(value * DENOMINATOR);
     }
     
@@ -32,15 +31,20 @@ public class SafeProbability {
     }
     
     
-    public SafeProbability(int numerator) {
+    private SafeProbability(int numerator) {
         assert numerator >= 0 && numerator <= DENOMINATOR;
+        this.numerator = numerator;
     }
+    
+    public int getNumerator() {
+        return numerator;
+    }
+    
     
     
     public SafeProbability complement() {
         return new SafeProbability(DENOMINATOR-numerator);
     }
-    
     
     public void add(SafeProbability p) {
         assert this.numerator + p.numerator <= DENOMINATOR;
@@ -91,6 +95,20 @@ public class SafeProbability {
         return String.valueOf(this.toDouble());
     }
     
+    public String toString_fraction() {
+        return this.numerator + "/" + this.DENOMINATOR;
+    }
+
+    
+    public static boolean isValidDistribution(Collection<SafeProbability> distribution) {
+        return residual(distribution)==0;
+    }
+    
+    public static int residual(Collection<SafeProbability> distribution) {
+        int sum = 0;
+        for(SafeProbability p : distribution) sum += p.numerator;
+        return DENOMINATOR - sum;
+    }
     
     
     /**

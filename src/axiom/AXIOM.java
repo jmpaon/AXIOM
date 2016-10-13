@@ -61,6 +61,11 @@ public class AXIOM {
 
             System.out.println(c);
             
+            SafeProbability ppp = new SafeProbability(1);
+            System.out.println(ppp.toString());
+            System.out.println(34d/35d);
+            
+            
             //System.out.println(m.statementsByTimestep().toString());
             //Option o = m.getOptionAtIndex(1);
             //System.out.println(m.getModelStates());

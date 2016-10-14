@@ -25,12 +25,12 @@ public class AXIOM {
             NameProbabilityAdjuster adj = new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster();
             Model m = new Model("Testmodel", adj);
             
-            m.add.statement("B", "B-description", false, 1);
+            m.add.statement("B", "B-description", true, 1);
             m.add.statement("C", "C-description", false, 1);
-            m.add.statement("A", "A-description", false, 1);
-            m.add.statement("D", "A-description", false, 2);
-            m.add.statement("E", "A-description", false, 2);
-            m.add.statement("F", "A-description", false, 2);
+            m.add.statement("A", "A-description", true, 1);
+            m.add.statement("D", "D-description", false, 2);
+            m.add.statement("E", "E-description", true, 2);
+            m.add.statement("F", "F-description", false, 2);
             m.add.option("B", "2", 0.7);
             m.add.option("B", "1", 0.3);
             m.add.option("A", "2", 0.2);
@@ -55,7 +55,12 @@ public class AXIOM {
             m.add.impact("F", "2", "C", "2", "-2");
             System.out.println("Option count : " + m.optionCount());
             
-            Configuration c = m.evaluate();
+            InterventionCombination ic = new InterventionCombination(m);
+            System.out.println(ic);
+            ic.nextCombination();
+            System.out.println(ic);
+            
+            //Configuration c = m.evaluate();
             //System.out.println(c.toStringAsOptionValues());
             //System.out.println(c);
             

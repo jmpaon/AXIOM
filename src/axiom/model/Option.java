@@ -110,8 +110,7 @@ public class Option implements Comparable<Option> {
         } else {
             value = this.adjusted.toString();
         }
-        String concatenatedLabel = this.statement.label + ":" + this.label;
-        return String.format("%s(%s)", concatenatedLabel, value);
+        return String.format("%s (%s)", label, value);
     }
 
 

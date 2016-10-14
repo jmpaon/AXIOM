@@ -63,7 +63,7 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         Probability sum = new Probability(0);
         for(Option o : optionsInRandomOrder()) { 
             sum.add(o.adjusted);
-            System.out.println("p sum is now "+  sum);
+            System.out.println("Option " + o.getLongLabel() + " :: p sum is now "+  sum);
             if(sum.compareTo(rnd) >= 0) {
                 System.out.println("sum " + sum + " is now bigger than " + rnd);
                 this.evaluatedState = o;

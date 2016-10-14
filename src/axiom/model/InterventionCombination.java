@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class InterventionCombination {
     private Model model;
-    private Map<Statement, <Pair 
+    private Map<Statement, String> mem;
     
     
     public InterventionCombination(Model model) {

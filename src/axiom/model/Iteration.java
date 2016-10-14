@@ -17,6 +17,7 @@ public class Iteration {
     
     public Probability getAposterioriProbability(Option o) {
         assert o.statement.model == this.model;
+        return null;
     }
     
 }

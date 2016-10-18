@@ -54,10 +54,8 @@ public class Option implements Comparable<Option> {
     
     void executeImpacts() throws ProbabilityAdjustmentException {
         for(Impact i : this.impactsInRandomOrder()) {
-            if(i.toOption.statement.getEvaluatedState() == null) {
-                System.out.println("Executing impact " + i);
-                i.execute();
-            }
+            System.out.println("Executing impact " + i);
+            i.execute();
         }
     }
     
@@ -110,7 +108,7 @@ public class Option implements Comparable<Option> {
         } else {
             value = this.adjusted.toString();
         }
-        return String.format("%s (%s)", label, value);
+        return String.format("%s (%s)", this.getLongLabel(), value);
     }
 
 

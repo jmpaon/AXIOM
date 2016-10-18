@@ -55,11 +55,9 @@ public class AXIOM {
             m.add.impact("F", "2", "C", "2", "-2");
             System.out.println("Option count : " + m.optionCount());
             
-            InterventionCombination ic = new InterventionCombination(m);
-            System.out.println(ic);
-            ic.nextCombination();
-            System.out.println(ic);
-            
+            IterationSet is = new IterationSet(m, 2);
+            System.out.println( is.getIterations().size() );
+
             //Configuration c = m.evaluate();
             //System.out.println(c.toStringAsOptionValues());
             //System.out.println(c);

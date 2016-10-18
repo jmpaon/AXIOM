@@ -54,28 +54,44 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         return this.evaluatedState;
     }
     
+    public boolean isEvaluated() {
+        return this.evaluatedState != null;
+    }
+    
+    void setActiveIntervention(Option interventionOption) {
+        assert this.intervention : "Attempt to set active intervention option for a non-intervention statement";
+        assert interventionOption.statement == this : "intervention option set to wrong statement";
+        
+        this.evaluatedState = interventionOption;
+    }
+    
     void evaluate() throws ProbabilityAdjustmentException {
         assert this.intervention || this.evaluatedState == null : "Non-intervention statement has state before evaluation";
         assert Probability.isValidDistribution(this.optionProbabilities());
         
-        Probability rnd = Probability.random();
-        System.out.println("random is " + rnd);
-        Probability sum = new Probability(0);
-        for(Option o : optionsInRandomOrder()) { 
-            sum.add(o.adjusted);
-            System.out.println("Option " + o.getLongLabel() + " :: p sum is now "+  sum);
-            if(sum.compareTo(rnd) >= 0) {
-                System.out.println("sum " + sum + " is now bigger than " + rnd);
-                this.evaluatedState = o;
-                break;
-            }
+        if(this.evaluatedState == null) {
+            Probability rnd = Probability.random();
+            System.out.println("random is " + rnd);
+            Probability sum = new Probability(0);
+            for(Option o : optionsInRandomOrder()) { 
+                sum.add(o.adjusted);
+                System.out.println("Option " + o.getLongLabel() + " :: p sum is now "+  sum);
+                if(sum.compareTo(rnd) >= 0) {
+                    System.out.println("sum " + sum + " is now bigger than " + rnd);
+                    this.evaluatedState = o;
+                    System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
+                    break;
+                }
+            }            
+        } else {
+            System.out.println("Statement " + this.label + "(timestep " + this.timestep + ") has state " + this.evaluatedState.label + " as intervention"   );
         }
         
         assert this.evaluatedState != null;
-        
-        //this.evaluatedState = this.optionsInRandomOrder().get(0);
-        System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
+
+        System.out.println("Call impact execution for option " + this.evaluatedState + " of statement " + this);
         this.evaluatedState.executeImpacts();
+        
         System.out.println(this.model.getModelStates());
     }
     

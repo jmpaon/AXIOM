@@ -22,14 +22,12 @@ import java.util.stream.Collectors;
  */
 public class InterventionCombination {
     private final Model model;
-    private final Map<Statement, Pair<Option, Collection<Option>>> interventions;
-    private final List<Pair<Statement, Pair<Option, List<Option>>>> ints;
+    private final List<Pair<Statement, Pair<Option, List<Option>>>> interventions;
     
     public InterventionCombination(Model model) {
         
         this.model = model;
-        this.interventions = new TreeMap<>();
-        this.ints = new LinkedList<>();
+        this.interventions = new LinkedList<>();
         
         for(Statement s : this.model.statements) {
             if(s.intervention) {
@@ -37,20 +35,45 @@ public class InterventionCombination {
                 Option firstOption = optionList.get(0);
                 Pair<Option, List<Option>> activeAndAvailableOptions = new Pair<>(firstOption, optionList);
                 Pair<Statement, Pair<Option, List<Option>>> pair = new Pair<>(s, activeAndAvailableOptions);
-                this.ints.add(pair);
+                this.interventions.add(pair);
             }
         }
-        
-        
     }
     
+    /**
+     * Returns the current combination of options for the 
+     * intervention statements of the <b>model</b> of this 
+     * <code>InterventionCombination</code>.
+     * 
+     * @return 
+     */
+    public List<Pair<Statement, Option>> getCombination() {
+        List<Pair<Statement, Option>> combination = new LinkedList<>();
+        for( Pair<Statement, Pair<Option, List<Option>>> p : this.interventions ) {
+            Pair<Statement, Option> intervention = new Pair(p.left, p.right.left);
+            combination.add(intervention);
+        }
+        return combination;
+    }
+    
+    
+    public boolean hasNextCombination() {
+        for(Pair<Statement, Pair<Option, List<Option>>> p : this.interventions) {
+            if(canStep (p.right) ) return true;
+        }
+        return false;
+    }
+    
+    
     public void nextCombination() {
-        for(Pair p : ints) {
-            if(canStep(p)) {
-                step(p);
+        assert hasNextCombination() : "No next combination available fpr " + this;
+        for(Pair<Statement, Pair<Option, List<Option>>> p : interventions) {
+            Pair<Option, List<Option>> pp = p.right;
+            if(canStep(pp)) {
+                step(pp);
                 return;
             } else {
-                reset(p);
+                reset(pp);
             }
         }
     }
@@ -73,7 +96,7 @@ public class InterventionCombination {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for(Pair<Statement, Pair<Option, List<Option>>> p : this.ints) {
+        for(Pair<Statement, Pair<Option, List<Option>>> p : this.interventions) {
             Statement s = p.left;
             Option o = p.right.left;
             Collection<Option> c = p.right.right;

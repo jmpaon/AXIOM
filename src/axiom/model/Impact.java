@@ -36,11 +36,14 @@ public class Impact {
     
     void execute() throws ProbabilityAdjustmentException {
         assert !executed;
-        Probability newProbability = adjustmentFunction.map(this.toOption.adjusted.get());
-        List<Probability> secondaryProbabilities = new LinkedList<>();
-        for(Option o : toOption.complementOptions()) secondaryProbabilities.add(o.adjusted);
-        this.toOption.adjusted.setWithSecondaryAdjustment(newProbability, secondaryProbabilities);
-        
+        if (!this.toOption.statement.isEvaluated()) {
+            Probability newProbability = adjustmentFunction.map(this.toOption.adjusted.get());
+            List<Probability> secondaryProbabilities = new LinkedList<>();
+            for(Option o : toOption.complementOptions()) secondaryProbabilities.add(o.adjusted);
+            this.toOption.adjusted.setWithSecondaryAdjustment(newProbability, secondaryProbabilities);
+        }
+
+        System.out.println("Impact " + this + " executed");
         this.executed = true;
     }
     
@@ -48,14 +51,15 @@ public class Impact {
     
     
     void reset() {
-        assert executed;
+        System.out.println("Resetting impact " + this);
+        //assert executed;
         this.executed = false;
     }
     
     
     @Override
     public String toString() {
-        return String.format("Impact from %s to %s by %s\n", fromOption, toOption, adjustmentFunction);
+        return String.format("Impact from %s to %s by %s\n", fromOption.getLongLabel(), toOption.getLongLabel(), adjustmentFunction);
     }
     
     

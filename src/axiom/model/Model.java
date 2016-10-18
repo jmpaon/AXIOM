@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -123,7 +124,21 @@ public class Model implements LabelNamespace {
                 s.evaluate();
             }
         }
-        return new Configuration(this);
+        Configuration c = new Configuration((this));
+        reset();
+        return c;
+    }
+    
+    public Configuration evaluate(List<Pair<Statement, Option>> activeInterventions) throws ProbabilityAdjustmentException  {
+        for(Pair<Statement, Option> p : activeInterventions) {
+            assert p.left.model == this;
+            assert p.left.intervention : "Statement " + p.left + " is not an intervention";
+            
+            // Set the active intervention for each intervention statement
+            p.left.setActiveIntervention(p.right);
+        }
+        return this.evaluate();
+        
     }
     
     void reset() {
@@ -144,6 +159,7 @@ public class Model implements LabelNamespace {
         return states.toString();
     }
 
+    
     @Override
     public Collection getNamespaceLabels() {
         Collection labels = new LinkedList<>();
@@ -152,6 +168,24 @@ public class Model implements LabelNamespace {
         }
         return labels;
     }
+
+    
+//    @Override
+//    public int hashCode() {
+//        int hash = 7;
+//        hash = 59 * hash + Objects.hashCode(this.statements);
+//        return hash;
+//    }
+//    
+//    
+//    @Override
+//    public boolean equals(Object o) {
+//        if(o == null) return false;
+//        if(!Model.class.isAssignableFrom(o.getClass())) return false;
+//        final Model m = (Model) o;
+//        return this.statements.equals(m.statements);
+//    }
+    
     
     
     

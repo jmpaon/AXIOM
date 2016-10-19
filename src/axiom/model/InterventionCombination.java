@@ -57,7 +57,7 @@ public class InterventionCombination {
     }
     
     /**
-     * Is there a new combination of <code>Option</code>s available
+     * Is there a new combination of <code>Option</code>s available? 
      * @return <b>true</b> if next combination exists, <b>false</b> otherwise
      */
     public boolean hasNextCombination() {
@@ -68,8 +68,12 @@ public class InterventionCombination {
     }
     
     
+    /**
+     * 'Moves ' this intervention combination one step forward.
+     * The new combination can be obtained with the {@link InterventionCombination#getCombination()} method.
+     */
     public void nextCombination() {
-        assert hasNextCombination() : "No next combination available fpr " + this;
+        assert hasNextCombination() : "No next combination available for " + this;
         for(Pair<Statement, Pair<Option, List<Option>>> p : interventions) {
             Pair<Option, List<Option>> pp = p.right;
             if(canStep(pp)) {
@@ -81,20 +85,32 @@ public class InterventionCombination {
         }
     }
     
-    private boolean canStep(Pair<Option, List<Option>> p) {
-        return !(p.right.indexOf(p.left) == p.right.size()-1);
+    /**
+     * Is the active intervention <code>Option</code> not the last <code>Option</code>
+     * of a set of possible intervention <code>Option</code>s?
+     * @param activeOptionAndPossibleOptions Pair containing the active <code>Option</code> and a <code>List</code> of possible <code>Option</code>s.
+     * @return <b>true</b> if the active option is the last in the list, <b>false</b> otherwise.
+     */
+    private boolean canStep(Pair<Option, List<Option>> activeOptionAndPossibleOptions) {
+        return !(activeOptionAndPossibleOptions.right.indexOf(activeOptionAndPossibleOptions.left) == activeOptionAndPossibleOptions.right.size()-1);
     }
     
-    private void step(Pair<Option, List<Option>> p) {
-        assert canStep(p);
-        p.left = p.right.get(p.right.indexOf(p.left)+1);
+    /**
+     * Set the active intervention option to be the next option on the list of possible options.
+     * @param activeOptionAndPossibleOptions <code>Pair</code> containing 
+     */
+    private void step(Pair<Option, List<Option>> activeOptionAndPossibleOptions) {
+        assert canStep(activeOptionAndPossibleOptions);
+        activeOptionAndPossibleOptions.left = activeOptionAndPossibleOptions.right.get(activeOptionAndPossibleOptions.right.indexOf(activeOptionAndPossibleOptions.left)+1);
     }
     
-    private void reset(Pair<Option, List<Option>> p) {
-        p.left = p.right.get(0);
+    /**
+     * Set the active intervention option to be the first option on the list of possible options.
+     * @param activeOptionAndPossibleOptions the active option and possible options
+     */
+    private void reset(Pair<Option, List<Option>> activeOptionAndPossibleOptions) {
+        activeOptionAndPossibleOptions.left = activeOptionAndPossibleOptions.right.get(0);
     }
-    
-    
     
     @Override
     public String toString() {
@@ -109,11 +125,6 @@ public class InterventionCombination {
     }
     
 
-    
-    // FIXME not needed?
-    private final Set<Statement> interventionStatements() {
-        return model.statements.stream().filter(s -> s.intervention).collect(Collectors.toSet());
-    }
     
 
     

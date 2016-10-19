@@ -8,13 +8,28 @@ package axiom.model;
 import java.util.Objects;
 
 /**
- *
+ * The label class represents identifying labels of AXIOM model components.
+ * These components can have a {@link LabelNamespace}, within which 
+ * they should be unique.
  * @author juha
  */
 public class Label implements Comparable<Label> {
     
+    /**
+     * Constant maximum length that labels can have.
+     */
     public static final int MAX_LABEL_LENGTH = 20;
+    
+    /**
+     * The String value of the label.
+     */
     public final String value;
+    
+    /**
+     * Namespace where this label is unique.
+     * Namespace is a set of a particular type of AXIOM model components, 
+     * such as the set of statements or the set of options under a statement
+     */
     public final LabelNamespace namespace;
     
     /**

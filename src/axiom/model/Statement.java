@@ -60,7 +60,8 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
     
     void setActiveIntervention(Option interventionOption) {
         assert this.intervention : "Attempt to set active intervention option for a non-intervention statement";
-        assert interventionOption.statement == this : "intervention option set to wrong statement";
+        assert interventionOption.statement == this : 
+                "intervention option set to wrong statement: Intervention option of statement " + interventionOption.statement.label + " set to " + this.label ;
         
         this.evaluatedState = interventionOption;
     }
@@ -71,28 +72,19 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         
         if(this.evaluatedState == null) {
             Probability rnd = Probability.random();
-            System.out.println("random is " + rnd);
             Probability sum = new Probability(0);
             for(Option o : optionsInRandomOrder()) { 
                 sum.add(o.adjusted);
-                System.out.println("Option " + o.getLongLabel() + " :: p sum is now "+  sum);
                 if(sum.compareTo(rnd) >= 0) {
-                    System.out.println("sum " + sum + " is now bigger than " + rnd);
                     this.evaluatedState = o;
-                    System.out.println("Evaluated statement " + this.label + "(timestep " + this.timestep + ") to state " + this.evaluatedState.label);
                     break;
                 }
             }            
-        } else {
-            System.out.println("Statement " + this.label + "(timestep " + this.timestep + ") has state " + this.evaluatedState.label + " as intervention"   );
         }
         
         assert this.evaluatedState != null;
-
-        System.out.println("Call impact execution for option " + this.evaluatedState + " of statement " + this);
         this.evaluatedState.executeImpacts();
         
-        System.out.println(this.model.getModelStates());
     }
     
     void reset() {

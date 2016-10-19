@@ -105,6 +105,12 @@ public class Probability implements Comparable<Probability> {
         for(Probability p : collection) this.subtract(p);
     }
     
+    public Probability getSubtract(Probability p) {
+        Probability tp = this.get();
+        tp.subtract(p);
+        return tp;
+    }
+    
     public double toDouble() {
         double val = (double)numerator/DENOMINATOR;
         return round(val, DEFAULT_PRECISION);

@@ -42,8 +42,6 @@ public class Impact {
             for(Option o : toOption.complementOptions()) secondaryProbabilities.add(o.adjusted);
             this.toOption.adjusted.setWithSecondaryAdjustment(newProbability, secondaryProbabilities);
         }
-
-        System.out.println("Impact " + this + " executed");
         this.executed = true;
     }
     
@@ -51,8 +49,6 @@ public class Impact {
     
     
     void reset() {
-        System.out.println("Resetting impact " + this);
-        //assert executed;
         this.executed = false;
     }
     

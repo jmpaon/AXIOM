@@ -54,7 +54,6 @@ public class Option implements Comparable<Option> {
     
     void executeImpacts() throws ProbabilityAdjustmentException {
         for(Impact i : this.impactsInRandomOrder()) {
-            System.out.println("Executing impact " + i);
             i.execute();
         }
     }

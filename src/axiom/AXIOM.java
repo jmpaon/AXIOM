@@ -10,6 +10,8 @@ import axiom.probabilityAdjusters.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.lang.System.out;
+import java.util.LinkedList;
+import java.util.List;
 /**
  *
  * @author juha
@@ -25,17 +27,18 @@ public class AXIOM {
             NameProbabilityAdjuster adj = new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster();
             Model m = new Model("Testmodel", adj);
             
-            m.add.statement("B", "B-description", true, 1);
-            m.add.statement("C", "C-description", false, 1);
             m.add.statement("A", "A-description", true, 1);
+            m.add.statement("B", "B-description", false, 1);
+            m.add.statement("C", "C-description", true, 1);
             m.add.statement("D", "D-description", false, 2);
-            m.add.statement("E", "E-description", true, 2);
+            m.add.statement("E", "E-description", false, 2);
             m.add.statement("F", "F-description", false, 2);
-            m.add.option("B", "2", 0.7);
-            m.add.option("B", "1", 0.3);
+
             m.add.option("A", "2", 0.2);
             m.add.option("A", "1", 0.3);
-            m.add.option("A", "3", 0.5);
+            m.add.option("A", "3", 0.5);            
+            m.add.option("B", "2", 0.7);
+            m.add.option("B", "1", 0.3);
             m.add.option("C", "1", 0.1);
             m.add.option("C", "3", 0.2);
             m.add.option("C", "2", 0.1);
@@ -53,10 +56,13 @@ public class AXIOM {
             m.add.impact("D", "2", "A", "2", "-1");
             m.add.impact("E", "1", "C", "1", "-4");
             m.add.impact("F", "2", "C", "2", "-2");
-            System.out.println("Option count : " + m.optionCount());
             
-            IterationSet is = new IterationSet(m, 2);
-            System.out.println( is.getIterations().size() );
+            List<Pair<Statement,Option>> ints = new LinkedList<>();
+            ints.add(new Pair<>(m.findStatement("B"), m.getOption(5)));
+            ints.add(new Pair<>(m.findStatement("D"), m.getOption(11)));
+            
+            IterationSet is = new IterationSet(m, 30000);
+            System.out.println(is);
 
             //Configuration c = m.evaluate();
             //System.out.println(c.toStringAsOptionValues());

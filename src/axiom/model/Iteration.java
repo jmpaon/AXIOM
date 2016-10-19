@@ -42,12 +42,66 @@ public class Iteration {
         for(Configuration c : this.configurations) {
             if(c.isOptionTrue(o)) optionFrequency++;
         }
-        return new Probability(optionFrequency / this.evaluationCount);
+        return new Probability((double)optionFrequency / this.evaluationCount);
+    }
+    
+    public Probability getAposterioriProbability(int index) {
+        int optionFrequency = 0;
+        for(Configuration c : this.configurations) {
+            if(c.isOptionTrue(index)) optionFrequency++;
+        }
+        return new Probability((double)optionFrequency / this.evaluationCount);
+    }
+    
+    public List<Pair<Option, Probability>> getAposterioriProbabilities() {
+        List<Pair<Option, Probability>> aposterioris = new LinkedList<>();
+        for(Option o : this.model.getOptions()) {
+            Probability p = getAposterioriProbability(o);
+            aposterioris.add(new Pair<>(o, p));
+        }
+        return aposterioris;
+    }
+    
+    public String toString_pChanges() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nActive interventions for iteration:\n").append(toString_activeInterventions());
+        
+        sb.append("\n");
+        for(Pair<Option,Probability> p : this.getAposterioriProbabilities()) {
+            if(!p.left.statement.intervention) {
+                sb.append(String.format("%10s %6.6s --> %6.6s (%6.6s) \n", p.left.getLongLabel(), p.left.apriori, p.right, (p.right.toDouble() - p.left.apriori.toDouble()) ));
+            } else {
+                boolean b = this.activeInterventions.stream().filter(f -> f.right.equals(p.left)).findFirst().isPresent();
+                sb.append(String.format("%10s (Active interv.) : %5s\n", p.left.getLongLabel(), b ? "TRUE" : "FALSE" ));
+            }
+        }
+        return sb.toString(); 
     }
     
     @Override
     public String toString() {
-        throw new UnsupportedOperationException();
+        return "Iteration with active interventions " + toString_activeInterventions();
+    }
+    
+    
+    public String toString_activeInterventions() {
+        StringBuilder sb = new StringBuilder();
+        for(Pair<Statement,Option> activeIntervention : activeInterventions) {
+            sb.append(activeIntervention.left.label).append(" <== ").append(activeIntervention.right.getLongLabel()).append("\n");
+        }
+        return sb.toString();
+    }
+    
+    public String toString_configurationTable() {
+        StringBuilder sb = new StringBuilder();
+        for(Option o : this.model.getOptions()) {
+            sb.append(String.format("%20s:", o.getLongLabel()));
+            for(Configuration c : this.configurations) {
+                sb.append( c.isOptionTrue(o) ? " 1 " : " 0 ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
     
     

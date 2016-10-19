@@ -69,27 +69,6 @@ public class Label implements Comparable<Label> {
         if(!this.value.equalsIgnoreCase(l.value)) return false;
         return true;
     }
-
-    
-//public boolean equals(Object obj) {
-//    if (obj == null) {
-//        return false;
-//    }
-//    if (!Person.class.isAssignableFrom(obj.getClass())) {
-//        return false;
-//    }
-//    final Person other = (Person) obj;
-//    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-//        return false;
-//    }
-//    if (this.age != other.age) {
-//        return false;
-//    }
-//    return true;
-//}    
-    
-    
-    
     
     @Override
     public int hashCode() {
@@ -98,7 +77,6 @@ public class Label implements Comparable<Label> {
         hash = 67 * hash + Objects.hashCode(this.namespace);
         return hash;
     }
-    
 
     @Override
     public int compareTo(Label l) {

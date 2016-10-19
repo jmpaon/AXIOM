@@ -15,30 +15,45 @@ import java.util.List;
  */
 public class IterationSet {
     
-    final List<Iteration> iterations;
+    final public List<Iteration> iterations;
     final Model model;
-    final int iterationCount;
+    final int evaluationCount;
     
     public IterationSet(Model model, int iterationCount) throws ProbabilityAdjustmentException {
+        assert iterationCount > 0;
+        
         this.iterations = new LinkedList<>();
         this.model = model;
-        this.iterationCount = iterationCount;
+        this.evaluationCount = iterationCount;
         this.createIterations();
+    }
+    
+    private int possibleInterventionCombinations() {
+        int combin = 1;
+        for(Statement s : this.model.statements) {
+            if(s.intervention) combin *= s.optionCount();
+        }
+        return combin;
     }
     
     private void createIterations() throws ProbabilityAdjustmentException {
         InterventionCombination interventions = new InterventionCombination(model);
         
         do {
-            this.iterations.add( new Iteration(model, interventions.getCombination(), iterationCount));
-            System.out.println("intervention set " + interventions.getCombination());
+            this.iterations.add(new Iteration(model, interventions.getCombination(), evaluationCount));
             interventions.nextCombination();            
         } while (interventions.hasNextCombination());
-
     }
     
-    public List<Iteration> getIterations() {
-        return iterations;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Iteration set of %s iterations, each of %s evaluations\n\n", this.possibleInterventionCombinations(), this.evaluationCount));
+        
+        for(Iteration i : this.iterations) {
+            sb.append(i.toString_pChanges());
+        }
+        return sb.toString();
     }
     
     

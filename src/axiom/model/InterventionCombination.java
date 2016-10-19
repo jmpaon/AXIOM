@@ -56,7 +56,10 @@ public class InterventionCombination {
         return combination;
     }
     
-    
+    /**
+     * Is there a new combination of <code>Option</code>s available
+     * @return <b>true</b> if next combination exists, <b>false</b> otherwise
+     */
     public boolean hasNextCombination() {
         for(Pair<Statement, Pair<Option, List<Option>>> p : this.interventions) {
             if(canStep (p.right) ) return true;

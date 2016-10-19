@@ -42,11 +42,15 @@ public class Model implements LabelNamespace {
         this.probabilityAdjuster = probabilityAdjuster;
     }
     
-    Statement findStatement(Label label) throws LabelNotFoundException {
+    public Statement findStatement(Label label) throws LabelNotFoundException {
         for (Statement s : statements) {
             if(s.label.equals(label)) return s;
         }
         throw new LabelNotFoundException("Statement with label " + label + " not found");
+    }
+    
+    public Statement findStatement(String label) throws LabelNotFoundException {
+        return findStatement(new Label(label));
     }
     
     boolean statementExists(Label label) {
@@ -103,7 +107,7 @@ public class Model implements LabelNamespace {
     }
     
     public Option getOption(String label) throws LabelNotFoundException {
-        for(Option o : getOptions()) if(o.label.value.equals(label)) return o;
+        for(Option o : getOptions()) if(o.label.value.equals(label)) return o; // FIXME model can have several options with the same label
         throw new LabelNotFoundException("Option with label " + label + " not found");
     }
     

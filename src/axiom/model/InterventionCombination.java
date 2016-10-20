@@ -8,11 +8,6 @@ package axiom.model;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 //import java.util.Map.Entry;
 
@@ -45,9 +40,9 @@ public class InterventionCombination {
      * intervention statements of the <b>model</b> of this 
      * <code>InterventionCombination</code>.
      * 
-     * @return 
+     * @return A list of pairs of intervention statements and their active interventions
      */
-    public List<Pair<Statement, Option>> getCombination() {
+    public List<Pair<Statement, Option>> getStatementsAndActiveInterventions() {
         List<Pair<Statement, Option>> combination = new LinkedList<>();
         for( Pair<Statement, Pair<Option, List<Option>>> p : this.interventions ) {
             Pair<Statement, Option> intervention = new Pair(p.left, p.right.left);
@@ -69,11 +64,12 @@ public class InterventionCombination {
     
     
     /**
-     * 'Moves ' this intervention combination one step forward.
-     * The new combination can be obtained with the {@link InterventionCombination#getCombination()} method.
+     * 'Advances' this intervention combination one step forward,
+     * transforming it to the next intervention combination available for <b>model</b>.
+     * The new combination can be obtained with the {@link InterventionCombination#getStatementsAndActiveInterventions()} method.
      */
     public void nextCombination() {
-        assert hasNextCombination() : "No next combination available for " + this;
+        assert hasNextCombination() : "Next combination is not available for " + this;
         for(Pair<Statement, Pair<Option, List<Option>>> p : interventions) {
             Pair<Option, List<Option>> pp = p.right;
             if(canStep(pp)) {

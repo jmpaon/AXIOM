@@ -57,6 +57,9 @@ public class AXIOM {
             m.add.impact("E", "1", "C", "1", "-4");
             m.add.impact("F", "2", "C", "2", "-2");
             
+            m.setupOpttbl();
+            System.out.println(m.opttbl);
+            
             List<Pair<Statement,Option>> ints = new LinkedList<>();
             ints.add(new Pair<>(m.findStatement("B"), m.getOption(5)));
             ints.add(new Pair<>(m.findStatement("D"), m.getOption(11)));

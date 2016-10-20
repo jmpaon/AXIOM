@@ -11,11 +11,10 @@ import axiom.probabilityAdjusters.ProbabilityAdjustmentFunction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,7 +29,7 @@ public class Model implements LabelNamespace {
     public final ComponentAdder add;
     final ProbabilityAdjuster probabilityAdjuster;
     final Set<Statement> statements;
-    
+    public final HashMap<Integer, Option> opttbl; // FIXME experimental
     
     public Model(String modelName, ProbabilityAdjuster probabilityAdjuster) {
         assert modelName != null;
@@ -40,6 +39,17 @@ public class Model implements LabelNamespace {
         this.add = new ComponentAdder(this);
         this.name = modelName;
         this.probabilityAdjuster = probabilityAdjuster;
+        
+        this.opttbl = new HashMap<>(); // FIXME experimental
+    }
+    
+    /* EXPERIMENTAL (FIXME)*/
+    public void setupOpttbl() {
+        for(int i=1;i<=this.optionCount();i++) {
+            opttbl.put(i, this.getOption_(i));
+            assert this.getOption(i) != null;
+        }
+        System.out.println("opttbl size : " + opttbl.size());
     }
     
     public Statement findStatement(Label label) throws LabelNotFoundException {
@@ -101,7 +111,14 @@ public class Model implements LabelNamespace {
         return list;
     }
     
+    /* EXPERIMENTAL */
     public Option getOption(int index) { // FIXME non public
+        assert index > 0 && index <= this.optionCount() : "index " + index + " is out of bounds [1," + this.optionCount()+"]" ;
+        return opttbl.get(index);
+    }
+    
+    /* NON-experimental */
+    public Option getOption_(int index) {
         assert index > 0 && index <= this.optionCount() : "index " + index + " is out of bounds [1," + this.optionCount()+"]" ;
         return this.getOptions().get(index-1);
     }

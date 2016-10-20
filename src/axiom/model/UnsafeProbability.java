@@ -11,8 +11,12 @@ import java.util.Collection;
 
 /**
  *
- * @author juha
+ * @author jmpaon
+ * @deprecated Use {@link Probability} instead. 
+ * This probability class wraps a double and can result in errors 
+ * regarding probability distributions.
  */
+@Deprecated
 public class UnsafeProbability implements Comparable<UnsafeProbability> {
 
     private double value;

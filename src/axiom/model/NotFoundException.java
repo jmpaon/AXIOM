@@ -9,15 +9,15 @@ package axiom.model;
  *
  * @author jmpaon
  */
-public class LabelNotFoundException extends NotFoundException {
+public class NotFoundException extends AXIOMException {
 
     /**
-     * Constructs an instance of <code>LabelNotFoundException</code> with the
+     * Constructs an instance of <code>NotFoundException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public LabelNotFoundException(String msg) {
+    public NotFoundException(String msg) {
         super(msg);
     }
 }

@@ -9,14 +9,21 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- *
+ * Configuration is the result of an AXIOM <code>Model</code> evaluation.
+ * In a configuration, each <code>Statement</code> has an evaluated state, 
+ * meaning that each <code>Option</code> has a truth value.
  * @author jmpaon
  */
 public class Configuration {
+    
     final Model model;
     final boolean states[];
     
-    public Configuration(Model model) {
+    /**
+     * Constructor for <code>Configuration</code>.
+     * @param model AXIOM model.
+     */
+    Configuration(Model model) {
         assert model != null;
         this.model = model;
         this.states = new boolean[model.optionCount()];
@@ -26,20 +33,41 @@ public class Configuration {
         }
     }
     
-    public boolean isOptionTrue(int index){
-        return this.states[index-1];
+    /**
+     * @param optionIndex Index of option in <b>model</b>
+     * @return TRUE if option is true in <code>Configuration</code>, FALSE otherwise
+     */
+    public boolean isOptionTrue(int optionIndex) {
+        assert optionIndex > 0 && optionIndex <= this.model.optionCount();
+        return this.states[optionIndex-1];
     }
     
+    /**
+     * 
+     * @param option
+     * @return 
+     */
     public boolean isOptionTrue(Option option) {
         assert option != null;
         assert option.statement.model == this.model;
         return states[model.getOptionIndex(option)-1];
     }
 
+    /**
+     * 
+     * @param optionLabel
+     * @return
+     * @throws LabelNotFoundException 
+     */
     public boolean isOptionTrue(Label optionLabel) throws LabelNotFoundException {
         return states[model.getOptionIndex(model.getOption(optionLabel.value))];
     }
     
+    /**
+     * 
+     * @param optionSet
+     * @return 
+     */
     public boolean isOptionSetTrue(Collection<Option> optionSet) {
         for(Option o : optionSet) if(! isOptionTrue(o)) return false;
         return true;

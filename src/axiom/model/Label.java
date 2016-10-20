@@ -19,6 +19,7 @@ public class Label implements Comparable<Label> {
      * Constant maximum length that labels can have.
      */
     public static final int MAX_LABEL_LENGTH = 20;
+    public static final char[] NON_ALLOWED_CHARS = {':'};
     
     /**
      * The String value of the label.
@@ -44,6 +45,7 @@ public class Label implements Comparable<Label> {
         
         assert namespace != null;
         assert label != null;
+        for(char c : NON_ALLOWED_CHARS) assert !label.contains(String.valueOf(c)) : "A non-allowed character (" + c + ") in label value " + label;
         
         this.namespace = namespace;
         if( label.length() > MAX_LABEL_LENGTH )
@@ -65,6 +67,7 @@ public class Label implements Comparable<Label> {
      */
     Label(String label) {
         assert label != null;
+        for(char c : NON_ALLOWED_CHARS) assert !label.contains(String.valueOf(c));
         
         if( label.length() > MAX_LABEL_LENGTH )
             throw new IllegalArgumentException("Label ("+label+" is too long; maximum length for label is 20 characters");
@@ -72,6 +75,8 @@ public class Label implements Comparable<Label> {
         this.namespace = null;
         this.value = label;
     }
+    
+    
     
     @Override
     public boolean equals(Object o) {

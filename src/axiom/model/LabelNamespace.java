@@ -20,5 +20,4 @@ public interface LabelNamespace {
      */
     public Collection<Label> getNamespaceLabels();
     
-    
 }

@@ -64,7 +64,7 @@ public class AXIOM {
             
             Reader r = new Reader("/home/juha/studio/cia/AXIOM/AXIOM/input1.txt");
             System.out.println(System.getProperty("user.dir"));
-            System.out.println(r.content);
+            // System.out.println(r.content);
             
             String comm = "# purr kurr murr";
             Command c = new Command(comm);

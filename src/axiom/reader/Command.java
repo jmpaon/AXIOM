@@ -18,13 +18,19 @@ public class Command {
     public List<String> parts;
     
     public Command(String commandText) {
-        String[] cmd = commandText.split("(?=[#\\*>\\'])");
-        for(String s : cmd) System.out.println(s + ":");
+        parts = new LinkedList<>();
+        String[] cmd = commandText.split("(?=[\\s+])");
+        //String[] cmd = commandText.split("(?=[#\\*>\\'])");
         Collections.addAll(parts, cmd);
     }
     
+    // public String findAfter
+    
     @Override
     public String toString() {
-        return this.parts.toString();
+        String ss = "";
+        for(String s : parts) ss += s + " == ";
+        return ss;
+        
     }
 }

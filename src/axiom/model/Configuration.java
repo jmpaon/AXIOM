@@ -73,11 +73,20 @@ public class Configuration {
         return true;
     }
 
+    /**
+     * 
+     * @param optionSet
+     * @return 
+     */
     public boolean isOptionSetTrue(int[] optionSet) {
         for(int i : optionSet) if(! states[i-1]==true) return false;
         return true;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public String toStringAsOptionValues() {
         StringBuilder sb = new StringBuilder();
         int i=0;

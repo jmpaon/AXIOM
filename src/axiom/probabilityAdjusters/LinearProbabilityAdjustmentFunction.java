@@ -49,10 +49,6 @@ public class LinearProbabilityAdjustmentFunction extends ProbabilityAdjustmentFu
     @Override
     public Probability map(Probability probability) throws ProbabilityAdjustmentException {
         
-        // FIXME not necessary anymore
-        //if(probability.getValue() == 1) probability.setValue(0.999999999999);
-        //if(probability.getValue() == 0) probability.setValue(0.000000000001);
-        
         if(distance >= 0) {
             return adjustByDistance(probability);
         }            

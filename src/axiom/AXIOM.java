@@ -7,6 +7,8 @@ package axiom;
 
 import axiom.model.*;
 import axiom.probabilityAdjusters.*;
+import axiom.reader.Command;
+import axiom.reader.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.lang.System.out;
@@ -58,14 +60,21 @@ public class AXIOM {
             m.add.impact("F", "2", "C", "2", "-2");
             
             m.setupOpttbl();
-            System.out.println(m.opttbl);
+            // System.out.println(m.opttbl);
             
-            List<Pair<Statement,Option>> ints = new LinkedList<>();
-            ints.add(new Pair<>(m.findStatement("B"), m.getOption(5)));
-            ints.add(new Pair<>(m.findStatement("D"), m.getOption(11)));
+            Reader r = new Reader("/home/juha/studio/cia/AXIOM/AXIOM/input1.txt");
+            System.out.println(System.getProperty("user.dir"));
+            System.out.println(r.content);
             
-            IterationSet is = new IterationSet(m, 30000);
-            System.out.println(is);
+            String comm = "# purr kurr murr";
+            Command c = new Command(comm);
+            System.out.println(c);
+            
+            
+            
+            
+            //IterationSet is = new IterationSet(m, 30000);
+            //System.out.println(is);
 
             //Configuration c = m.evaluate();
             //System.out.println(c.toStringAsOptionValues());

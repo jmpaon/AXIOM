@@ -59,16 +59,14 @@ public class AXIOM {
             m.add.impact("E", "1", "C", "1", "-4");
             m.add.impact("F", "2", "C", "2", "-2");
             
-            m.setupOpttbl();
+            
             // System.out.println(m.opttbl);
-            
-            Reader r = new Reader("/home/juha/studio/cia/AXIOM/AXIOM/input1.txt");
-            System.out.println(System.getProperty("user.dir"));
-            // System.out.println(r.content);
-            
-            String comm = "# purr kurr murr";
-            Command c = new Command(comm);
-            System.out.println(c);
+            //String inputfilename = System.getProperty("user.dir") + "\\" + "input1.txt";
+            Reader r = new Reader("input1.txt");
+            Model m2 = r.createAXIOMmodelFromInput();
+            System.out.println(m2);
+
+
             
             
             

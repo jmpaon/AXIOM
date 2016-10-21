@@ -28,7 +28,7 @@ public class Configuration {
         this.model = model;
         this.states = new boolean[model.optionCount()];
         for(int i=0; i<model.optionCount(); i++) {
-            Option o = model.getOption(i+1);
+            Option o = model.find.option(i+1);
             states[i] = o.statement.getEvaluatedState().equals(o);
         }
     }
@@ -53,15 +53,6 @@ public class Configuration {
         return states[model.getOptionIndex(option)-1];
     }
 
-    /**
-     * 
-     * @param optionLabel
-     * @return
-     * @throws LabelNotFoundException 
-     */
-    public boolean isOptionTrue(Label optionLabel) throws LabelNotFoundException {
-        return states[model.getOptionIndex(model.getOption(optionLabel.value))];
-    }
     
     /**
      * 
@@ -101,7 +92,7 @@ public class Configuration {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int i=0;
-        for(boolean b : states) sb.append(++i).append(") ").append(model.getOption(i).getLongLabel()).append("=").append(b).append(" ");
+        for(boolean b : states) sb.append(++i).append(") ").append(model.find.option(i).getLongLabel()).append("=").append(b).append(" ");
         return sb.toString();
     }
     

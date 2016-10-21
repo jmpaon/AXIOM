@@ -27,6 +27,7 @@ public class Model implements LabelNamespace {
     
     public final String name;
     public final ComponentAdder add;
+    public ComponentFinder find;
     final ProbabilityAdjuster probabilityAdjuster;
     final Set<Statement> statements;
     public final HashMap<Integer, Option> opttbl; // FIXME experimental
@@ -36,37 +37,16 @@ public class Model implements LabelNamespace {
         assert probabilityAdjuster != null : "Null probabilityAdjuster";
         
         this.statements = new TreeSet<>();
-        this.add = new ComponentAdder(this);
+        this.add  = new ComponentAdder(this);
+        this.find = null;
         this.name = modelName;
         this.probabilityAdjuster = probabilityAdjuster;
         
         this.opttbl = new HashMap<>(); // FIXME experimental
     }
     
-    /* EXPERIMENTAL (FIXME)*/
-    public void setupOpttbl() {
-        for(int i=1;i<=this.optionCount();i++) {
-            opttbl.put(i, this.getOption_(i));
-            assert this.getOption(i) != null;
-        }
-        System.out.println("opttbl size : " + opttbl.size());
-    }
     
-    public Statement findStatement(Label label) throws LabelNotFoundException {
-        for (Statement s : statements) {
-            if(s.label.equals(label)) return s;
-        }
-        throw new LabelNotFoundException("Statement with label " + label + " not found");
-    }
     
-    public Statement findStatement(String label) throws LabelNotFoundException {
-        return findStatement(new Label(label));
-    }
-    
-    boolean statementExists(Label label) {
-        for(Statement s : statements) if(s.label.equals(label)) return true;
-        return false;
-    }
     
     /**
      * Collect the statements in the model into a map of lists ordered by the 
@@ -111,24 +91,8 @@ public class Model implements LabelNamespace {
         return list;
     }
     
-    /* EXPERIMENTAL */
-    public Option getOption(int index) { // FIXME non public
-        assert index > 0 && index <= this.optionCount() : "index " + index + " is out of bounds [1," + this.optionCount()+"]" ;
-        return opttbl.get(index);
-    }
     
-    /* NON-experimental */
-    public Option getOption_(int index) {
-        assert index > 0 && index <= this.optionCount() : "index " + index + " is out of bounds [1," + this.optionCount()+"]" ;
-        return this.getOptions().get(index-1);
-    }
-    
-    public Option getOption(String label) throws LabelNotFoundException {
-        for(Option o : getOptions()) if(o.label.value.equals(label)) return o; // FIXME model can have several options with the same label
-        throw new LabelNotFoundException("Option with label " + label + " not found");
-    }
-    
-    public int getOptionIndex(Option o) {
+    int getOptionIndex(Option o) {
         assert o != null;
         assert o.statement.model == this;
         int i = 1;
@@ -140,11 +104,18 @@ public class Model implements LabelNamespace {
     }
     
     public Configuration evaluate() throws ProbabilityAdjustmentException {
+        
+        /* Initialize ComponentFinder if not yet initialized */
+        if(this.find==null) this.find = new ComponentFinder(this);
+        
+        /* Evaluate model statements ordered by temporal category */
         for(Map.Entry<Integer, List<Statement>> e : this.statementsByTimestep().entrySet()) {
             for(Statement s : e.getValue()) {
                 s.evaluate();
             }
         }
+        
+        /* Return evaluation result and reset model */
         Configuration c = new Configuration((this));
         reset();
         return c;
@@ -155,7 +126,7 @@ public class Model implements LabelNamespace {
             assert p.left.model == this;
             assert p.left.intervention : "Statement " + p.left + " is not an intervention";
             
-            // Set the active intervention for each intervention statement
+            /* Set the active intervention for each intervention statement */
             p.left.setActiveIntervention(p.right);
         }
         return this.evaluate();
@@ -189,27 +160,22 @@ public class Model implements LabelNamespace {
         }
         return labels;
     }
-
     
-//    @Override
-//    public int hashCode() {
-//        int hash = 7;
-//        hash = 59 * hash + Objects.hashCode(this.statements);
-//        return hash;
-//    }
-//    
-//    
-//    @Override
-//    public boolean equals(Object o) {
-//        if(o == null) return false;
-//        if(!Model.class.isAssignableFrom(o.getClass())) return false;
-//        final Model m = (Model) o;
-//        return this.statements.equals(m.statements);
-//    }
-    
-    
-    
-    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString()).append("\n");
+        for(Statement s : this.statements) {
+            sb.append("Statement ").append(s.label).append("\n");
+            for(Option o : s.options) {
+                sb.append("\tOption ").append(o.label).append(" (p").append(o.adjusted).append(")\n");
+                for(Impact i : o.impacts) {
+                    sb.append(String.format("\t\t> %s by %s\n", i.toOption.label, i.adjustmentFunction.toString()));
+                }
+            }
+        }
+        return sb.toString();
+    }
     
     
     public final class ComponentAdder {
@@ -233,7 +199,9 @@ public class Model implements LabelNamespace {
             assert optionLabel != null;
             assert aprioriProbability >= 0 && aprioriProbability <= 1;
             
-            Statement s = model.findStatement(new Label(statementLabel));
+            //Statement s = find.statement(statementLabel);
+            Statement s = statements.stream().filter(st -> st.label.value.equals(statementLabel)).findFirst().get();
+            assert s != null;
             Option o = new Option(new Label(optionLabel, s), s, new Probability(aprioriProbability));
             s.options.add(o);
         }
@@ -252,9 +220,9 @@ public class Model implements LabelNamespace {
             assert toOptionLabel != null;
             assert adjustmentFunctionName != null;
             
-            Statement fromStatement = model.findStatement(new Label(fromStatementLabel));
+            Statement fromStatement = statements.stream().filter(st -> st.label.value.equals(fromStatementLabel)).findFirst().get();
             Option fromOption = fromStatement.findOption(new Label(fromOptionLabel));
-            Statement toStatement = model.findStatement(new Label(toStatementLabel));
+            Statement toStatement = statements.stream().filter(st -> st.label.value.equals(toStatementLabel)).findFirst().get();
             Option toOption = toStatement.findOption(new Label(toOptionLabel));
             if(fromStatement.equals(toStatement)) throw new AXIOMException("Impact from statement " + fromStatement.label + " cannot point to an option in the same statement");
             ProbabilityAdjustmentFunction f = model.probabilityAdjuster.getFunction(adjustmentFunctionName);
@@ -265,7 +233,48 @@ public class Model implements LabelNamespace {
             
             fromOption.impacts.add(new Impact(f, fromOption, toOption));
         }
+    }
+    
+    public final class ComponentFinder {
         
+        final Model model;
+        private final HashMap<Integer, Option>   optionTable;
+        private final HashMap<String, Statement> statementTable;
+        
+        ComponentFinder(Model model) {
+            this.model = model;
+            this.optionTable = new HashMap<>();
+            this.statementTable = new HashMap<>();
+            
+            for(int i=1;i<=this.model.optionCount();i++) {
+                Option o = this.model.getOptions().get(i-1);
+                assert o != null;
+                this.optionTable.put(i, o);
+            }
+            
+            for(Statement s : model.statements) {
+                statementTable.put(s.label.value, s);
+            }
+            
+        }
+        
+        public Statement statement(String label) {
+            assert statementTable.containsKey(label);
+            return statementTable.get(label);
+        }
+
+        public Statement statement(Label label) throws LabelNotFoundException {
+            return this.statement(label.value);
+        }        
+        
+        public Option option(String statementLabel, String optionLabel) throws LabelNotFoundException {
+            return statementTable.get(statementLabel).findOption(new Label(optionLabel));
+        }
+
+        public Option option(int index) {
+            assert index > 0 && index <= model.optionCount() : "index " + index + " is out of bounds [1," + model.optionCount() + "]";
+            return optionTable.get(index);
+        }
     }
     
 

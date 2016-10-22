@@ -79,7 +79,7 @@ public class NameProbabilityAdjuster extends ProbabilityAdjuster {
 
     @Override
     public ProbabilityAdjustmentFunction getFunction(String name) {
-        assert adjusterExists(name);
+        if (!adjusterExists(name)) throw new IllegalArgumentException("Adjuster by name " + name + " does not exist");
         return adjustmentFunctions.get(name);
     }
 

@@ -45,7 +45,8 @@ public class Label implements Comparable<Label> {
         
         assert namespace != null;
         assert label != null;
-        for(char c : NON_ALLOWED_CHARS) assert !label.contains(String.valueOf(c)) : "A non-allowed character (" + c + ") in label value " + label;
+        for(char c : NON_ALLOWED_CHARS) if(label.contains(String.valueOf(c))) throw new IllegalArgumentException("A non-allowed character (" + c + ") in label value " + label);
+
         
         this.namespace = namespace;
         if( label.length() > MAX_LABEL_LENGTH )

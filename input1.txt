@@ -11,5 +11,6 @@
       > statement1 option3 +1
    
 # statement3
-   * option1 0.3
-   * option2 0.7
+   * option1 0.7
+      > statement2 option1 +6
+   * option2 0.3

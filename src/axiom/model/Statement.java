@@ -68,7 +68,8 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
     
     void evaluate() throws ProbabilityAdjustmentException {
         assert this.intervention || this.evaluatedState == null : "Non-intervention statement has state before evaluation";
-        assert Probability.isValidDistribution(this.optionProbabilities());
+        if(!Probability.isValidDistribution(this.optionProbabilities())) 
+            throw new IllegalStateException("Probability distribution of statement " +this.label+ " is not valid (" + this.optionProbabilityDistribution(" ") +")");
         
         if(this.evaluatedState == null) {
             Probability rnd = Probability.random();
@@ -170,10 +171,10 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
         return String.format("Statement %s with options %s", this.label, this.options.toString());
     }
     
-    public String optionProbabilityDistribution() {
+    public String optionProbabilityDistribution(String separator) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Statement ").append(this.label).append("\n");
-        for(Option o : this.options) sb.append(o.label).append(" : ").append(o.adjusted.toStringAsFraction()).append("\n");
+        sb.append("Statement ").append(this.label).append(separator);
+        for(Option o : this.options) sb.append(o.label).append(" : ").append(o.adjusted.toStringAsFraction()).append(separator);
         return sb.toString();
     }
     

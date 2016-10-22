@@ -119,8 +119,10 @@ public class Iteration {
         
         sb.append("\n");
         for(Pair<Option,Probability> p : this.aposterioriProbabilities) {
+            
             boolean isIntervention = p.left.statement.intervention;
             boolean noInterventions = this.activeInterventions.isEmpty();
+            
             if( !isIntervention || noInterventions ) {
                 double difference = p.right.toDouble()-p.left.apriori.toDouble();
                 assert difference >= -1 && difference <= 1;

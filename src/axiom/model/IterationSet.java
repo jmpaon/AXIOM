@@ -44,7 +44,7 @@ public class IterationSet {
         for(Statement s : this.model.statements) {
             if(s.intervention) combinationCount *= s.optionCount();
         }
-        return combinationCount;
+        return combinationCount == 1 ? 1 : combinationCount+1; /* if there are no intervention combinations, 0 combinations are possible */
     }
     
     /**
@@ -55,17 +55,23 @@ public class IterationSet {
     private void createIterations() throws ProbabilityAdjustmentException {
         InterventionCombination interventionCombination = new InterventionCombination(model);
         
-        do {
+        /* Add an iteration without any interventions to the iteration set */
+        this.iterations.add(new Iteration(model, new LinkedList<>(), evaluationCount ));
+        
+        
+        while(interventionCombination.hasCombinations()) {
             this.iterations.add(new Iteration(model, interventionCombination.getStatementsAndActiveInterventions(), evaluationCount));
-            interventionCombination.nextCombination();            
-        } while (interventionCombination.hasNextCombination());
+            if(!interventionCombination.hasNextCombination()) break;
+            interventionCombination.nextCombination();
+        }
+
     }
     
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("Iteration set of %s iterations, each of %s evaluations\n\n", this.possibleInterventionCombinations(), this.evaluationCount));
+        sb.append(String.format("Iteration set of %s iterations, each of %s evaluations\n\n", this.iterations.size(), this.evaluationCount));
         
         for(Iteration i : this.iterations) {
             sb.append(i.toString_probabilityChanges());

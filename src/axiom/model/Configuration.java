@@ -50,7 +50,7 @@ public class Configuration {
     public boolean isOptionTrue(Option option) {
         assert option != null;
         assert option.statement.model == this.model;
-        return states[model.getOptionIndex(option)-1];
+        return states[model.find.index(option)-1];
     }
 
     

@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -91,17 +92,10 @@ public class Model implements LabelNamespace {
         return list;
     }
     
-    
-    int getOptionIndex(Option o) {
-        assert o != null;
-        assert o.statement.model == this;
-        int i = 1;
-        for(Option op : getOptions()) {
-            if(op.equals(o)) return i;
-            i++;
-        }
-        throw new IllegalArgumentException("Option " + o + " not found");
+    public void updateFinder() {
+        this.find = new ComponentFinder(this);
     }
+    
     
     public Configuration evaluate() throws ProbabilityAdjustmentException {
         
@@ -182,11 +176,24 @@ public class Model implements LabelNamespace {
         
         final Model model;
         
-        public ComponentAdder(Model model) {
+        public ComponentAdder(Model model) {            
             this.model = model;
+            assert this.model.find == null;
         }
         
-        public final void statement(String statementLabel, String description, boolean intervention, int timestep) {
+        /**
+         * Adds a <tt>Statement</tt> to the <b>model</b>
+         * @param statementLabel Label of the statement
+         * @param description Longer description of the statement
+         * @param intervention Is the statement an intervention statement?
+         * @param timestep The temporal category of the statement
+         */
+        public final void statement(
+                String statementLabel, 
+                String description, 
+                boolean intervention, 
+                int timestep) 
+        {
             assert statementLabel != null;
             Label label = new Label(statementLabel, model);
             Statement s = new Statement(this.model, label, description, intervention, timestep);
@@ -194,7 +201,20 @@ public class Model implements LabelNamespace {
             
         }
         
-        public final void option(String statementLabel, String optionLabel, double aprioriProbability) throws LabelNotFoundException {
+        /**
+         * Adds an <tt>Option</tt> to a <tt>Statement</tt> in the <b>model</b>.
+         * Statements needs to be added to the model before option addition.
+         * @param statementLabel Label of the statement of the option
+         * @param optionLabel Label of the option to be added
+         * @param aprioriProbability Initial / A priori probability of the option
+         * @throws LabelNotFoundException 
+         */
+        public final void option(
+                String statementLabel, 
+                String optionLabel, 
+                double aprioriProbability) 
+                throws LabelNotFoundException 
+        {
             assert statementLabel != null;
             assert optionLabel != null;
             assert aprioriProbability >= 0 && aprioriProbability <= 1;
@@ -206,14 +226,25 @@ public class Model implements LabelNamespace {
             s.options.add(o);
         }
         
+        /**
+         * Adds an <tt>Impact</tt> to an <tt>Option</tt> of a <tt>Statement</tt> in the <b>model</b>.
+         * The option and the statement need to be added to the model before impact addition.
+         * @param fromStatementLabel Label of the statement of the option that the impact belongs to
+         * @param fromOptionLabel Label of the option that the impact belongs to
+         * @param toStatementLabel Label of the statement of the option that the impact is targeted at 
+         * @param toOptionLabel Label of the option that the impact is targeted at 
+         * @param adjustmentFunctionName Name of the probability adjustment function to be used with impact
+         * @throws LabelNotFoundException
+         * @throws AXIOMException 
+         */
         public final void impact(
                 String fromStatementLabel, 
                 String fromOptionLabel, 
                 String toStatementLabel, 
                 String toOptionLabel, 
                 String adjustmentFunctionName) 
-                throws LabelNotFoundException, AXIOMException {
-            
+                throws LabelNotFoundException, AXIOMException 
+        {
             assert fromStatementLabel != null;
             assert toStatementLabel != null;
             assert fromOptionLabel != null;
@@ -239,41 +270,78 @@ public class Model implements LabelNamespace {
         
         final Model model;
         private final HashMap<Integer, Option>   optionTable;
+        private final HashMap<Option, Integer>   indexTable;
         private final HashMap<String, Statement> statementTable;
         
         ComponentFinder(Model model) {
             this.model = model;
             this.optionTable = new HashMap<>();
+            this.indexTable = new HashMap<>();
             this.statementTable = new HashMap<>();
             
             for(int i=1;i<=this.model.optionCount();i++) {
                 Option o = this.model.getOptions().get(i-1);
                 assert o != null;
                 this.optionTable.put(i, o);
+                this.indexTable.put(o,i);
             }
             
             for(Statement s : model.statements) {
+                assert s != null;
                 statementTable.put(s.label.value, s);
             }
-            
         }
         
+        /**
+         * Returns <tt>Statement</tt> with label <b>label</b>
+         * @param label statement label
+         * @return A <tt>Statement</tt>
+         */
         public Statement statement(String label) {
-            assert statementTable.containsKey(label);
-            return statementTable.get(label);
+            Statement s = Objects.requireNonNull(statementTable.get(label),"Statement with label " + label + " not found");
+            return s;
         }
 
-        public Statement statement(Label label) throws LabelNotFoundException {
+        /**
+         * Returns <tt>Statement</tt> with label <b>label</b>
+         * @param label statement label
+         * @return A <tt>Statement</tt>
+         */
+        public Statement statement(Label label) {
             return this.statement(label.value);
         }        
         
-        public Option option(String statementLabel, String optionLabel) throws LabelNotFoundException {
-            return statementTable.get(statementLabel).findOption(new Label(optionLabel));
+        /**
+         * Returns the <tt>Option</tt> with specified <b>statementLabel</b> and <b>optionLabel</b>
+         * @param statementLabel Label of statement of option
+         * @param optionLabel Label of option
+         * @return <tt>Option</tt> 
+         * @throws LabelNotFoundException 
+         */
+        public Option option(String statementLabel, String optionLabel) throws LabelNotFoundException  {
+            Option o = Objects.requireNonNull(statement(statementLabel).findOption(new Label(optionLabel)), 
+                    "Option with label " + optionLabel + " not found");
+            return o;
         }
 
+        /**
+         * Returns the <tt>Option</tt> with index <b>index</b>
+         * @param index Index of <tt>Option</tt> 
+         * @return <tt>Option</tt> with index <b>index</b>
+         */
         public Option option(int index) {
-            assert index > 0 && index <= model.optionCount() : "index " + index + " is out of bounds [1," + model.optionCount() + "]";
-            return optionTable.get(index);
+            Option o = Objects.requireNonNull(optionTable.get(index));
+            return o;
+        }
+
+        /**
+         * Returns the index of <tt>Option</tt> <b>option</b>
+         * @param option Option whose index is returned
+         * @return Index of <b>option</b>
+         */
+        int index(Option option) {
+            assert option.statement.model == this.model;
+            return indexTable.get(option);
         }
     }
     

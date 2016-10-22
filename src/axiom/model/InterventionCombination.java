@@ -18,6 +18,7 @@ import java.util.List;
 public class InterventionCombination {
     private final Model model;
     private final List<Pair<Statement, Pair<Option, List<Option>>>> interventions;
+    private final boolean hasCombinations;
     
     public InterventionCombination(Model model) {
         
@@ -33,7 +34,14 @@ public class InterventionCombination {
                 this.interventions.add(pair);
             }
         }
+        hasCombinations = !this.interventions.isEmpty();
     }
+    
+    /**
+     * Does the <tt>InterventionCombination</tt> have any combinations?
+     * @return <i>true</i> if there are any combinations in the <tt>InterventionCombination</tt>
+     */
+    public boolean hasCombinations() { return hasCombinations; }
     
     /**
      * Returns the current combination of options for the 

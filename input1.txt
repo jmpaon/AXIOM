@@ -1,4 +1,4 @@
-# statement1 
+# statement1 INT
    * option1 0.3 
       > statement2 option1 +3
    * option2 0.2

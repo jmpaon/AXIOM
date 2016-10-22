@@ -12,6 +12,7 @@ import axiom.reader.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.lang.System.out;
+import java.security.cert.PKIXRevocationChecker;
 import java.util.LinkedList;
 import java.util.List;
 /**
@@ -29,9 +30,9 @@ public class AXIOM {
             NameProbabilityAdjuster adj = new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster();
             Model m = new Model("Testmodel", adj);
             
-            m.add.statement("A", "A-description", true, 1);
+            m.add.statement("A", "A-description", false, 1);
             m.add.statement("B", "B-description", false, 1);
-            m.add.statement("C", "C-description", true, 1);
+            m.add.statement("C", "C-description", false, 1);
             m.add.statement("D", "D-description", false, 2);
             m.add.statement("E", "E-description", false, 2);
             m.add.statement("F", "F-description", false, 2);
@@ -59,12 +60,13 @@ public class AXIOM {
             m.add.impact("E", "1", "C", "1", "-4");
             m.add.impact("F", "2", "C", "2", "-2");
             
-            
-            // System.out.println(m.opttbl);
-            //String inputfilename = System.getProperty("user.dir") + "\\" + "input1.txt";
+            String inputfilename = System.getProperty("user.dir") + "\\" + "input1.txt";
             Reader r = new Reader("input1.txt");
             Model m2 = r.createAXIOMmodelFromInput();
             System.out.println(m2);
+            
+            IterationSet is = new IterationSet(m2, 50);
+            System.out.println(is);
 
 
             

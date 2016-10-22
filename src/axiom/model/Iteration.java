@@ -73,10 +73,15 @@ public class Iteration {
      */
     private void computeIteration(int evaluationCount) throws ProbabilityAdjustmentException {
         while(evaluationCount-- > 0) {
-            this.configurations.add(this.model.evaluate(activeInterventions));
+            if(this.activeInterventions.isEmpty()) {
+                this.configurations.add(this.model.evaluate());
+            } else {
+                this.configurations.add(this.model.evaluate(activeInterventions));
+            }
+            
         }
     }
-
+    
     private Probability computeAposterioriProbability(Option o) {
         assert o.statement.model == this.model;
         int optionFrequency = 0;
@@ -114,7 +119,9 @@ public class Iteration {
         
         sb.append("\n");
         for(Pair<Option,Probability> p : this.aposterioriProbabilities) {
-            if(!p.left.statement.intervention) {
+            boolean isIntervention = p.left.statement.intervention;
+            boolean noInterventions = this.activeInterventions.isEmpty();
+            if( !isIntervention || noInterventions ) {
                 double difference = p.right.toDouble()-p.left.apriori.toDouble();
                 assert difference >= -1 && difference <= 1;
                 sb.append(String.format("%10s %6.6s --> %6.6s (%2.4f) \n", p.left.getLongLabel(), p.left.apriori, p.right, difference ));

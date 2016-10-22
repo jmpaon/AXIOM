@@ -36,14 +36,11 @@ public class Reader {
         allContent = allContent.replaceAll("\\s+", " ");
         allContent = allContent.trim();
         
-        // String res = orig.replaceAll("[\\r\\n]+\\s", "");
-        System.out.println(allContent);
         this.content = allContent.trim();
         
-        //content = new String(Files.readAllBytes(Paths.get(qualifiedFilename)), Charset.forName("UTF-8")).replaceAll(content, filename);
     }
     
-    public Model createAXIOMmodelFromInput() throws ProbabilityAdjustmentException, AXIOMException {
+    public Model createAXIOMmodelFromInput() throws ProbabilityAdjustmentException, AXIOMInputException, AXIOMException {
         Model model = new Model("AXIOM model", new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster());
         List<ModelBuildingAction> mba = fileToModelBuildingActions(model);
         Collections.sort(mba);
@@ -51,7 +48,7 @@ public class Reader {
         return model;
     }
     
-    private List<ModelBuildingAction> fileToModelBuildingActions(Model model) throws AXIOMException {
+    private List<ModelBuildingAction> fileToModelBuildingActions(Model model) throws AXIOMException, AXIOMInputException {
         
         final List<ModelBuildingAction> mba = new LinkedList<>();
         final String[] splitByDelimiters = this.content.split("(?=[#\\*>\\'])");

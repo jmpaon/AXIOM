@@ -31,14 +31,14 @@ public class ModelBuildingAction implements Comparable<ModelBuildingAction> {
     public final Command command;
     public final int precedence;
 
-    public ModelBuildingAction(Model model, Command command) throws AXIOMException {
+    public ModelBuildingAction(Model model, Command command) throws AXIOMInputException {
         this.model = model;
         this.command = command;
         this.type = identifyActionType();
         this.precedence = determinePrecedence();
     };
     
-    public void execute() {
+    public void execute() throws AXIOMInputException {
         try {
             switch (type) {
                 case ADDSTATEMENT:
@@ -53,10 +53,8 @@ public class ModelBuildingAction implements Comparable<ModelBuildingAction> {
                 default:
                     throw new RuntimeException();
             }
-        } catch (RuntimeException runtimeException) {
-            System.out.println("Input syntax error in '" + this.command.text + "'");
         } catch (Exception e) {
-            System.out.println("Input syntax error in '" + this.command.text + "'");
+            throw new AXIOMInputException("Input syntax error in '" + this.command.text + "': " + e.getMessage());
         }
     }
     
@@ -69,19 +67,19 @@ public class ModelBuildingAction implements Comparable<ModelBuildingAction> {
         }        
     }
     
-    private ActionType identifyActionType() throws AXIOMException {
+    private ActionType identifyActionType() throws AXIOMInputException {
         switch(command.parts.get(0)) {
             case "#" : return ActionType.ADDSTATEMENT;
             case "*" : return ActionType.ADDOPTION;
             case ">" : return ActionType.ADDIMPACT;
-            default  : throw new AXIOMException("Invalid input: " + command.text);
+            default  : throw new AXIOMInputException("Unknown model component type in input: " + command.text);
         }
     }
     
     private void addStatement() {
         String statementLabel = command.get(1);
         String description = "";
-        boolean intervention = command.has("INT");
+        boolean intervention = command.has("int");
         int timestep = command.has("TS") ? Integer.valueOf(command.right("TS")) : 0;
         
         model.add.statement(statementLabel, description, intervention, timestep);

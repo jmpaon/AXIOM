@@ -60,15 +60,16 @@ public class AXIOM {
             m.add.impact("E", "1", "C", "1", "-4");
             m.add.impact("F", "2", "C", "2", "-2");
             
-            String inputfilename = System.getProperty("user.dir") + "\\" + "input1.txt";
-            Reader r = new Reader("input1.txt");
+            String inputfilename = System.getProperty("user.dir") + "\\" + "input2.txt";
+            Reader r = new Reader("input2.txt");
             Model m2 = r.createAXIOMmodelFromInput();
             System.out.println(m2);
             
-            IterationSet is = new IterationSet(m2, 50);
-            System.out.println(is);
+            //IterationSet is = new IterationSet(m2, 50);
+            //System.out.println(is);
 
-
+            //TestInputGenerator tig = new TestInputGenerator();
+            //System.out.println(tig.generateInput(100));
             
             
             

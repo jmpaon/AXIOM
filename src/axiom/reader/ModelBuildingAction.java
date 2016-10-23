@@ -54,7 +54,7 @@ public class ModelBuildingAction implements Comparable<ModelBuildingAction> {
                     throw new RuntimeException();
             }
         } catch (Exception e) {
-            throw new AXIOMInputException("Input syntax error in '" + this.command.text + "': " + e.getMessage());
+            throw new AXIOMInputException("Input syntax error in '" + this.command.text + "': " + e.getMessage() + e.toString()  );
         }
     }
     

@@ -1,0 +1,1366 @@
+# Statement1
+	* Option1 0.601475
+		> Statement75 Option2 +4
+	* Option2 0.952712
+		> Statement21 Option3 +3
+	* Option3 0.076026
+		> Statement89 Option3 -2
+	* Option4 0.803585
+		> Statement50 Option3 0
+		> Statement27 Option1 +1
+# Statement2
+	* Option1 0.110226
+		> Statement99 Option2 +3
+	* Option2 0.497657
+		> Statement36 Option1 +3
+	* Option3 0.995005
+		> Statement55 Option3 -1
+		> Statement67 Option1 +3
+	* Option4 0.920344
+		> Statement63 Option2 +1
+		> Statement58 Option1 -3
+		> Statement35 Option3 -4
+# Statement3 INT
+	* Option1 0.175741
+		> Statement28 Option3 -3
+		> Statement10 Option1 -2
+		> Statement81 Option3 +2
+	* Option2 0.397317
+		> Statement7 Option2 0
+		> Statement48 Option1 +2
+		> Statement37 Option3 +1
+	* Option3 0.467375
+		> Statement35 Option1 +1
+	* Option4 0.427943
+		> Statement67 Option1 +2
+		> Statement31 Option2 +2
+		> Statement19 Option2 -1
+# Statement4
+	* Option1 0.790885
+		> Statement48 Option3 +4
+	* Option2 0.286009
+		> Statement6 Option3 -3
+		> Statement43 Option1 0
+		> Statement81 Option1 +4
+	* Option3 0.805450
+		> Statement41 Option3 +2
+		> Statement36 Option1 0
+		> Statement73 Option3 +3
+	* Option4 0.054252
+		> Statement45 Option3 -4
+# Statement5
+	* Option1 0.007602
+		> Statement72 Option3 +3
+		> Statement2 Option1 +4
+	* Option2 0.950943
+		> Statement6 Option3 +2
+		> Statement16 Option1 -1
+	* Option3 0.076374
+		> Statement10 Option2 +1
+		> Statement23 Option3 +4
+	* Option4 0.885611
+		> Statement5 Option2 0
+# Statement6
+	* Option1 0.419457
+		> Statement54 Option3 -3
+		> Statement33 Option1 -2
+	* Option2 0.347216
+		> Statement70 Option3 -3
+		> Statement21 Option2 +4
+		> Statement10 Option1 -3
+	* Option3 0.432170
+		> Statement77 Option1 -1
+	* Option4 0.113618
+		> Statement19 Option2 -3
+		> Statement72 Option1 -3
+# Statement7
+	* Option1 0.481661
+		> Statement46 Option2 -2
+		> Statement50 Option3 +4
+	* Option2 0.544513
+		> Statement4 Option1 -1
+		> Statement31 Option1 +3
+	* Option3 0.368412
+		> Statement88 Option3 +4
+		> Statement29 Option3 -1
+	* Option4 0.769114
+
+		> Statement79 Option3 +1
+		> Statement70 Option3 -3
+# Statement8
+	* Option1 0.203515
+		> Statement45 Option2 -4
+		> Statement83 Option3 0
+	* Option2 0.725487
+		> Statement93 Option1 -4
+		> Statement58 Option3 0
+	* Option3 0.110683
+		> Statement51 Option3 +1
+		> Statement44 Option2 -1
+		> Statement33 Option2 0
+	* Option4 0.305785
+		> Statement88 Option3 -1
+		> Statement27 Option3 -4
+# Statement9
+	* Option1 0.965644
+		> Statement19 Option3 0
+		> Statement93 Option2 -1
+		> Statement50 Option3 -2
+	* Option2 0.091163
+		> Statement74 Option1 0
+		> Statement24 Option2 -3
+		> Statement39 Option1 -3
+	* Option3 0.878965
+		> Statement21 Option3 +4
+		> Statement20 Option3 0
+		> Statement57 Option2 0
+	* Option4 0.649949
+		> Statement74 Option2 +3
+		> Statement47 Option2 -3
+# Statement10
+	* Option1 0.768755
+		> Statement31 Option2 +1
+		> Statement23 Option2 +1
+		> Statement65 Option2 0
+	* Option2 0.013001
+		> Statement43 Option3 -1
+	* Option3 0.362916
+		> Statement38 Option3 -4
+		> Statement46 Option2 -4
+		> Statement55 Option3 0
+	* Option4 0.210647
+		> Statement19 Option3 -3
+		> Statement84 Option2 0
+# Statement11
+	* Option1 0.017480
+		> Statement6 Option1 +1
+		> Statement68 Option2 +3
+	* Option2 0.536660
+		> Statement35 Option1 -2
+		> Statement26 Option1 +2
+		> Statement74 Option1 +3
+	* Option3 0.065574
+		> Statement37 Option1 -4
+	* Option4 0.825516
+		> Statement28 Option2 +2
+# Statement12
+	* Option1 0.948783
+		> Statement90 Option1 +3
+		> Statement41 Option1 +3
+	* Option2 0.072176
+		> Statement88 Option2 -2
+		> Statement33 Option3 +3
+	* Option3 0.673804
+		> Statement96 Option2 0
+		> Statement61 Option1 -3
+		> Statement42 Option2 +2
+	* Option4 0.488693
+		> Statement32 Option3 +3
+# Statement13
+	* Option1 0.561115
+		> Statement18 Option1 0
+		> Statement82 Option2 +4
+		> Statement90 Option3 -3
+	* Option2 0.064218
+		> Statement26 Option3 -2
+	* Option3 0.264354
+		> Statement67 Option2 -4
+		> Statement46 Option1 +2
+	* Option4 0.324537
+		> Statement24 Option3 -1
+		> Statement44 Option3 +3
+# Statement14
+	* Option1 0.057548
+		> Statement74 Option3 -4
+		> Statement84 Option2 +2
+		> Statement28 Option3 0
+	* Option2 0.169593
+		> Statement64 Option3 0
+		> Statement50 Option1 +4
+	* Option3 0.281517
+		> Statement67 Option2 0
+	* Option4 0.976626
+		> Statement24 Option2 0
+		> Statement42 Option3 0
+# Statement15
+	* Option1 0.671466
+		> Statement75 Option1 -1
+	* Option2 0.832248
+		> Statement75 Option2 -2
+	* Option3 0.481919
+		> Statement72 Option1 -3
+		> Statement42 Option3 +3
+	* Option4 0.824117
+		> Statement81 Option1 +4
+		> Statement57 Option1 +4
+		> Statement47 Option1 -1
+# Statement16
+	* Option1 0.825554
+		> Statement59 Option2 -2
+		> Statement25 Option3 -2
+		> Statement25 Option2 +1
+	* Option2 0.459796
+		> Statement25 Option1 +2
+		> Statement48 Option1 -2
+		> Statement80 Option3 -1
+	* Option3 0.953739
+		> Statement31 Option3 +3
+	* Option4 0.363418
+		> Statement46 Option2 -3
+		> Statement13 Option2 -2
+# Statement17
+	* Option1 0.868604
+		> Statement21 Option1 -1
+	* Option2 0.910348
+
+	* Option3 0.269665
+		> Statement24 Option3 +2
+		> Statement7 Option3 -2
+		> Statement79 Option2 -1
+		> Statement60 Option1 -3
+	* Option4 0.500078
+		> Statement45 Option1 -3
+		> Statement39 Option3 +1
+		> Statement24 Option1 0
+# Statement18
+	* Option1 0.954773
+		> Statement76 Option1 +3
+		> Statement87 Option3 -1
+	* Option2 0.886174
+		> Statement57 Option2 -1
+		> Statement39 Option1 +2
+		> Statement82 Option2 +4
+		> Statement14 Option3 +2
+	* Option3 0.712484
+		> Statement69 Option1 +4
+		> Statement99 Option1 +4
+		> Statement47 Option3 0
+	* Option4 0.083470
+		> Statement11 Option2 -1
+# Statement19
+	* Option1 0.366076
+		> Statement92 Option2 +2
+	* Option2 0.612488
+		> Statement41 Option1 +3
+		> Statement29 Option3 -4
+		> Statement49 Option3 +2
+	* Option3 0.162444
+		> Statement37 Option2 +2
+	* Option4 0.386299
+		> Statement61 Option3 +2
+		> Statement91 Option1 -1
+# Statement20
+	* Option1 0.164544
+		> Statement2 Option3 +3
+		> Statement37 Option1 -1
+	* Option2 0.612949
+		> Statement10 Option1 0
+		> Statement69 Option2 0
+	* Option3 0.111777
+		> Statement34 Option2 +2
+		> Statement28 Option3 -2
+	* Option4 0.595806
+		> Statement49 Option2 -1
+		> Statement8 Option2 +1
+# Statement21
+	* Option1 0.904273
+		> Statement71 Option1 0
+		> Statement60 Option2 +3
+	* Option2 0.203856
+
+		> Statement31 Option1 -2
+		> Statement76 Option2 +3
+	* Option3 0.341622
+		> Statement50 Option1 +2
+	* Option4 0.770163
+		> Statement7 Option1 -4
+		> Statement83 Option1 -3
+# Statement22
+	* Option1 0.959329
+		> Statement65 Option2 -4
+	* Option2 0.279143
+		> Statement9 Option1 0
+		> Statement4 Option2 +2
+	* Option3 0.899652
+		> Statement5 Option2 +2
+		> Statement7 Option3 -3
+	* Option4 0.933319
+		> Statement99 Option3 -3
+		> Statement75 Option1 +2
+		> Statement68 Option1 +1
+# Statement23
+	* Option1 0.593979
+		> Statement5 Option2 +2
+		> Statement40 Option2 -4
+		> Statement72 Option3 -1
+	* Option2 0.543065
+		> Statement42 Option3 -1
+		> Statement61 Option2 0
+		> Statement50 Option2 -2
+	* Option3 0.491599
+		> Statement15 Option3 -1
+		> Statement25 Option1 -2
+	* Option4 0.872764
+		> Statement28 Option2 -3
+		> Statement21 Option1 0
+# Statement24
+	* Option1 0.213364
+		> Statement11 Option2 +3
+	* Option2 0.121613
+		> Statement26 Option2 -2
+	* Option3 0.600173
+		> Statement95 Option1 0
+		> Statement28 Option1 -3
+		> Statement55 Option3 +2
+	* Option4 0.862861
+		> Statement81 Option3 0
+# Statement25
+	* Option1 0.411324
+		> Statement22 Option2 -1
+		> Statement7 Option3 -4
+	* Option2 0.696416
+		> Statement68 Option2 +4
+		> Statement6 Option2 0
+		> Statement31 Option3 -3
+	* Option3 0.755476
+		> Statement12 Option3 +4
+		> Statement37 Option2 0
+	* Option4 0.680682
+		> Statement79 Option1 -1
+		> Statement53 Option1 +2
+# Statement26
+	* Option1 0.573810
+		> Statement50 Option2 +3
+	* Option2 0.549762
+		> Statement42 Option3 +4
+		> Statement80 Option3 +1
+	* Option3 0.322041
+		> Statement27 Option2 -3
+	* Option4 0.849992
+		> Statement3 Option2 0
+
+		> Statement73 Option3 0
+# Statement27
+	* Option1 0.414233
+		> Statement4 Option2 +3
+		> Statement69 Option2 +2
+		> Statement38 Option1 +1
+	* Option2 0.548233
+		> Statement11 Option3 0
+		> Statement1 Option3 +1
+		> Statement21 Option3 -1
+	* Option3 0.030677
+		> Statement63 Option1 -2
+		> Statement46 Option1 0
+		> Statement99 Option1 -2
+	* Option4 0.608481
+		> Statement19 Option2 -1
+# Statement28 INT
+	* Option1 0.354649
+		> Statement78 Option3 0
+		> Statement30 Option1 0
+		> Statement72 Option3 -2
+		> Statement28 Option1 -1
+	* Option2 0.704795
+		> Statement98 Option2 +2
+		> Statement77 Option2 -1
+		> Statement44 Option1 -1
+		> Statement83 Option1 -4
+	* Option3 0.658154
+		> Statement56 Option3 +4
+		> Statement53 Option3 +2
+		> Statement64 Option2 -1
+	* Option4 0.121016
+		> Statement43 Option3 +1
+		> Statement63 Option2 +4
+		> Statement11 Option3 -1
+# Statement29
+	* Option1 0.337013
+		> Statement44 Option2 0
+	* Option2 0.793621
+		> Statement6 Option2 -1
+	* Option3 0.816608
+		> Statement47 Option2 0
+	* Option4 0.322854
+		> Statement58 Option3 -1
+		> Statement14 Option2 -3
+		> Statement53 Option2 +4
+# Statement30
+	* Option1 0.314395
+		> Statement19 Option3 -2
+		> Statement40 Option3 +2
+	* Option2 0.013859
+		> Statement46 Option3 +1
+	* Option3 0.466763
+		> Statement42 Option2 -4
+	* Option4 0.847497
+		> Statement2 Option2 -2
+# Statement31
+	* Option1 0.847241
+		> Statement22 Option2 -4
+		> Statement39 Option1 -3
+	* Option2 0.988679
+		> Statement95 Option1 0
+	* Option3 0.835003
+		> Statement14 Option1 +4
+		> Statement15 Option2 +2
+		> Statement8 Option3 0
+		> Statement99 Option1 -4
+	* Option4 0.999177
+		> Statement53 Option3 +4
+		> Statement56 Option1 -2
+# Statement32
+	* Option1 0.839982
+		> Statement56 Option2 -3
+	* Option2 0.148970
+		> Statement10 Option1 -2
+	* Option3 0.982938
+		> Statement72 Option2 +2
+	* Option4 0.800140
+		> Statement13 Option3 +3
+
+		> Statement61 Option3 +4
+# Statement33
+	* Option1 0.647739
+		> Statement42 Option3 -4
+		> Statement16 Option1 -3
+	* Option2 0.161291
+		> Statement93 Option2 -1
+		> Statement78 Option3 +4
+	* Option3 0.921842
+		> Statement53 Option2 +4
+	* Option4 0.463501
+		> Statement23 Option2 +3
+		> Statement14 Option3 0
+# Statement34
+	* Option1 0.823284
+		> Statement15 Option1 +2
+		> Statement18 Option1 -1
+	* Option2 0.435115
+		> Statement78 Option2 -1
+		> Statement46 Option3 -3
+	* Option3 0.246065
+		> Statement61 Option3 0
+		> Statement19 Option1 -4
+	* Option4 0.936112
+		> Statement23 Option1 -1
+		> Statement11 Option2 +4
+# Statement35
+	* Option1 0.108016
+		> Statement54 Option1 +1
+		> Statement42 Option2 +4
+		> Statement43 Option2 +4
+	* Option2 0.123422
+		> Statement51 Option3 +4
+		> Statement63 Option2 +2
+	* Option3 0.991056
+		> Statement89 Option1 +4
+		> Statement4 Option1 0
+		> Statement99 Option2 +3
+	* Option4 0.961619
+		> Statement57 Option3 0
+# Statement36
+	* Option1 0.226777
+		> Statement91 Option3 -4
+	* Option2 0.161286
+		> Statement62 Option3 0
+		> Statement75 Option2 0
+		> Statement80 Option3 0
+	* Option3 0.137692
+		> Statement31 Option1 0
+		> Statement7 Option2 0
+	* Option4 0.408947
+		> Statement96 Option1 +3
+# Statement37
+	* Option1 0.308383
+		> Statement38 Option3 0
+		> Statement78 Option2 +1
+	* Option2 0.256873
+
+		> Statement94 Option2 +1
+		> Statement85 Option3 +1
+		> Statement26 Option1 0
+	* Option3 0.379082
+		> Statement68 Option1 0
+		> Statement82 Option2 +3
+		> Statement47 Option2 +3
+	* Option4 0.956060
+		> Statement77 Option2 +1
+		> Statement71 Option1 -1
+		> Statement1 Option1 -3
+# Statement38
+	* Option1 0.433622
+		> Statement22 Option3 0
+	* Option2 0.724062
+		> Statement50 Option3 -1
+		> Statement93 Option2 +4
+	* Option3 0.194416
+		> Statement56 Option3 +4
+		> Statement75 Option2 -1
+		> Statement53 Option3 0
+	* Option4 0.416813
+		> Statement94 Option1 0
+		> Statement51 Option1 +1
+# Statement39
+	* Option1 0.488731
+		> Statement30 Option3 -1
+		> Statement11 Option3 +3
+		> Statement4 Option1 -2
+	* Option2 0.955522
+		> Statement37 Option3 +4
+		> Statement53 Option2 0
+		> Statement41 Option2 -2
+		> Statement26 Option1 +1
+	* Option3 0.126986
+		> Statement68 Option1 +3
+		> Statement22 Option1 +3
+	* Option4 0.707935
+		> Statement30 Option2 -3
+		> Statement18 Option3 -1
+		> Statement46 Option1 +1
+		> Statement73 Option3 +2
+# Statement40
+	* Option1 0.244492
+		> Statement66 Option2 +3
+		> Statement41 Option2 -3
+		> Statement27 Option3 0
+	* Option2 0.985852
+		> Statement28 Option3 -4
+		> Statement42 Option2 +4
+		> Statement97 Option2 -2
+	* Option3 0.307507
+		> Statement97 Option1 0
+		> Statement77 Option3 -2
+	* Option4 0.273556
+		> Statement11 Option3 +3
+		> Statement21 Option1 0
+# Statement41
+	* Option1 0.408907
+		> Statement21 Option1 -4
+		> Statement44 Option1 -2
+	* Option2 0.096394
+		> Statement36 Option2 -1
+	* Option3 0.706926
+		> Statement96 Option1 -2
+	* Option4 0.499130
+		> Statement23 Option3 +1
+# Statement42
+	* Option1 0.284409
+		> Statement75 Option3 0
+		> Statement72 Option2 -1
+	* Option2 0.672097
+		> Statement13 Option2 +2
+		> Statement68 Option1 +3
+	* Option3 0.397951
+		> Statement76 Option1 +1
+	* Option4 0.401020
+		> Statement66 Option3 0
+# Statement43
+	* Option1 0.497797
+		> Statement88 Option3 -2
+		> Statement14 Option3 -1
+	* Option2 0.701041
+		> Statement30 Option2 -2
+		> Statement26 Option1 -1
+		> Statement71 Option1 -4
+	* Option3 0.546645
+		> Statement79 Option3 +1
+		> Statement4 Option3 -4
+	* Option4 0.962018
+		> Statement57 Option3 -2
+# Statement44
+	* Option1 0.683313
+		> Statement71 Option3 -4
+		> Statement45 Option3 0
+	* Option2 0.510628
+		> Statement86 Option1 -2
+		> Statement64 Option2 +2
+		> Statement9 Option3 -4
+	* Option3 0.444036
+		> Statement37 Option3 +1
+		> Statement83 Option3 -4
+
+	* Option4 0.469498
+		> Statement16 Option1 +4
+		> Statement89 Option2 -1
+# Statement45
+	* Option1 0.238406
+		> Statement43 Option2 +2
+		> Statement50 Option2 +3
+		> Statement7 Option3 -4
+		> Statement64 Option1 +1
+	* Option2 0.798780
+		> Statement48 Option1 -2
+		> Statement90 Option1 -4
+	* Option3 0.277814
+		> Statement91 Option1 -1
+		> Statement47 Option1 0
+	* Option4 0.118192
+		> Statement28 Option3 -3
+# Statement46
+	* Option1 0.008299
+		> Statement27 Option3 0
+		> Statement50 Option1 +3
+	* Option2 0.423182
+		> Statement20 Option3 -4
+		> Statement8 Option2 0
+	* Option3 0.283652
+		> Statement37 Option3 -1
+		> Statement59 Option2 -2
+		> Statement74 Option3 -4
+		> Statement79 Option3 +1
+	* Option4 0.723512
+		> Statement68 Option3 -4
+		> Statement80 Option3 0
+# Statement47
+	* Option1 0.373271
+		> Statement89 Option3 -4
+	* Option2 0.435435
+		> Statement74 Option1 +3
+		> Statement38 Option1 -4
+	* Option3 0.380378
+		> Statement57 Option2 -4
+		> Statement64 Option2 0
+		> Statement12 Option2 +2
+	* Option4 0.990069
+		> Statement71 Option1 0
+		> Statement61 Option1 +4
+		> Statement85 Option2 +3
+# Statement48
+	* Option1 0.246202
+		> Statement62 Option2 +1
+	* Option2 0.591927
+		> Statement72 Option1 0
+		> Statement32 Option3 +3
+	* Option3 0.099316
+		> Statement88 Option1 +1
+		> Statement8 Option2 +2
+		> Statement92 Option2 +3
+	* Option4 0.395664
+		> Statement5 Option2 0
+# Statement49
+	* Option1 0.732987
+		> Statement45 Option2 +2
+		> Statement16 Option2 -3
+		> Statement69 Option2 +4
+	* Option2 0.462162
+		> Statement2 Option1 -2
+		> Statement14 Option3 +3
+	* Option3 0.905598
+		> Statement5 Option3 -2
+		> Statement77 Option2 +1
+		> Statement54 Option2 +4
+		> Statement95 Option1 +2
+	* Option4 0.930109
+		> Statement3 Option1 +1
+		> Statement41 Option3 +3
+# Statement50
+	* Option1 0.609983
+		> Statement99 Option3 -1
+		> Statement19 Option1 +4
+	* Option2 0.221296
+		> Statement81 Option1 -4
+		> Statement45 Option2 +4
+	* Option3 0.135425
+		> Statement6 Option1 0
+	* Option4 0.694192
+		> Statement67 Option2 +3
+		> Statement36 Option3 -1
+		> Statement72 Option2 -2
+# Statement51
+	* Option1 0.658810
+		> Statement37 Option1 0
+		> Statement6 Option3 0
+		> Statement47 Option3 -2
+	* Option2 0.981285
+		> Statement41 Option1 -1
+		> Statement97 Option3 +4
+		> Statement41 Option2 0
+	* Option3 0.515886
+		> Statement18 Option2 -2
+		> Statement21 Option2 -4
+		> Statement38 Option1 +1
+		> Statement90 Option3 +3
+	* Option4 0.003867
+		> Statement62 Option2 +3
+		> Statement37 Option1 -2
+# Statement52
+	* Option1 0.268515
+		> Statement36 Option3 0
+		> Statement18 Option1 +2
+	* Option2 0.436511
+		> Statement48 Option2 +3
+		> Statement54 Option2 +3
+		> Statement43 Option3 0
+	* Option3 0.570680
+		> Statement24 Option1 +2
+		> Statement8 Option2 -3
+	* Option4 0.620963
+		> Statement87 Option3 0
+		> Statement31 Option1 +3
+# Statement53
+	* Option1 0.173993
+		> Statement76 Option3 +2
+		> Statement20 Option2 -3
+	* Option2 0.084685
+		> Statement35 Option1 +4
+		> Statement30 Option1 -3
+	* Option3 0.175386
+		> Statement37 Option3 +4
+	* Option4 0.459442
+		> Statement25 Option3 +3
+		> Statement68 Option3 0
+		> Statement63 Option1 -4
+# Statement54
+	* Option1 0.431779
+		> Statement59 Option1 +4
+	* Option2 0.201299
+		> Statement11 Option2 +3
+		> Statement16 Option3 +1
+	* Option3 0.168168
+		> Statement86 Option2 -4
+		> Statement87 Option1 0
+	* Option4 0.523719
+		> Statement13 Option1 +1
+# Statement55
+	* Option1 0.609826
+		> Statement49 Option1 -2
+		> Statement22 Option1 -2
+	* Option2 0.323401
+		> Statement26 Option3 -2
+		> Statement22 Option2 0
+	* Option3 0.035877
+		> Statement5 Option2 +4
+		> Statement9 Option3 0
+	* Option4 0.785265
+		> Statement8 Option2 +2
+# Statement56
+	* Option1 0.872289
+		> Statement38 Option3 0
+		> Statement44 Option2 +3
+	* Option2 0.093228
+		> Statement66 Option1 +4
+		> Statement68 Option2 -3
+		> Statement63 Option2 0
+	* Option3 0.751220
+		> Statement89 Option1 -3
+	* Option4 0.560897
+		> Statement36 Option3 -2
+		> Statement41 Option1 +3
+		> Statement22 Option1 +1
+# Statement57
+	* Option1 0.697190
+		> Statement22 Option3 0
+		> Statement61 Option1 0
+		> Statement72 Option1 +3
+	* Option2 0.370204
+		> Statement51 Option2 0
+		> Statement3 Option2 +3
+	* Option3 0.946477
+		> Statement66 Option3 +1
+		> Statement33 Option2 -2
+		> Statement41 Option3 -4
+	* Option4 0.591901
+		> Statement51 Option3 0
+		> Statement80 Option1 0
+		> Statement29 Option1 +2
+# Statement58
+	* Option1 0.469522
+		> Statement71 Option2 -1
+		> Statement87 Option2 -2
+		> Statement96 Option3 -4
+	* Option2 0.464497
+		> Statement32 Option2 +4
+		> Statement87 Option3 +2
+	* Option3 0.939643
+		> Statement23 Option3 0
+		> Statement31 Option2 0
+		> Statement45 Option1 +3
+	* Option4 0.102235
+		> Statement84 Option1 0
+# Statement59
+	* Option1 0.008456
+		> Statement54 Option2 -2
+		> Statement15 Option3 -4
+		> Statement53 Option1 +3
+		> Statement23 Option2 +3
+	* Option2 0.984331
+		> Statement60 Option3 0
+	* Option3 0.088468
+		> Statement70 Option1 +4
+		> Statement77 Option3 +4
+		> Statement29 Option3 -3
+	* Option4 0.768021
+
+		> Statement93 Option2 +2
+# Statement60
+	* Option1 0.095675
+		> Statement69 Option2 -3
+		> Statement27 Option2 -1
+		> Statement58 Option3 +1
+	* Option2 0.602421
+		> Statement14 Option3 0
+		> Statement56 Option2 +3
+		> Statement42 Option2 -3
+	* Option3 0.350907
+		> Statement49 Option1 +3
+		> Statement60 Option3 +4
+	* Option4 0.959594
+		> Statement23 Option3 +4
+		> Statement80 Option1 0
+# Statement61
+	* Option1 0.061277
+		> Statement23 Option2 -2
+		> Statement68 Option2 +1
+	* Option2 0.169209
+		> Statement59 Option3 -3
+		> Statement82 Option2 +4
+		> Statement50 Option2 0
+		> Statement94 Option1 -4
+	* Option3 0.775177
+		> Statement11 Option1 +2
+		> Statement59 Option1 +3
+		> Statement2 Option2 0
+	* Option4 0.409382
+		> Statement30 Option3 +4
+# Statement62
+	* Option1 0.834910
+		> Statement69 Option2 -4
+	* Option2 0.820107
+		> Statement38 Option1 +2
+		> Statement44 Option2 +3
+	* Option3 0.335393
+		> Statement13 Option3 +4
+		> Statement71 Option3 -3
+	* Option4 0.271296
+		> Statement2 Option2 +1
+		> Statement17 Option2 -1
+# Statement63
+	* Option1 0.583482
+		> Statement94 Option2 0
+		> Statement33 Option1 +3
+		> Statement55 Option3 +2
+		> Statement10 Option3 0
+	* Option2 0.151213
+		> Statement80 Option1 -2
+		> Statement95 Option3 0
+	* Option3 0.903340
+		> Statement27 Option3 +2
+	* Option4 0.636719
+		> Statement68 Option2 +3
+		> Statement2 Option3 +2
+# Statement64 INT
+	* Option1 0.856808
+		> Statement73 Option1 -2
+		> Statement58 Option1 +4
+	* Option2 0.378808
+		> Statement9 Option3 +3
+		> Statement84 Option3 +1
+	* Option3 0.596731
+		> Statement55 Option1 0
+		> Statement19 Option3 -3
+		> Statement57 Option1 0
+	* Option4 0.727074
+		> Statement13 Option2 +3
+		> Statement29 Option3 0
+# Statement65
+	* Option1 0.403821
+		> Statement23 Option1 -3
+	* Option2 0.120862
+		> Statement22 Option3 0
+	* Option3 0.921884
+		> Statement84 Option3 +1
+		> Statement67 Option1 0
+		> Statement55 Option3 -4
+	* Option4 0.903241
+		> Statement23 Option2 0
+		> Statement19 Option2 +1
+		> Statement98 Option1 +4
+# Statement66
+	* Option1 0.818378
+		> Statement99 Option2 +3
+	* Option2 0.850996
+		> Statement47 Option3 +4
+	* Option3 0.795222
+		> Statement51 Option2 +3
+	* Option4 0.712795
+		> Statement69 Option1 0
+		> Statement78 Option2 -4
+		> Statement91 Option1 -3
+# Statement67
+	* Option1 0.434853
+		> Statement76 Option1 +1
+		> Statement58 Option2 -2
+		> Statement36 Option3 0
+	* Option2 0.490540
+		> Statement79 Option1 -4
+	* Option3 0.874467
+		> Statement49 Option2 -1
+		> Statement54 Option1 +3
+		> Statement34 Option3 +1
+	* Option4 0.691124
+		> Statement67 Option2 -2
+# Statement68
+	* Option1 0.401610
+		> Statement29 Option2 -2
+		> Statement37 Option3 0
+	* Option2 0.371634
+		> Statement16 Option3 +3
+		> Statement91 Option2 -1
+	* Option3 0.267338
+		> Statement7 Option1 -4
+	* Option4 0.904023
+		> Statement26 Option3 -1
+# Statement69 INT
+	* Option1 0.409389
+		> Statement40 Option2 -3
+	* Option2 0.353424
+		> Statement72 Option2 +4
+		> Statement73 Option1 -2
+		> Statement15 Option1 0
+		> Statement46 Option3 +1
+	* Option3 0.808751
+		> Statement5 Option3 -4
+		> Statement93 Option1 -3
+	* Option4 0.838944
+		> Statement78 Option2 -3
+# Statement70
+	* Option1 0.013377
+		> Statement84 Option3 +4
+		> Statement36 Option3 -2
+		> Statement59 Option1 0
+		> Statement49 Option1 -3
+	* Option2 0.396479
+		> Statement54 Option3 +1
+		> Statement47 Option1 +4
+		> Statement76 Option2 -3
+	* Option3 0.068266
+		> Statement17 Option3 -4
+		> Statement25 Option2 +4
+		> Statement56 Option2 -3
+	* Option4 0.697101
+		> Statement88 Option1 0
+		> Statement26 Option1 -3
+		> Statement27 Option2 +3
+# Statement71
+	* Option1 0.602147
+		> Statement68 Option2 +2
+		> Statement73 Option2 +3
+	* Option2 0.932759
+		> Statement74 Option2 -4
+		> Statement66 Option2 0
+	* Option3 0.358283
+		> Statement38 Option2 +1
+		> Statement72 Option3 +4
+		> Statement43 Option2 +1
+		> Statement55 Option2 -3
+	* Option4 0.576287
+		> Statement43 Option1 +2
+# Statement72
+	* Option1 0.023738
+		> Statement58 Option3 +4
+	* Option2 0.706258
+		> Statement74 Option3 -3
+		> Statement51 Option3 -4
+		> Statement7 Option1 +2
+		> Statement47 Option2 +3
+	* Option3 0.569880
+		> Statement11 Option1 -1
+		> Statement12 Option1 -3
+		> Statement52 Option3 -1
+	* Option4 0.773921
+		> Statement85 Option3 0
+		> Statement56 Option1 -1
+# Statement73
+	* Option1 0.848587
+		> Statement81 Option2 +4
+		> Statement63 Option2 -2
+	* Option2 0.901779
+		> Statement47 Option3 0
+		> Statement81 Option1 +1
+		> Statement85 Option1 -3
+	* Option3 0.136784
+		> Statement75 Option3 +1
+		> Statement9 Option1 +3
+	* Option4 0.496993
+		> Statement33 Option3 +1
+		> Statement52 Option3 -4
+# Statement74
+	* Option1 0.249452
+		> Statement25 Option1 0
+		> Statement5 Option2 -3
+	* Option2 0.971234
+		> Statement25 Option3 -3
+		> Statement21 Option3 +3
+		> Statement7 Option3 -2
+		> Statement83 Option3 0
+	* Option3 0.664682
+		> Statement67 Option3 +1
+		> Statement90 Option3 0
+		> Statement11 Option2 -2
+		> Statement8 Option2 -3
+	* Option4 0.420850
+		> Statement94 Option3 +3
+		> Statement55 Option1 -1
+# Statement75
+	* Option1 0.009115
+		> Statement15 Option2 -1
+	* Option2 0.688164
+		> Statement98 Option3 +2
+		> Statement24 Option3 +1
+	* Option3 0.572088
+		> Statement33 Option1 +1
+		> Statement56 Option3 +1
+	* Option4 0.658757
+		> Statement68 Option2 +3
+		> Statement86 Option2 -4
+		> Statement42 Option3 -1
+# Statement76
+	* Option1 0.849382
+		> Statement28 Option2 -3
+		> Statement72 Option2 +3
+	* Option2 0.337961
+		> Statement46 Option2 0
+	* Option3 0.898456
+		> Statement14 Option3 -1
+		> Statement74 Option1 +3
+	* Option4 0.742263
+		> Statement65 Option1 +4
+		> Statement90 Option3 -1
+# Statement77
+	* Option1 0.870693
+		> Statement48 Option2 0
+		> Statement40 Option1 0
+		> Statement48 Option2 -3
+	* Option2 0.923544
+		> Statement94 Option1 +3
+	* Option3 0.606315
+		> Statement14 Option3 +3
+	* Option4 0.765371
+		> Statement21 Option2 -2
+		> Statement7 Option2 +4
+# Statement78
+	* Option1 0.236038
+		> Statement24 Option3 +2
+		> Statement63 Option1 +1
+		> Statement83 Option3 +3
+	* Option2 0.251921
+		> Statement87 Option3 +2
+		> Statement48 Option2 -4
+	* Option3 0.418304
+		> Statement88 Option2 0
+		> Statement95 Option1 -2
+		> Statement43 Option2 +4
+	* Option4 0.806158
+		> Statement75 Option1 +2
+# Statement79
+	* Option1 0.946328
+		> Statement68 Option1 0
+		> Statement46 Option2 +4
+		> Statement8 Option1 +4
+	* Option2 0.123055
+		> Statement64 Option3 +3
+		> Statement47 Option1 +2
+	* Option3 0.493598
+		> Statement20 Option3 +4
+		> Statement89 Option3 +4
+	* Option4 0.343997
+		> Statement26 Option1 +1
+		> Statement51 Option3 -1
+# Statement80
+	* Option1 0.377974
+		> Statement46 Option2 -4
+	* Option2 0.999469
+		> Statement39 Option2 +1
+		> Statement8 Option2 -1
+		> Statement14 Option2 -2
+	* Option3 0.101128
+		> Statement65 Option2 -2
+		> Statement6 Option2 +3
+		> Statement27 Option1 -4
+		> Statement13 Option2 -4
+	* Option4 0.715466
+		> Statement49 Option1 +4
+		> Statement47 Option2 0
+# Statement81
+	* Option1 0.989456
+		> Statement45 Option3 +1
+	* Option2 0.467714
+		> Statement29 Option1 -2
+	* Option3 0.403712
+		> Statement30 Option3 -4
+		> Statement11 Option3 0
+		> Statement81 Option2 +2
+	* Option4 0.597797
+		> Statement2 Option2 -2
+		> Statement42 Option3 -1
+# Statement82
+	* Option1 0.951127
+		> Statement33 Option2 +4
+	* Option2 0.521338
+		> Statement85 Option2 0
+		> Statement37 Option3 -4
+	* Option3 0.393338
+		> Statement99 Option1 +1
+		> Statement91 Option1 -1
+	* Option4 0.832957
+		> Statement99 Option3 +3
+# Statement83
+	* Option1 0.052913
+		> Statement2 Option3 -3
+		> Statement74 Option1 +1
+		> Statement8 Option3 0
+	* Option2 0.799469
+		> Statement44 Option2 -1
+		> Statement41 Option3 +2
+		> Statement30 Option1 -1
+	* Option3 0.622476
+		> Statement98 Option1 -1
+		> Statement8 Option2 +2
+		> Statement15 Option2 -2
+		> Statement17 Option3 +2
+	* Option4 0.641582
+		> Statement55 Option3 0
+# Statement84
+	* Option1 0.436658
+		> Statement98 Option2 0
+		> Statement82 Option2 -4
+		> Statement89 Option2 0
+	* Option2 0.932354
+		> Statement91 Option2 -1
+		> Statement39 Option3 0
+	* Option3 0.126144
+		> Statement92 Option3 +1
+		> Statement15 Option3 -1
+		> Statement26 Option1 +2
+	* Option4 0.174174
+		> Statement59 Option1 0
+		> Statement97 Option1 +2
+# Statement85
+	* Option1 0.955100
+		> Statement11 Option3 +3
+		> Statement77 Option1 +2
+	* Option2 0.459460
+		> Statement19 Option2 0
+	* Option3 0.790653
+		> Statement24 Option1 +3
+	* Option4 0.330601
+		> Statement31 Option3 -4
+		> Statement28 Option3 +2
+		> Statement77 Option1 -3
+# Statement86
+	* Option1 0.872207
+		> Statement33 Option3 -3
+	* Option2 0.927310
+		> Statement53 Option3 -3
+		> Statement40 Option2 0
+		> Statement50 Option3 -4
+		> Statement33 Option1 +1
+	* Option3 0.473446
+		> Statement77 Option2 +1
+	* Option4 0.995597
+		> Statement42 Option3 +2
+		> Statement81 Option1 +1
+# Statement87
+	* Option1 0.463367
+
+	* Option2 0.722668
+		> Statement80 Option2 +2
+		> Statement9 Option2 -4
+		> Statement52 Option3 +2
+	* Option3 0.169675
+		> Statement2 Option1 -2
+		> Statement16 Option2 +4
+	* Option4 0.859272
+		> Statement28 Option3 0
+		> Statement95 Option1 +3
+		> Statement32 Option1 -2
+		> Statement71 Option1 +3
+# Statement88
+	* Option1 0.364318
+		> Statement22 Option1 +1
+	* Option2 0.995001
+		> Statement73 Option1 +4
+		> Statement8 Option1 -4
+	* Option3 0.489348
+		> Statement38 Option3 0
+		> Statement76 Option3 -4
+		> Statement81 Option1 -1
+	* Option4 0.317808
+		> Statement38 Option2 0
+# Statement89
+	* Option1 0.890809
+		> Statement94 Option2 -2
+		> Statement17 Option3 +4
+		> Statement51 Option3 +4
+		> Statement16 Option3 0
+	* Option2 0.190319
+		> Statement51 Option3 +1
+		> Statement29 Option3 -3
+	* Option3 0.501564
+		> Statement53 Option2 +4
+		> Statement24 Option3 +1
+	* Option4 0.878949
+		> Statement72 Option3 +2
+		> Statement70 Option3 -1
+		> Statement72 Option2 +1
+		> Statement21 Option2 -3
+# Statement90 INT
+	* Option1 0.317730
+		> Statement49 Option2 -1
+		> Statement41 Option2 -2
+		> Statement93 Option1 -1
+		> Statement83 Option3 -4
+	* Option2 0.150271
+		> Statement58 Option1 +2
+		> Statement35 Option2 +4
+	* Option3 0.928421
+		> Statement71 Option1 +2
+		> Statement96 Option3 +2
+		> Statement11 Option1 +4
+		> Statement11 Option2 -2
+	* Option4 0.537892
+		> Statement56 Option1 0
+		> Statement53 Option1 0
+		> Statement41 Option3 -1
+# Statement91
+	* Option1 0.325231
+		> Statement34 Option3 -4
+		> Statement49 Option2 +4
+	* Option2 0.273957
+		> Statement35 Option2 0
+		> Statement76 Option1 0
+	* Option3 0.671414
+		> Statement43 Option1 0
+		> Statement84 Option2 0
+		> Statement25 Option3 +3
+		> Statement10 Option1 +4
+	* Option4 0.084236
+		> Statement91 Option3 +1
+		> Statement79 Option2 0
+# Statement92
+	* Option1 0.663765
+
+		> Statement3 Option3 +2
+		> Statement16 Option3 +3
+	* Option2 0.219752
+		> Statement92 Option2 0
+		> Statement31 Option2 +2
+		> Statement16 Option2 +4
+		> Statement4 Option2 0
+	* Option3 0.630642
+		> Statement50 Option1 0
+	* Option4 0.029323
+		> Statement65 Option2 -3
+		> Statement70 Option2 0
+# Statement93
+	* Option1 0.864980
+		> Statement8 Option1 +2
+		> Statement48 Option2 0
+		> Statement85 Option3 +4
+	* Option2 0.571966
+		> Statement96 Option3 +1
+		> Statement87 Option3 -3
+		> Statement47 Option2 -1
+		> Statement44 Option2 -3
+	* Option3 0.998643
+		> Statement16 Option3 -2
+		> Statement43 Option3 +2
+	* Option4 0.656192
+		> Statement19 Option3 -1
+		> Statement66 Option3 +3
+		> Statement16 Option2 0
+# Statement94
+	* Option1 0.880004
+		> Statement94 Option1 -4
+	* Option2 0.855103
+		> Statement76 Option3 0
+	* Option3 0.848576
+		> Statement87 Option3 0
+		> Statement88 Option3 +2
+		> Statement88 Option3 +2
+	* Option4 0.277479
+		> Statement33 Option1 -2
+		> Statement74 Option1 0
+# Statement95
+	* Option1 0.595556
+		> Statement95 Option3 -3
+		> Statement98 Option1 +3
+	* Option2 0.621578
+		> Statement66 Option3 +3
+	* Option3 0.376348
+		> Statement32 Option3 +1
+	* Option4 0.155192
+		> Statement86 Option2 -3
+		> Statement83 Option1 +4
+# Statement96
+	* Option1 0.317289
+		> Statement85 Option3 -3
+		> Statement63 Option3 -3
+		> Statement55 Option2 -1
+	* Option2 0.814814
+		> Statement58 Option2 +2
+		> Statement57 Option3 -2
+		> Statement20 Option2 -1
+	* Option3 0.330997
+		> Statement4 Option3 +3
+	* Option4 0.847089
+		> Statement49 Option3 0
+# Statement97
+	* Option1 0.136559
+		> Statement70 Option2 -4
+		> Statement38 Option3 +2
+	* Option2 0.400726
+		> Statement46 Option2 -4
+		> Statement44 Option3 +2
+		> Statement75 Option3 -1
+	* Option3 0.006979
+		> Statement90 Option3 -1
+		> Statement30 Option2 -2
+		> Statement50 Option1 -3
+	* Option4 0.507076
+		> Statement1 Option2 +1
+		> Statement48 Option1 -1
+		> Statement11 Option3 -2
+# Statement98
+	* Option1 0.516744
+		> Statement56 Option1 -1
+		> Statement48 Option2 +2
+		> Statement12 Option2 0
+		> Statement13 Option1 -1
+	* Option2 0.708797
+		> Statement88 Option2 -1
+		> Statement5 Option3 -3
+		> Statement32 Option1 +3
+		> Statement10 Option2 +3
+	* Option3 0.201437
+		> Statement71 Option2 +3
+		> Statement71 Option3 -3
+	* Option4 0.458748
+		> Statement25 Option3 +4
+		> Statement33 Option3 +4
+# Statement99
+	* Option1 0.497959
+		> Statement22 Option3 +1
+		> Statement13 Option1 +4
+		> Statement74 Option3 +1
+	* Option2 0.428463
+		> Statement83 Option3 -4
+		> Statement20 Option1 +4
+	* Option3 0.867161
+		> Statement60 Option3 -4
+		> Statement61 Option2 -3
+		> Statement62 Option3 +1
+		> Statement94 Option3 0
+	* Option4 0.726884
+		> Statement72 Option2 +2
+# Statement100
+	* Option1 0.388908
+		> Statement76 Option2 -4
+	* Option2 0.128895
+		> Statement58 Option2 -1
+	* Option3 0.805006
+		> Statement30 Option2 -2
+		> Statement93 Option3 +2
+	* Option4 0.300019
+		> Statement50 Option2 +2

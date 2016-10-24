@@ -11,8 +11,7 @@ import axiom.reader.Command;
 import axiom.reader.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static java.lang.System.out;
-import java.security.cert.PKIXRevocationChecker;
+
 import java.util.LinkedList;
 import java.util.List;
 /**
@@ -59,17 +58,22 @@ public class AXIOM {
             m.add.impact("D", "2", "A", "2", "-1");
             m.add.impact("E", "1", "C", "1", "-4");
             m.add.impact("F", "2", "C", "2", "-2");
+
+            //TestInputGenerator tig = new TestInputGenerator();
+            //System.out.println(tig.generateInput(100));
             
             String inputfilename = System.getProperty("user.dir") + "\\" + "input2.txt";
             Reader r = new Reader("input2.txt");
             Model m2 = r.createAXIOMmodelFromInput();
-            System.out.println(m2);
+            //System.out.println(m2);
+            // m2.fixProbabilityDistributionErrors();
+            // m2.printDistributions();
             
-            //IterationSet is = new IterationSet(m2, 50);
-            //System.out.println(is);
+            IterationSet is = new IterationSet(m2, 1000000);
+            System.out.println(is);
 
-            //TestInputGenerator tig = new TestInputGenerator();
-            //System.out.println(tig.generateInput(100));
+            
+            
             
             
             

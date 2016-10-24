@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.ToIntBiFunction;
+import java.util.function.ToIntFunction;
 
 /**
  *
@@ -99,6 +102,8 @@ public class Model implements LabelNamespace {
     
     public Configuration evaluate() throws ProbabilityAdjustmentException {
         
+        fixProbabilityDistributionErrors();
+        
         /* Initialize ComponentFinder if not yet initialized */
         if(this.find==null) this.find = new ComponentFinder(this);
         
@@ -169,6 +174,26 @@ public class Model implements LabelNamespace {
             }
         }
         return sb.toString();
+    }
+    
+    public void fixProbabilityDistributionErrors() {
+        for(Statement s : this.statements) {
+            int errorCorrection = Probability.requiredDistributionCorrection(s.optionProbabilities()) > 0 ? 1 : -1;
+            // System.out.println("Correcting " + s.optionProbabilityDistribution(", "));
+            Iterator<Option> optionIterator = s.optionsInRandomOrder().iterator();
+            while(Probability.requiredDistributionCorrection(s.optionProbabilities()) != 0) {
+                if(!optionIterator.hasNext()) optionIterator = s.optionsInRandomOrder().iterator();
+                Option o = optionIterator.next();
+                o.adjusted.correct(errorCorrection);
+            }
+            // System.out.println("Corrected to " + s.optionProbabilityDistribution(", "));
+        }
+    }
+    
+    public void printDistributions() {
+        for(Statement s : this.statements) {
+            System.out.println(s.optionProbabilityDistribution(", "));;
+        }
     }
     
     

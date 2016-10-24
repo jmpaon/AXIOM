@@ -72,7 +72,9 @@ public class Iteration {
      * @throws ProbabilityAdjustmentException 
      */
     private void computeIteration(int evaluationCount) throws ProbabilityAdjustmentException {
+        int itNumber=1;
         while(evaluationCount-- > 0) {
+            System.out.println("Model evaluation " + (itNumber++) + " with active interventions " + toString_activeInterventions() );
             if(this.activeInterventions.isEmpty()) {
                 this.configurations.add(this.model.evaluate());
             } else {

@@ -174,11 +174,16 @@ public class Statement implements LabelNamespace, Comparable<Statement> {
     public String optionProbabilityDistribution(String separator) {
         StringBuilder sb = new StringBuilder();
         sb.append("Statement ").append(this.label).append(separator);
-        for(Option o : this.options) sb.append(o.label).append(" : ").append(o.adjusted.toStringAsFraction()).append(separator);
+        for(Option o : this.options) {
+            sb.append(o.label).append(" : ").append(o.adjusted.toStringAsFraction()).append(separator);
+        }
+        int residual = Probability.requiredDistributionCorrection(this.optionProbabilities());
+        sb.append("Residual ").append(residual);
+        
         return sb.toString();
     }
     
-    private Collection<Probability> optionProbabilities() {
+    Collection<Probability> optionProbabilities() {
         LinkedList<Probability> ps = new LinkedList<>();
         for(Option o : this.options) ps.add(o.adjusted);
         return ps;

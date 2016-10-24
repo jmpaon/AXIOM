@@ -23,18 +23,20 @@ public class TestInputGenerator {
         String currOption = "";
         StringBuilder sb = new StringBuilder();
         
-        for(int i=0;i<statements;i++) {
+        for(int i=1;i<=statements;i++) {
             currStatement = "Statement" + statementCount++;
             boolean intervention = Math.random() > 0.95 ? true : false;
             sb.append(statementInput(currStatement, intervention));
             
+            double[] ps = pdist(4);
+            
             for(int ii=1;ii<=4;ii++) {
                 currOption = "Option" + ii;
-                double apriori = Math.random();
+                double apriori = ps[ii-1];
                 sb.append(optionInput(currOption, apriori));
                 for(int iii=1;iii<=Math.random()*4 +1 ;iii++) {
-                    int targetIndex = (int)(Math.random() * statements);
-                    while(targetIndex == i) targetIndex = (int)(Math.random() * statements);
+                    int targetIndex = (int)(Math.random() * statements + 1);
+                    while(targetIndex == i) targetIndex = (int)(Math.random() * statements + 1 );
                     String targetStatement = "Statement" + String.valueOf(targetIndex);
                     String targetOption = "Option" + String.valueOf((int)(Math.random()*3 + 1));
                     
@@ -50,6 +52,21 @@ public class TestInputGenerator {
                 
     }
     
+    public double[] pdist(int items) {
+        double[] ps = new double[items];
+        double pleft = 1;
+        for(int i = 0;i<items;i++) {
+            
+            if( i == items-1) {
+                ps[i] = pleft;
+            } else {
+                ps[i] = Math.random() * pleft;
+                pleft = pleft - ps[i];
+            }
+            
+        }
+        return ps;
+    }
     
 
     public String statementInput(String label, boolean intervention) {

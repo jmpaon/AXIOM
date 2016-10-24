@@ -102,10 +102,10 @@ public class Probability implements Comparable<Probability> {
     
     /**
      * This method is used to correct a numerator value in case 
-     * where there is residual left from secondary probability adjustment.
-     * @param addToNumerator The residual to be added to <code>this.numerator</code>.
+ where there is requiredDistributionCorrection left from secondary probability adjustment.
+     * @param addToNumerator The requiredDistributionCorrection to be added to <code>this.numerator</code>.
      */
-    private void correct(int addToNumerator) {
+    void correct(int addToNumerator) {
         assert this.numerator + addToNumerator <= DENOMINATOR : "Corrected to >1: "+  (this.numerator+addToNumerator);
         assert this.numerator + addToNumerator >= 0 : "Corrected to <0";
         this.numerator += addToNumerator;
@@ -213,7 +213,7 @@ public class Probability implements Comparable<Probability> {
      * @return 
      */
     public static boolean isValidDistribution(Collection<Probability> distribution) {
-        return residual(distribution)==0;
+        return requiredDistributionCorrection(distribution)==0;
     }
     
     /**
@@ -222,7 +222,7 @@ public class Probability implements Comparable<Probability> {
      * @param distribution Collection of probabilities.
      * @return Difference of DENOMINATOR and the sum of nominators in distribution.
      */
-    public static int residual(Collection<Probability> distribution) {
+    public static int requiredDistributionCorrection(Collection<Probability> distribution) {
         int sum = 0;
         for(Probability p : distribution) sum += p.numerator;
         return DENOMINATOR - sum;

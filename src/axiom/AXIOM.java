@@ -9,6 +9,7 @@ import axiom.model.*;
 import axiom.probabilityAdjusters.*;
 import axiom.reader.Command;
 import axiom.reader.Reader;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,24 @@ public class AXIOM {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+        tryFeatures();
+    }
+    
+    public static void axiom_main(String[] args) {
+        try {
+            Reader reader = new Reader(args[1]);
+            Model axiomModel = reader.createAXIOMmodelFromInput();
+            
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void tryFeatures() {
         try {
             NameProbabilityAdjuster adj = new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster();
             Model m = new Model("Testmodel", adj);
@@ -65,43 +83,22 @@ public class AXIOM {
             String inputfilename = System.getProperty("user.dir") + "\\" + "input2.txt";
             Reader r = new Reader("input2.txt");
             Model m2 = r.createAXIOMmodelFromInput();
-            //System.out.println(m2);
-            // m2.fixProbabilityDistributionErrors();
-            // m2.printDistributions();
+            System.out.println(m2);
+            m2.printDistributions(); System.out.println("");
+            m2.fixProbabilityDistributionErrors();
+            m2.printDistributions();
             
-            IterationSet is = new IterationSet(m2, 1000000);
+            IterationSet is = new IterationSet(m2, 1000);
             System.out.println(is);
-
-            
-            
-            
-            
-            
-            
-            //IterationSet is = new IterationSet(m, 30000);
-            //System.out.println(is);
-
-            //Configuration c = m.evaluate();
-            //System.out.println(c.toStringAsOptionValues());
-            //System.out.println(c);
-            
-            
-            
-            //System.out.println(m.statementsByTimestep().toString());
-            //Option o = m.getOptionAtIndex(1);
-            //System.out.println(m.getModelStates());
-                    
-                    
             
             
         } catch (ProbabilityAdjustmentException ex) {
             Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        
+        }        
     }
+    
     
     public static void testAdjustment() {
         try {

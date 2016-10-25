@@ -26,11 +26,22 @@ public class Option implements Comparable<Option> {
     final String description;
     final List<Impact> impacts;
     
-    
+    /**
+     * Constructor for <tt>Option</tt>
+     * @param label Option label
+     * @param statement Statement of the option
+     * @param apriori Initial probability of the option
+     */
     Option(Label label, Statement statement, Probability apriori) {
         this(label, statement, apriori, null);
     }
-    
+    /**
+     * Constructor for <tt>Option</tt>
+     * @param label Option label
+     * @param statement Statement of the option
+     * @param apriori Initial probability of the option
+     * @param description Longer description of the option
+     */
     Option(Label label, Statement statement, Probability apriori, String description) {
         assert label != null;
         assert statement != null;
@@ -44,6 +55,10 @@ public class Option implements Comparable<Option> {
         this.impacts = new LinkedList<>();
     }
     
+    /**
+     * Returns a list of other options that are under this statement
+     * @return Other options under the same statement
+     */
     List<Option> complementOptions() {
         List<Option> otherOptions = new LinkedList<>();
         for(Option o : this.statement.options) {
@@ -52,12 +67,24 @@ public class Option implements Comparable<Option> {
         return otherOptions;
     }
     
+    /**
+     * Executes the <tt>Impact</tt>s associated with this option.
+     * This operation should be performed only for options 
+     * that are evaluated to be true, i.e.are assigned as the state of some statements.
+     * @throws ProbabilityAdjustmentException 
+     */
     void executeImpacts() throws ProbabilityAdjustmentException {
+        assert this.statement.getEvaluatedState() == this;
         for(Impact i : this.impactsInRandomOrder()) {
             i.execute();
         }
     }
     
+    /**
+     * Resets the <tt>Option</tt> by resetting the adjusted probability 
+     * to be equal to the initial/a priori probability and 
+     * calling the {@link Impact#reset() } method on each <tt>Impact</tt> of this option.
+     */
     void reset() {
         this.adjusted.set(apriori);
         for(Impact i : impacts) i.reset();
@@ -95,6 +122,13 @@ public class Option implements Comparable<Option> {
         return this.label.compareTo(o.label);
     }
     
+    /**
+     * Returns an identifying long label for this option: 
+     * long label consists of the label of the statement 
+     * and the label of the option,
+     * separated by a semicolon.
+     * @return A long label made of statement and option labels separated by semicolon
+     */
     public String getLongLabel() {
         return this.statement.label + ":" + this.label;
     }

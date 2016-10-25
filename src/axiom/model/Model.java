@@ -11,8 +11,6 @@ import axiom.probabilityAdjusters.ProbabilityAdjustmentFunction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +18,12 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.ToIntBiFunction;
-import java.util.function.ToIntFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+
 
 /**
- *
+ * Represents an AXIOM model.
  * @author juha
  */
 public class Model implements LabelNamespace {
@@ -36,6 +35,12 @@ public class Model implements LabelNamespace {
     final Set<Statement> statements;
     public final HashMap<Integer, Option> opttbl; // FIXME experimental
     
+    
+    /**
+     * Constructor for <tt>Model</tt>.
+     * @param modelName Name of the model
+     * @param probabilityAdjuster probability adjuster to provide the probability adjustment functions for <tt>Impact</tt>s in the model
+     */
     public Model(String modelName, ProbabilityAdjuster probabilityAdjuster) {
         assert modelName != null;
         assert probabilityAdjuster != null : "Null probabilityAdjuster";
@@ -89,20 +94,23 @@ public class Model implements LabelNamespace {
         return optionCount;
     }
     
+    /**
+     * Returns a new list of the <tt>Option</tt>s in the model.
+     * The options on the new list are in the label-based ordering.
+     * @return New ordered list of all options in the model.
+     */
     List<Option> getOptions() {
         List<Option> list = new ArrayList<>();
         for(Statement s : statements) list.addAll(s.options);
         return list;
     }
     
-    public void updateFinder() {
-        this.find = new ComponentFinder(this);
-    }
-    
-    
+    /**
+     * Evaluates the model, resulting in a <tt>Configuration</tt>
+     * @return A {@link Configuration} representing the model state after the evaluation
+     * @throws ProbabilityAdjustmentException 
+     */
     public Configuration evaluate() throws ProbabilityAdjustmentException {
-        
-        fixProbabilityDistributionErrors();
         
         /* Initialize ComponentFinder if not yet initialized */
         if(this.find==null) this.find = new ComponentFinder(this);
@@ -120,18 +128,43 @@ public class Model implements LabelNamespace {
         return c;
     }
     
+    /**
+     * Evaluate the model with a set of intervention options.
+     * The intervention options are set to be true before model evaluation.
+     * After that, the model is evaluated normally by calling {@link Model#evaluate()}.
+     * The impacts of the intervention options are executed
+     * only when the relevant statement is evaluated.
+     * @param activeInterventions List of statement-option pairs; the options will be set as the states of the corresponding statements
+     * @return A {@link Configuration} representing the model state after the evaluation
+     * @throws ProbabilityAdjustmentException 
+     */
     public Configuration evaluate(List<Pair<Statement, Option>> activeInterventions) throws ProbabilityAdjustmentException  {
+        
+        BiPredicate<Statement, List<Pair<Statement, Option>>> unique = (statement, list) -> {
+            int i=0;
+            for(Pair<Statement, Option> p : list) {if(p.left==statement) i++;}
+            return i==1;
+        };
+        
+        /* Set the active intervention for each intervention statement */
         for(Pair<Statement, Option> p : activeInterventions) {
             assert p.left.model == this;
             assert p.left.intervention : "Statement " + p.left + " is not an intervention";
+            assert p.right.statement == p.left;
+            assert unique.test(p.left, activeInterventions);
             
-            /* Set the active intervention for each intervention statement */
             p.left.setActiveIntervention(p.right);
         }
+        
+        /* Evaluate normally with intervention statements already having a state */
         return this.evaluate();
         
     }
     
+    /**
+     * Resets the model.
+     * This operation is performed after evaluation.
+     */
     void reset() {
         for(Statement s : statements) s.reset();
     }
@@ -176,23 +209,26 @@ public class Model implements LabelNamespace {
         return sb.toString();
     }
     
+
+    /**
+     * Distributes the error in the a priori probability distributions of statements
+     * to the options randomly.
+     */
     public void fixProbabilityDistributionErrors() {
         for(Statement s : this.statements) {
-            int errorCorrection = Probability.requiredDistributionCorrection(s.optionProbabilities()) > 0 ? 1 : -1;
-            // System.out.println("Correcting " + s.optionProbabilityDistribution(", "));
-            Iterator<Option> optionIterator = s.optionsInRandomOrder().iterator();
-            while(Probability.requiredDistributionCorrection(s.optionProbabilities()) != 0) {
-                if(!optionIterator.hasNext()) optionIterator = s.optionsInRandomOrder().iterator();
-                Option o = optionIterator.next();
-                o.adjusted.correct(errorCorrection);
+            if(Probability.requiredDistributionCorrection(s.aprioriProbabilities()) >= Probability.ALLOWED_DISTRIBUTION_ERROR) {
+                throw new IllegalStateException("The probability distribution error for statement " 
+                        + s.label + " is too big. The distribution is " 
+                        + s.adjustedProbabilityDistributionString(", "));
             }
-            // System.out.println("Corrected to " + s.optionProbabilityDistribution(", "));
+            Probability.correct(s.aprioriProbabilities());
+            s.options.stream().forEach(option -> { option.adjusted.set(option.apriori); });
         }
     }
     
     public void printDistributions() {
         for(Statement s : this.statements) {
-            System.out.println(s.optionProbabilityDistribution(", "));;
+            System.out.println(s.adjustedProbabilityDistributionString(", "));
         }
     }
     
@@ -200,10 +236,16 @@ public class Model implements LabelNamespace {
     public final class ComponentAdder {
         
         final Model model;
+        private boolean additionAllowed;
         
         public ComponentAdder(Model model) {            
             this.model = model;
+            additionAllowed = true;
             assert this.model.find == null;
+        }
+        
+        public void disableAdditions() {
+            this.additionAllowed = false;
         }
         
         /**
@@ -220,6 +262,8 @@ public class Model implements LabelNamespace {
                 int timestep) 
         {
             assert statementLabel != null;
+            if(!additionAllowed) throw new IllegalStateException("Model component addition is disabled");
+            
             Label label = new Label(statementLabel, model);
             Statement s = new Statement(this.model, label, description, intervention, timestep);
             model.statements.add(s);
@@ -240,6 +284,7 @@ public class Model implements LabelNamespace {
                 double aprioriProbability) 
                 throws LabelNotFoundException 
         {
+            if(!additionAllowed) throw new IllegalStateException("Model component addition is disabled");
             assert statementLabel != null;
             assert optionLabel != null;
             assert aprioriProbability >= 0 && aprioriProbability <= 1;
@@ -248,6 +293,7 @@ public class Model implements LabelNamespace {
             Statement s = statements.stream().filter(st -> st.label.value.equals(statementLabel)).findFirst().get();
             assert s != null;
             Option o = new Option(new Label(optionLabel, s), s, new Probability(aprioriProbability));
+            assert !s.options.contains(o) : "Option " + o + " is already present in the model for statement " + s;
             s.options.add(o);
         }
         
@@ -270,6 +316,7 @@ public class Model implements LabelNamespace {
                 String adjustmentFunctionName) 
                 throws LabelNotFoundException, AXIOMException 
         {
+            if(!additionAllowed) throw new IllegalStateException("Model component addition is disabled");
             assert fromStatementLabel != null;
             assert toStatementLabel != null;
             assert fromOptionLabel != null;
@@ -291,6 +338,11 @@ public class Model implements LabelNamespace {
         }
     }
     
+    /**
+     * This inner class provides the methods to find components of the AXIOM model.
+     * The components are, at this point, <tt>Statement</tt>s, <tt>Option</tt>s and <tt>Impact</tt>s.
+     * A "reverse" lookup for the indices of <tt>Option</tt>s is also provided.
+     */
     public final class ComponentFinder {
         
         final Model model;

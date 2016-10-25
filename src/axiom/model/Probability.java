@@ -8,6 +8,10 @@ package axiom.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class represents a probability.
@@ -19,8 +23,10 @@ import java.util.Collection;
 public class Probability implements Comparable<Probability> {
     
     private int numerator;
-    private static final int DENOMINATOR = 1000000;
-    private static final int DEFAULT_PRECISION = 4;
+    public static final int DENOMINATOR = 1000000;
+    public static final int ALLOWED_DISTRIBUTION_ERROR = 500;
+    public static final int DEFAULT_PRECISION = 4;
+    
     
     /**
      * Constructor for Probability.
@@ -102,14 +108,36 @@ public class Probability implements Comparable<Probability> {
     
     /**
      * This method is used to correct a numerator value in case 
- where there is requiredDistributionCorrection left from secondary probability adjustment.
+     * where there is requiredDistributionCorrection left from secondary probability adjustment.
      * @param addToNumerator The requiredDistributionCorrection to be added to <code>this.numerator</code>.
      */
     void correct(int addToNumerator) {
         assert this.numerator + addToNumerator <= DENOMINATOR : "Corrected to >1: "+  (this.numerator+addToNumerator);
         assert this.numerator + addToNumerator >= 0 : "Corrected to <0";
         this.numerator += addToNumerator;
-    }    
+    }
+    
+    /**
+     * This method is used to correct the numerator values of probabilities 
+     * in a probability distribution.
+     * The method randomly allocates the required correction 
+     * to the probabilities in the distribution so that the sum of probability 
+     * in the distribution is equal to 1 after the <tt>correct</tt> operation.
+     * @param distribution A collection of probabilities that together form a probability distribution.
+     */
+    static void correct(Collection<Probability> distribution) {
+        int errorCorrection = Probability.requiredDistributionCorrection(distribution) > 0 ? 1 : -1;
+        assert Math.abs(errorCorrection) <= ALLOWED_DISTRIBUTION_ERROR;
+        List<Probability> shuffledOrder = new LinkedList<>(distribution);
+        Collections.shuffle(shuffledOrder);
+        Iterator<Probability> shuffledIterator = shuffledOrder.iterator();
+        while(Probability.requiredDistributionCorrection(shuffledOrder) != 0) {
+            if(!shuffledIterator.hasNext()) shuffledIterator = shuffledOrder.iterator();
+            shuffledIterator.next().correct(errorCorrection);
+        }
+    }
+
+
     
     /**
      * Returns a probability that is the complement of this probability.

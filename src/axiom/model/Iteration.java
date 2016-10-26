@@ -74,7 +74,8 @@ public class Iteration {
     private void computeIteration(int evaluationCount) throws ProbabilityAdjustmentException {
         int itNumber=1;
         while(evaluationCount-- > 0) {
-            System.out.println("Model evaluation " + (itNumber++) + " with active interventions " + toString_activeInterventions() );
+            System.out.println(String.format("Model evaluation %7d with active interventions %s", itNumber++, toString_activeInterventions()));
+            //System.out.println("Model evaluation " + (itNumber++) + " with active interventions " + toString_activeInterventions() );
             if(this.activeInterventions.isEmpty()) {
                 this.configurations.add(this.model.evaluate());
             } else {
@@ -128,10 +129,10 @@ public class Iteration {
             if( !isIntervention || noInterventions ) {
                 double difference = p.right.toDouble()-p.left.apriori.toDouble();
                 assert difference >= -1 && difference <= 1;
-                sb.append(String.format("%10s %6.6s --> %6.6s (%2.4f) \n", p.left.getLongLabel(), p.left.apriori, p.right, difference ));
+                sb.append(String.format("%41s\t%5.5s\t->\t%5.5s\t(%+4.3f)\n", p.left.getLongLabel(), p.left.apriori, p.right, difference ));
             } else {
                 boolean b = this.activeInterventions.stream().filter(f -> f.right.equals(p.left)).findFirst().isPresent();
-                sb.append(String.format("%10s (Active interv.) : %5s\n", p.left.getLongLabel(), b ? "TRUE" : "FALSE" ));
+                sb.append(String.format("%41s as intervention:\t%5.5s\n", p.left.getLongLabel(), b ? "TRUE" : "FALSE" ));
             }
         }
         return sb.toString(); 
@@ -149,7 +150,8 @@ public class Iteration {
     public String toString_activeInterventions() {
         StringBuilder sb = new StringBuilder();
         activeInterventions.stream().forEach((activeIntervention) -> {
-            sb.append(activeIntervention.left.label).append(" <== ").append(activeIntervention.right.getLongLabel()).append("\n");
+            sb.append(String.format("[%s::%s] ", activeIntervention.left.label, activeIntervention.right.label));
+            // sb.append(activeIntervention.left.label).append(" <== ").append(activeIntervention.right.getLongLabel()).append(" ");
         });
         return sb.toString();
     }

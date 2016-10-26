@@ -25,14 +25,22 @@ public class AXIOM {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        tryFeatures();
+        //tryFeatures();
+        String arggs[] = {"input35.txt", "50"};
+        axiom_main(arggs);
+        //generateInput();
+        
     }
     
     public static void axiom_main(String[] args) {
         try {
-            Reader reader = new Reader(args[1]);
+            int evaluationCount = Integer.valueOf(args[1]);
+            Reader reader = new Reader(args[0]);
             Model axiomModel = reader.createAXIOMmodelFromInput();
+            axiomModel.fixProbabilityDistributionErrors();
+            IterationSet iterationSet = new IterationSet(axiomModel, evaluationCount);
             
+            System.out.println(iterationSet);
             
             
         } catch (IOException ex) {
@@ -97,6 +105,11 @@ public class AXIOM {
         } catch (Exception ex) {
             Logger.getLogger(AXIOM.class.getName()).log(Level.SEVERE, null, ex);
         }        
+    }
+    
+    public static void generateInput() {
+        TestInputGenerator tig = new TestInputGenerator();
+        System.out.println(tig.generateInput(35));        
     }
     
     

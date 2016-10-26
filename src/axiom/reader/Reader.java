@@ -9,6 +9,7 @@ import axiom.model.AXIOMException;
 import axiom.model.Model;
 import axiom.probabilityAdjusters.ProbabilityAdjusterFactory;
 import axiom.probabilityAdjusters.ProbabilityAdjustmentException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public class Reader {
     
     public Reader(String filename) throws IOException {
         this.filename = filename;
-        this.qualifiedFilename = (System.getProperty("user.dir")) + "\\" + this.filename;
+        this.qualifiedFilename = (System.getProperty("user.dir")) + File.separator + this.filename;
         String allContent = new String(Files.readAllBytes(Paths.get(qualifiedFilename)), Charset.forName("UTF-8"));
         
         allContent = allContent.replaceAll("\n", " ");
@@ -40,11 +41,27 @@ public class Reader {
         
     }
     
+    /**
+     * Creates an AXIOM model on the basis of the file passed to this <tt>Reader</tt>.
+     * @return New AXIOM <tt>Model</tt> based on the contents of file <b>filename</b>
+     * @throws ProbabilityAdjustmentException
+     * @throws AXIOMInputException
+     * @throws AXIOMException 
+     */
     public Model createAXIOMmodelFromInput() throws ProbabilityAdjustmentException, AXIOMInputException, AXIOMException {
         Model model = new Model("AXIOM model", new ProbabilityAdjusterFactory().createDefaultNameProbabilityAdjuster());
         List<ModelBuildingAction> mba = fileToModelBuildingActions(model);
+        
+        /* Model building actions are sorted to their natural ordering by precedence */
         Collections.sort(mba);
+        
+        /* Execute model building actions */
         for(ModelBuildingAction m : mba) m.execute();
+        
+        /* After model additions have been performed, ready model for computation */
+        model.fixProbabilityDistributionErrors();
+        model.add.disableAdditions();
+        
         return model;
     }
     

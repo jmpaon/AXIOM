@@ -35,6 +35,8 @@ public class Option implements Comparable<Option> {
     Option(Label label, Statement statement, Probability apriori) {
         this(label, statement, apriori, null);
     }
+    
+    
     /**
      * Constructor for <tt>Option</tt>
      * @param label Option label
@@ -54,6 +56,7 @@ public class Option implements Comparable<Option> {
         this.adjusted = new Probability(apriori.get());
         this.impacts = new LinkedList<>();
     }
+    
     
     /**
      * Returns a list of other options that are under this statement

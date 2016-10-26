@@ -75,7 +75,6 @@ public class Iteration {
         int itNumber=1;
         while(evaluationCount-- > 0) {
             System.out.println(String.format("Model evaluation %7d with active interventions %s", itNumber++, toString_activeInterventions()));
-            //System.out.println("Model evaluation " + (itNumber++) + " with active interventions " + toString_activeInterventions() );
             if(this.activeInterventions.isEmpty()) {
                 this.configurations.add(this.model.evaluate());
             } else {

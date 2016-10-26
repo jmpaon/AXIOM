@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
+ * Objects of this class represent the different values 
+ * AXIOM <tt>Statement</tt>s can have.
+ * Each statement in the model has a set of options associated with it
+ * that represent its possible states after evaluation.
  * @author juha
  */
 public class Option implements Comparable<Option> {

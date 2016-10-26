@@ -14,8 +14,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class represents a probability.
- * It wraps an int that represents the numerator;
+ * Objects of this class represent probabilities.
+ * <tt>Probability</tt> wraps an <tt>int</tt> that represents a numerator
+ * in a fraction that is the probability value.
  * this solution is safe from the point of view of having valid 
  * probability distributions (whose members' probabilities' sum equals 1)
  * @author juha

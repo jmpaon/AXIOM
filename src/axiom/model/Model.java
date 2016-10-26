@@ -183,7 +183,10 @@ public class Model implements LabelNamespace {
         return states.toString();
     }
 
-    
+    /**
+     * Returns the labels of the <tt>Statement</tt>s of this model.
+     * @return Collection of labels of statements
+     */
     @Override
     public Collection getNamespaceLabels() {
         Collection labels = new LinkedList<>();
@@ -192,6 +195,7 @@ public class Model implements LabelNamespace {
         }
         return labels;
     }
+    
     
     @Override
     public String toString() {
@@ -210,21 +214,6 @@ public class Model implements LabelNamespace {
     }
     
 
-    /**
-     * Distributes the error in the a priori probability distributions of statements
-     * to the options randomly.
-     */
-    public void fixProbabilityDistributionErrors() {
-        for(Statement s : this.statements) {
-            if(Probability.requiredDistributionCorrection(s.aprioriProbabilities()) >= Probability.ALLOWED_DISTRIBUTION_ERROR) {
-                throw new IllegalStateException("The probability distribution error for statement " 
-                        + s.label + " is too big. The distribution is " 
-                        + s.adjustedProbabilityDistributionString(", "));
-            }
-            Probability.correct(s.aprioriProbabilities());
-            s.options.stream().forEach(option -> { option.adjusted.set(option.apriori); });
-        }
-    }
     
     public void printDistributions() {
         for(Statement s : this.statements) {
@@ -335,6 +324,22 @@ public class Model implements LabelNamespace {
             assert f != null;
             
             fromOption.impacts.add(new Impact(f, fromOption, toOption));
+        }
+
+        /**
+         * Distributes the error in the a priori probability distributions of statements
+         * to the options randomly.
+         */
+        public void fixProbabilityDistributionErrors() {
+            for (Statement s : model.statements) {
+                if (Probability.requiredDistributionCorrection(s.aprioriProbabilities()) >= Probability.ALLOWED_DISTRIBUTION_ERROR) {
+                    throw new IllegalStateException("The probability distribution error for statement " + s.label + " is too big. The distribution is " + s.adjustedProbabilityDistributionString(", "));
+                }
+                Probability.correct(s.aprioriProbabilities());
+                s.options.stream().forEach((Option option) -> {
+                    option.adjusted.set(option.apriori);
+                });
+            }
         }
     }
     

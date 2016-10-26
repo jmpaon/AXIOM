@@ -7,7 +7,7 @@ package axiom;
 
 import axiom.model.*;
 import axiom.probabilityAdjusters.*;
-import axiom.reader.Command;
+
 import axiom.reader.Reader;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -37,7 +37,6 @@ public class AXIOM {
             int evaluationCount = Integer.valueOf(args[1]);
             Reader reader = new Reader(args[0]);
             Model axiomModel = reader.createAXIOMmodelFromInput();
-            axiomModel.fixProbabilityDistributionErrors();
             IterationSet iterationSet = new IterationSet(axiomModel, evaluationCount);
             
             System.out.println(iterationSet);
@@ -93,7 +92,7 @@ public class AXIOM {
             Model m2 = r.createAXIOMmodelFromInput();
             System.out.println(m2);
             m2.printDistributions(); System.out.println("");
-            m2.fixProbabilityDistributionErrors();
+            m2.add.fixProbabilityDistributionErrors();
             m2.printDistributions();
             
             IterationSet is = new IterationSet(m2, 1000);

@@ -67,7 +67,7 @@
 		> Statement18 Option3 0
 		> Statement30 Option1 -1
 		> Statement15 Option2 +2
-# Statement6
+# Statement6 ts 1
 	* Option1 0.586704
 		> Statement27 Option2 0
 		> Statement29 Option3 +1
@@ -94,7 +94,7 @@
 	* Option4 0.147149
 		> Statement31 Option1 +4
 		> Statement23 Option3 -2
-# Statement8
+# Statement8 ts 1
 	* Option1 0.738744
 		> Statement30 Option2 0
 	* Option2 0.050833
@@ -109,7 +109,7 @@
 	* Option4 0.108483
 		> Statement21 Option1 0
 		> Statement33 Option1 -2
-# Statement9
+# Statement9 ts 1
 	* Option1 0.845925
 		> Statement3 Option1 +4
 		> Statement12 Option3 -1
@@ -137,7 +137,7 @@
 		> Statement1 Option1 0
 		> Statement1 Option1 -2
 		> Statement12 Option2 0
-# Statement11
+# Statement11 ts 1
 	* Option1 0.530940
 		> Statement19 Option3 +2
 		> Statement14 Option3 0
@@ -168,7 +168,7 @@
 		> Statement3 Option1 -4
 		> Statement28 Option2 -4
 		> Statement2 Option2 0
-# Statement13
+# Statement13 ts 1
 	* Option1 0.923503
 		> Statement34 Option3 +2
 		> Statement9 Option2 -4
@@ -196,7 +196,7 @@
 		> Statement24 Option2 -1
 		> Statement9 Option3 +4
 		> Statement34 Option3 +1
-# Statement15
+# Statement15 ts 1
 	* Option1 0.787998
 		> Statement30 Option2 +1
 	* Option2 0.021648
@@ -220,7 +220,7 @@
 		> Statement17 Option2 +1
 	* Option4 0.045772
 		> Statement34 Option2 -4
-# Statement17
+# Statement17 ts 1
 	* Option1 0.226756
 		> Statement7 Option1 +4
 	* Option2 0.576182
@@ -246,7 +246,7 @@
 		> Statement7 Option2 -2
 		> Statement1 Option1 -3
 		> Statement20 Option3 0
-# Statement19
+# Statement19 ts 1
 	* Option1 0.969721
 		> Statement17 Option1 +3
 		> Statement32 Option1 -3
@@ -276,7 +276,7 @@
 		> Statement28 Option3 +1
 		> Statement17 Option3 -2
 		> Statement25 Option3 -3
-# Statement21
+# Statement21 ts 1
 	* Option1 0.363140
 		> Statement12 Option2 +3
 	* Option2 0.053219
@@ -290,7 +290,7 @@
 		> Statement25 Option2 -4
 		> Statement30 Option2 -4
 		> Statement30 Option1 0
-# Statement22 INT
+# Statement22 INT ts 1
 	* Option1 0.244159
 		> Statement17 Option3 +4
 	* Option2 0.271212
@@ -304,7 +304,7 @@
 		> Statement2 Option3 0
 	* Option4 0.265884
 		> Statement20 Option1 -4
-# Statement23
+# Statement23 ts 1
 	* Option1 0.654419
 		> Statement29 Option1 +3
 		> Statement35 Option2 0
@@ -359,7 +359,7 @@
 	* Option4 0.027576
 		> Statement18 Option2 +2
 		> Statement27 Option2 -3
-# Statement27
+# Statement27 2
 	* Option1 0.640246
 		> Statement26 Option2 +3
 	* Option2 0.310218
@@ -372,7 +372,7 @@
 	* Option4 0.000486
 		> Statement1 Option1 +1
 		> Statement7 Option1 +4
-# Statement28 INT
+# Statement28 INT 2
 	* Option1 0.741746
 		> Statement30 Option1 +3
 		> Statement32 Option2 +3

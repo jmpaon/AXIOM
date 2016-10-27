@@ -113,7 +113,7 @@ class ModelBuildingAction implements Comparable<ModelBuildingAction> {
         String statementLabel = command.get(1);
         String description = "";
         boolean intervention = command.has("int");
-        int timestep = command.has("TS") ? Integer.valueOf(command.right("TS")) : 0;
+        int timestep = command.has("ts") ? Integer.valueOf(command.right("ts")) : 0;
         
         model.add.statement(statementLabel, description, intervention, timestep);
     }

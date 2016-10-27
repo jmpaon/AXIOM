@@ -19,7 +19,11 @@ public class Label implements Comparable<Label> {
      * Constant maximum length that labels can have.
      */
     public static final int MAX_LABEL_LENGTH = 20;
-    public static final char[] NON_ALLOWED_CHARS = {':'};
+    
+    /**
+     * Characters that are not allowed in labels
+     */
+    public static final char[] NON_ALLOWED_CHARS = {':', ' '};
     
     /**
      * The String value of the label.
@@ -32,6 +36,7 @@ public class Label implements Comparable<Label> {
      * such as the set of statements or the set of options under a statement
      */
     public final LabelNamespace namespace;
+    
     
     /**
      * This Label constructor is meant to be used in adding labels 
@@ -60,10 +65,11 @@ public class Label implements Comparable<Label> {
         this.value = label;
     }
     
+    
     /**
      * This constructor should be used only for creating temporary labels
      * for finding AXIOM components with labels.
-     * When labels are added to components, they should be provided a namespace.
+     * When labels are added to components, they should be provided a <tt>LabelNamespace</tt>.
      * @param label 
      */
     Label(String label) {
@@ -76,7 +82,6 @@ public class Label implements Comparable<Label> {
         this.namespace = null;
         this.value = label;
     }
-    
     
     
     @Override

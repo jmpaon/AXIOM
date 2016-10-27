@@ -12,7 +12,13 @@ import java.util.List;
 //import java.util.Map.Entry;
 
 /**
- *
+ * Objects of this class can serve sets of <tt>Option</tt>s from model <b>model</b>,
+ * which are combinations of options in the intervention statements of <b>model</b>.
+ * <tt>InterventionCombination</tt> can generate a new/unused combination of options
+ * with the {@link InterventionCombination#nextCombination()} method
+ * and return the combination 
+ * in the form of a <tt>List</tt> of <tt>Statement</tt>-<tt>Option</tt> pairs
+ * with the {@link InterventionCombination#getStatementsAndActiveInterventions()} method.
  * @author jmpaon
  */
 public class InterventionCombination {
@@ -34,6 +40,8 @@ public class InterventionCombination {
                 this.interventions.add(pair);
             }
         }
+        
+        /** Flag <b>hasCombinations</b> if there are no interventions */
         hasCombinations = !this.interventions.isEmpty();
     }
     

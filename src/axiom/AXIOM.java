@@ -25,10 +25,9 @@ public class AXIOM {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //tryFeatures();
-        String arggs[] = {"input35.txt", "50"};
-        axiom_main(arggs);
-        //generateInput();
+        
+        axiom_main(args);
+
         
     }
     
@@ -36,9 +35,11 @@ public class AXIOM {
         try {
             int evaluationCount = Integer.valueOf(args[1]);
             Reader reader = new Reader(args[0]);
-            Model axiomModel = reader.createAXIOMmodelFromInput();
-            IterationSet iterationSet = new IterationSet(axiomModel, evaluationCount);
             
+            Model axiomModel = reader.createAXIOMmodelFromInput();
+            System.out.println(axiomModel.toString());
+            
+            IterationSet iterationSet = new IterationSet(axiomModel, evaluationCount);
             System.out.println(iterationSet);
             
             

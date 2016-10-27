@@ -1,0 +1,45 @@
+# GEOPOLITICS ts 2 Geopolitical position of Finland after 2025	
+	* EU 0.5 Member state in the European Union
+		> unitedstates police -2 
+		> unitedstates pacific +1
+	* EURASIAN 0.15 Member state in the Eurasian Union
+		> unitedstates police +3
+	* NEUTRAL 0.35 Non-aligned position
+		> unitedstates pacific +2
+
+# GOVERNMENT ts 1 INT Governing political parties in Finland 2019-2023
+	* TRUEFINN 0.1 True Finns as the ruling political party 
+		> geopolitics eurasian +3
+		> geopolitics neutral +4
+		> geopolitics eu -3
+		> economy nogrowth +1
+	* SDP_LEFT 0.3 SDP and Left Alliance as the ruling parties
+		> geopolitics eu -2
+		> geopolitics neutral +1
+		> unitedstates isolationist +1
+	* CENTER_COAL 0.4 Center Party and Coalition Party as the ruling parties
+		> geopolitics eu +3
+		> unitedstates police +1
+	* RAINBOW 0.2 Rainbow coalition government
+		> geopolitics eu +1
+
+# ECONOMY ts 1 Economic development in the European Union from 2017-2023
+	* NOGROWTH 0.30 Average economic growth close to zero in EU area 
+		> government truefinn +3
+		> government sdp_left +2
+		> unitedstates pacific +2
+		> unitedstates isolationist +1
+	* SLOWGROWTH 0.45 Average growth in EU area slow (close to 1% GDP growth annually)
+		> government rainbow +1
+	* FASTGROWTH 0.25 Average growth fast in EU area (close to 3% GDP growth annually)
+		> government center_coal +3
+
+# UNITEDSTATES ts 2 Role of United States in international politics in 2020s
+	* POLICE 0.15 United States polices the whole world
+		> geopolitics eu +3
+	* PACIFIC 0.65 United States is active in the pacific region and passive in Europe
+		> geopolitics eurasian +1
+		> geopolitics neutral +2
+	* ISOLATIONIST 0.2 United States observes an isolationist foreign policy
+		> geopolitics eurasian +4
+	

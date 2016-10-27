@@ -202,7 +202,7 @@ public class Model implements LabelNamespace {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString()).append("\n");
         for(Statement s : this.statements) {
-            sb.append("Statement ").append(s.label).append("\n");
+            sb.append("Statement ").append(s.label).append(" timestep:").append(s.timestep).append(" intervention:").append(s.intervention).append("\n");
             for(Option o : s.options) {
                 sb.append("\tOption ").append(o.label).append(" (p").append(o.adjusted).append(")\n");
                 for(Impact i : o.impacts) {

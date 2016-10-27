@@ -59,6 +59,7 @@ class Command {
      * @return <i>true</i> if s is present in <b>parts</b>
      */
     public boolean has(String s) {
+        s = s.toLowerCase();
         return parts.contains(s);
     }
     
@@ -68,6 +69,7 @@ class Command {
      * @return String
      */
     public String right(String s) {
+        s = s.toLowerCase();
         if(parts.contains(s)) {
             if(parts.indexOf(s) == lastIndex) return null;
             return get(parts.indexOf(s)+1);
@@ -81,6 +83,7 @@ class Command {
      * @return 
      */
     public String left(String s) {
+        s = s.toLowerCase();
         if(parts.contains(s)) {
             if(parts.indexOf(s) == 0) return null;
             return get(parts.indexOf(s)-1);

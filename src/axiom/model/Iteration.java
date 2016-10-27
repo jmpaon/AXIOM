@@ -7,6 +7,7 @@ package axiom.model;
 
 import axiom.probabilityAdjusters.ProbabilityAdjustmentException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,16 +73,26 @@ public class Iteration {
      * @throws ProbabilityAdjustmentException 
      */
     private void computeIteration(int evaluationCount) throws ProbabilityAdjustmentException {
-        int itNumber=1;
+        int totalEvaluations = evaluationCount;
+        int itNumber  = 1;
+        int itCounter = 0;
+        final double share = evaluationCount <= 5000 ? 100 : 2500 ;
+        System.out.println(String.format("Computing iteration with %7d evaluations and with active interventions %s\n", totalEvaluations, toString_activeInterventions()));
         while(evaluationCount-- > 0) {
-            System.out.println(String.format("Model evaluation %7d with active interventions %s", itNumber++, toString_activeInterventions()));
+            itNumber++;
+            if( ++itCounter >= share ) { 
+                System.out.println(String.format("\t%1.0f%% computed", (double)itNumber/totalEvaluations*100));
+                itCounter = 0;
+                
+            }
+            // System.out.println(String.format("Model evaluation %7d with active interventions %s", itNumber++, toString_activeInterventions()));
             if(this.activeInterventions.isEmpty()) {
                 this.configurations.add(this.model.evaluate());
             } else {
                 this.configurations.add(this.model.evaluate(activeInterventions));
             }
-            
         }
+        System.out.println(String.format("\t%7d evaluations computed", totalEvaluations));
     }
     
     private Probability computeAposterioriProbability(Option o) {
@@ -108,6 +119,30 @@ public class Iteration {
             aposterioris.add(new Pair<>(o, p));
         }
         return aposterioris;
+    }
+    
+    /**
+     * Returns a list of Option-Double pairs where the Double is the difference
+     * between a posteriori probability of iteration1 for an <tt>Option</tt>
+     * and a posteriori probability of iteration2 for the same <tt>Option</tt>.
+     * @param iteration1 Iteration
+     * @param iteration2 Compared iteration
+     * @return List of Option-Double Pairs
+     */
+    public static List<Pair<Option, Double>> compareAposterioriProbabilities(Iteration iteration1, Iteration iteration2) {
+        assert iteration1.model == iteration2.model;
+        assert iteration1 != iteration2;
+        List<Pair<Option,Double>> differences = new LinkedList<>();
+        Iterator<Pair<Option, Probability>> iter1 = iteration1.aposterioriProbabilities.iterator();
+        Iterator<Pair<Option, Probability>> iter2 = iteration2.aposterioriProbabilities.iterator();
+        while(iter1.hasNext() && iter2.hasNext()) {
+            Pair<Option, Probability> p1 = iter1.next();
+            Pair<Option, Probability> p2 = iter2.next();
+            assert p1.left == p2.left;
+            differences.add(new Pair<Option,Double>(p1.left, p1.right.toDouble() - p2.right.toDouble()));
+        }
+        assert iter1.hasNext() == iter2.hasNext();
+        return differences;
     }
     
     /**
@@ -148,6 +183,7 @@ public class Iteration {
      */
     public String toString_activeInterventions() {
         StringBuilder sb = new StringBuilder();
+        if(activeInterventions.isEmpty()) return "[No active interventions]";
         activeInterventions.stream().forEach((activeIntervention) -> {
             sb.append(String.format("[%s::%s] ", activeIntervention.left.label, activeIntervention.right.label));
             // sb.append(activeIntervention.left.label).append(" <== ").append(activeIntervention.right.getLongLabel()).append(" ");

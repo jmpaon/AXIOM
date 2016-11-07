@@ -5,8 +5,14 @@ This java program implements the AXIOM method.
 
 ## Usage 
 ```
-java -jar AXIOM.jar inputfile iterationcount 
+java -jar AXIOM.jar inputfile evaluationcount 
 ```
+for example 
+```
+java -jar AXIOM.jar my_axiom_data.txt 50000 
+```
+will read an AXIOM model from the file "my_axiom_data.txt" and perform 50000 evaluations per iteration.
+
 
 ## Input file syntax
 

@@ -34,13 +34,17 @@ public class AXIOM {
     public static void axiom_main(String[] args) {
         try {
             int evaluationCount = Integer.valueOf(args[1]);
-            Reader reader = new Reader(args[0]);
+            String inputfilename = args[0];
             
+            Reader reader = new Reader(inputfilename);
             Model axiomModel = reader.createAXIOMmodelFromInput();
-            System.out.println(axiomModel.toString());
+            
+            System.out.println("Read input from file " + reader.qualifiedFilename + "\n" + axiomModel.toString() + "\n\n");
             
             IterationSet iterationSet = new IterationSet(axiomModel, evaluationCount);
-            System.out.println(iterationSet);
+            
+            System.out.println("\nA posteriori probabilities in different iterations:\n");
+            System.out.println(iterationSet.toString_table());
             
             
         } catch (IOException ex) {

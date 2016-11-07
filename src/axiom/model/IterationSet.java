@@ -79,5 +79,42 @@ public class IterationSet {
         return sb.toString();
     }
     
+
+    public String toString_table() throws NotFoundException {
+        StringBuilder sb = new StringBuilder();
+        int iterationNumber = 0;
+        
+        for(Iteration it : this.iterations) {
+            sb.append("Iteration ").append(iterationNumber++).append(": ").append(it.toString_activeInterventions()).append("\n");
+        }
+        
+        sb.append("\n");
+        sb.append(String.format("%41s", "Iteration"));
+        sb.append(String.format("\t%7s", "apriori"));
+        
+        for(int i=0;i<this.iterations.size();i++) {
+            sb.append(String.format("\t%7d", i));
+        }
+        
+        sb.append("\n");
+        
+        for(Option option : this.model.getOptions()) {
+            String label = option.getLongLabel();
+            int optionIndex = this.model.find.index(option);
+            
+            sb.append(String.format("%41s", label));
+            sb.append(String.format("\t%7.3f", option.apriori.toDouble() ));
+            
+            for(Iteration it : this.iterations) {
+                Probability prob = it.getAposterioriProbability(option);
+                sb.append(String.format("\t%7.3f", prob.toDouble()));
+            }
+            sb.append("\n");
+        }
+        
+        return sb.toString();
+        
+    }
+    
     
 }

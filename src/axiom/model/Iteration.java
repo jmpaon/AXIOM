@@ -53,7 +53,7 @@ public class Iteration {
      */
     public Probability getAposterioriProbability(int optionIndex) {
         assert optionIndex > 0 && optionIndex <= this.model.optionCount() : "Invalid option index (" + optionIndex + ")";
-        return aposterioriProbabilities.get(optionIndex).right;
+        return aposterioriProbabilities.get(optionIndex-1).right;
     }
     
     /**

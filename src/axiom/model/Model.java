@@ -200,13 +200,13 @@ public class Model implements LabelNamespace {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString()).append("\n");
+        
         for(Statement s : this.statements) {
             sb.append("Statement ").append(s.label).append(" timestep:").append(s.timestep).append(" intervention:").append(s.intervention).append("\n");
             for(Option o : s.options) {
                 sb.append("\tOption ").append(o.label).append(" (p").append(o.adjusted).append(")\n");
                 for(Impact i : o.impacts) {
-                    sb.append(String.format("\t\t> %s by %s\n", i.toOption.label, i.adjustmentFunction.toString()));
+                    sb.append(String.format("\t\t> %s by %s\n", i.toOption.getLongLabel(), i.adjustmentFunction.toString()));
                 }
             }
         }

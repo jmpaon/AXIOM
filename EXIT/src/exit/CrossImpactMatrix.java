@@ -8,7 +8,6 @@ package exit;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -346,9 +345,10 @@ public final class CrossImpactMatrix extends SquareDataMatrix {
      * @return Difference matrix
      */
     public CrossImpactMatrix differenceMatrix(CrossImpactMatrix subtractMatrix) {
-        if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("comparison matrix is of different size");
+        if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("Comparison matrix is of different size");
+        if(this.maxImpact != subtractMatrix.maxImpact) throw new IllegalArgumentException("Comparison matrix has different maxImpact and might be not suitable for difference calculation");
         boolean bothMatricesIntegral = this.onlyIntegers && subtractMatrix.onlyIntegers;
-        CrossImpactMatrix differenceMatrix = new CrossImpactMatrix(this.maxImpact, this.varCount, bothMatricesIntegral, this.names, this.values);
+        CrossImpactMatrix differenceMatrix = new CrossImpactMatrix((this.maxImpact+subtractMatrix.maxImpact), this.varCount, bothMatricesIntegral, this.names, this.values);
         for (int i = 0; i < differenceMatrix.values.length; i++) {
             differenceMatrix.values[i] -= subtractMatrix.values[i];
         }

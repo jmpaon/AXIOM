@@ -7,7 +7,10 @@ package exit;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import jdk.nashorn.internal.objects.NativeArray;
 
 /**
  * <code>SquareMatrix</code> represents 
@@ -29,6 +32,8 @@ public class SquareMatrix {
     protected final String[] names;
     /** Is the matrix locked? If locked, matrix contents cannot be changed */
     private boolean isLocked;
+    /** List of descriptions of transformations done to this matrix */
+    private final List<String> transformations;
     
     
     public SquareMatrix(boolean onlyIntegers, String[] names, double[][] values) {
@@ -61,7 +66,7 @@ public class SquareMatrix {
         this.values = values;
         this.names = names;
         this.isLocked = false;
-
+        this.transformations = new LinkedList<>();
     }
     
     
@@ -89,7 +94,7 @@ public class SquareMatrix {
     /**
      * Returns true if <code>SquareMatrix</code> is locked, false otherwise. 
      * SquareMatrix being locked means 
- that impact values cannot be changed anymore.
+     * that impact values cannot be changed anymore.
      * @return <i>true</i> if matrix is locked, <i>false</i> otherwise.
      */
     protected boolean isLocked() {
@@ -532,6 +537,18 @@ public class SquareMatrix {
             sb.append(String.format("%n"));
         }
         return sb.toString();
+    }
+    
+    public String getTransformations() {
+        StringBuilder sb = new StringBuilder();
+        transformations.stream().forEach((String s)->{sb.append(" * ").append(s).append("\n"); });
+        return sb.toString();
+    }
+    
+    public void noteTransformation(String description) {
+        assert description != null;
+        assert !description.equalsIgnoreCase("");
+        this.transformations.add(description);
     }
 
 }

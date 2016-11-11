@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 public final class CrossImpactMatrix extends SquareMatrix {
     
     /** The maximum absolute value allowed in this matrix */
-    private double maxImpact; 
+    private double maxImpact;
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
@@ -265,7 +265,9 @@ public final class CrossImpactMatrix extends SquareMatrix {
     }
     
     public CrossImpactMatrix normalize(double scaleTo) {
-        return this.normalize().scale(scaleTo);
+        CrossImpactMatrix normalized = this.normalize().scale(scaleTo);
+        normalized.noteTransformation("Normalized to " + scaleTo);
+        return normalized;
     }
     
     
@@ -290,6 +292,7 @@ public final class CrossImpactMatrix extends SquareMatrix {
                 importanceMatrix.setImpact(impactor, impacted, importance);
             }
         }
+        importanceMatrix.noteTransformation("Derived as an importance matrix");
         return importanceMatrix;
     }
     
@@ -308,6 +311,7 @@ public final class CrossImpactMatrix extends SquareMatrix {
         for (int i = 0; i < differenceMatrix.values.length; i++) {
             differenceMatrix.values[i] -= subtractMatrix.values[i];
         }
+        differenceMatrix.noteTransformation("Derived as a difference matrix");
         return differenceMatrix;
     }
 

@@ -10,14 +10,14 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
- * <code>SquareDataMatrix</code> represents 
+ * <code>SquareMatrix</code> represents 
  * a square numeric data matrix,
  * square matrix being a matrix 
  * where row and column counts are equal.
  * 
  * @author jmpaon
  */
-public class SquareDataMatrix {
+public class SquareMatrix {
     
     /** Number of variables (and rows and columns) in this matrix */
     protected final int varCount;
@@ -38,7 +38,7 @@ public class SquareDataMatrix {
      * @param names Array of row/column/variable names or labels, length must be equal to varCount
      * @param values Array of values, length must be equal to varCount^2
      */
-    public SquareDataMatrix(int varCount, boolean onlyIntegers, String[] names, double[] values) {
+    public SquareMatrix(int varCount, boolean onlyIntegers, String[] names, double[] values) {
         if (varCount < 1) { throw new IllegalArgumentException("varCount cannot be smaller than 1"); }
         if(values == null) throw new NullPointerException("values array is null");
         if(names == null) throw new NullPointerException("names array is null");
@@ -67,7 +67,7 @@ public class SquareDataMatrix {
      * @param onlyIntegers Are only integers allowed?
      * @param names Array of row/column/variable names or labels, length must be equal to varCount
      */
-    public SquareDataMatrix(int varCount, boolean onlyIntegers, String[] names) {
+    public SquareMatrix(int varCount, boolean onlyIntegers, String[] names) {
         this(varCount, onlyIntegers, names, new double[varCount*varCount]);
     }
     
@@ -77,15 +77,15 @@ public class SquareDataMatrix {
      * @param varCount Number of rows, columns and variables in the matrix
      * @param onlyIntegers Are only integers allowed?
      */    
-    public SquareDataMatrix(int varCount, boolean onlyIntegers) {
+    public SquareMatrix(int varCount, boolean onlyIntegers) {
         this(varCount, onlyIntegers, createNames(varCount), new double[varCount*varCount]);
     }
     
 
     /**
-     * Returns true if <code>SquareDataMatrix</code> is locked, false otherwise. 
-     * SquareDataMatrix being locked means 
-     * that impact values cannot be changed anymore.
+     * Returns true if <code>SquareMatrix</code> is locked, false otherwise. 
+     * SquareMatrix being locked means 
+ that impact values cannot be changed anymore.
      * @return <i>true</i> if matrix is locked, <i>false</i> otherwise.
      */
     protected boolean isLocked() {
@@ -389,7 +389,7 @@ public class SquareDataMatrix {
     }
 
     /**
-     * @return The number of variables in the <code>SquareDataMatrix</code>.
+     * @return The number of variables in the <code>SquareMatrix</code>.
      */
     public int getVarCount() {
         return varCount;
@@ -473,7 +473,7 @@ public class SquareDataMatrix {
      * @param maxDifference The maximum relative difference allowed to still consider the matrices approximately same in terms of values
      * @return <b>true</b> if
      */
-    boolean areValuesApproximatelySame(SquareDataMatrix matrix, double maxDifference) {
+    boolean areValuesApproximatelySame(SquareMatrix matrix, double maxDifference) {
         if(maxDifference <= 0) throw new IllegalArgumentException("maxDifference must be greater than 0");
         if (matrix.values.length != this.values.length) {
             throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");

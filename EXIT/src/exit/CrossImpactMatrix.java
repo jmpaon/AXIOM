@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * @author jmpaon
  * @version 0.9
  */
-public final class CrossImpactMatrix extends SquareDataMatrix {
+public final class CrossImpactMatrix extends SquareMatrix {
     
     /** The maximum absolute value allowed in this matrix */
     private double maxImpact; 

@@ -30,7 +30,7 @@ import java.util.Objects;
  * 
  * @author jmpaon
  */
-public class MicmacMatrix extends SquareDataMatrix {
+public class MicmacMatrix extends SquareMatrix {
     
     public static enum Orientation {
         byDependency,
@@ -44,7 +44,7 @@ public class MicmacMatrix extends SquareDataMatrix {
         }
     }
     
-    public MicmacMatrix(SquareDataMatrix matrix) {
+    public MicmacMatrix(SquareMatrix matrix) {
         super(matrix.varCount, matrix.onlyIntegers, matrix.names.clone(), matrix.values.clone());
     }
     

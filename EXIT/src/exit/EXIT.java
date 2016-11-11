@@ -138,7 +138,8 @@ public class EXIT {
                 }
                 
                 output.printf("%nDifference matrix of normalized result matrix and normalized input matrix, scaled to %f:%n", inputMatrix.getMaxImpact());
-                output.println(resultMatrix.normalize().scale(inputMatrix.getMaxImpact()).differenceMatrix(inputMatrix.normalize().scale(inputMatrix.getMaxImpact())));
+                // output.println(resultMatrix.normalize().scale(inputMatrix.getMaxImpact()).differenceMatrix(inputMatrix.normalize().scale(inputMatrix.getMaxImpact())));
+                output.println(resultMatrix.normalize().differenceMatrix(inputMatrix.normalize()));
                 
                 if(arguments.extraReports) {
                     output.printf("%nDifference matrix of result matrix and input matrix scaled to %f and rounded:%n", inputMatrix.getMaxImpact());
@@ -308,7 +309,7 @@ public class EXIT {
             System.out.println(result.scale(matrix.getMaxImpact()));
             
             
-            CrossImpactMatrix co1=null;
+            SquareMatrix co1=null;
             int sameIt = -1;
             
             

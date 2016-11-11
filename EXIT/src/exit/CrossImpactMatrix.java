@@ -112,62 +112,18 @@ public final class CrossImpactMatrix extends SquareMatrix {
         this(maxImpact, varCount, true);
     }
     
-    
     /**
-     * Calculates and returns 
-     * a new <code>CrossImpactMatrix</code> that contains
-     * the summed direct and indirect values between the variables.
-     * In the returned matrix, 
-     * impactor variables are in rows 
-     * and impacted variables are in columns.
-     * @param impactThreshold The low bound for inclusion for the impact of chains that are summed in the matrix. 
-     * See {@link ImpactChain#highImpactChainsIntermediary(double)}.
-     * @return <code>CrossImpactMatrix</code> with the summed direct and indirect values between variables
-     * @deprecated This calculation strategy is inefficient. 
-     * @see CrossImpactMatrix#summedImpactMatrix(double) A more efficient method for getting the summed impact matrix
+     * Creates a <tt>CrossImpactMatrix</tt> from a <tt>SquareMatrix</tt>.
+     * @param matrix <tt>SquareMatrix</tt> that is a valid <tt>CrossImpactMatrix</tt>
      */
-    @Deprecated
-    public CrossImpactMatrix summedImpactMatrix_variablePairs(double impactThreshold) {
-        
-        Reporter.msg(String.format("Begin search of impact chains having impact of at least %1.3f...%n", impactThreshold), 3);
-        CrossImpactMatrix iim = new CrossImpactMatrix(this.maxImpact, this.varCount, false, names);
-        int chainsProcessedCount=0;
-        
-        for(int impactor = 1 ; impactor <= iim.varCount ; impactor++ ) {
-            for(int impacted = 1 ; impacted <= iim.varCount ; impacted++ ) {
-                double impactSum = 0;
-                if(impactor != impacted) {
-                    
-                    Reporter.msg(String.format(
-                            "Calculating impacts of %4s (%10s) on %4s (%10s)...", 
-                            "V"+impactor, 
-                            truncateName(this.getName(impactor),10), 
-                            "V"+impacted, 
-                            truncateName(this.getName(impacted),10)
-                    ), 3);
-                    
-                    List<ImpactChain> chains = this.indirectImpacts(impactor, impacted, impactThreshold);
-                    
-                    int counter = 0;
-                    for (ImpactChain chain : chains) {
-                        impactSum += chain.impact();
-                        counter++;
-                    }
-                    Reporter.msg(String.format(" %5d significant impact chains found with total impact sum of %4.2f%n", counter, impactSum), 3);
-                    chainsProcessedCount += counter;
-                }
-                if(iim.maxImpact < Math.abs(impactSum)) {
-                    iim.setMaxImpact(Math.abs(impactSum));
-                }
-                
-                iim.setImpact(impactor, impacted, impactSum);
-            }
-        }
-        
-        Reporter.msg(String.format("Total of %d significant (threshold %1.2f) impact chains found in the matrix.%n", chainsProcessedCount, impactThreshold), 5);
-        Reporter.msg(String.format("The total number of possible chains in this matrix is %s.%n", approximateChainCountString()),2);
-        return iim;
+    public CrossImpactMatrix(SquareMatrix matrix) {
+        this(matrix.greatestValue(), matrix.varCount, matrix.allValuesAreIntegers(), matrix.names.clone(), matrix.values.clone());
+        for(int i=1;i<=this.varCount;i++) {
+            assert this.getValue(i, i) == 0 : "Impact of hypothesis on itself not allowed";
+        }        
     }
+    
+    
     
     
     /**
@@ -346,7 +302,7 @@ public final class CrossImpactMatrix extends SquareMatrix {
      */
     public CrossImpactMatrix differenceMatrix(CrossImpactMatrix subtractMatrix) {
         if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("Comparison matrix is of different size");
-        if(this.maxImpact != subtractMatrix.maxImpact) throw new IllegalArgumentException("Comparison matrix has different maxImpact and might be not suitable for difference calculation");
+        // if(this.maxImpact != subtractMatrix.maxImpact) throw new IllegalArgumentException("Comparison matrix has different maxImpact and might be not suitable for difference calculation");
         boolean bothMatricesIntegral = this.onlyIntegers && subtractMatrix.onlyIntegers;
         CrossImpactMatrix differenceMatrix = new CrossImpactMatrix((this.maxImpact+subtractMatrix.maxImpact), this.varCount, bothMatricesIntegral, this.names, this.values);
         for (int i = 0; i < differenceMatrix.values.length; i++) {
@@ -439,7 +395,7 @@ public final class CrossImpactMatrix extends SquareMatrix {
      */
     List<Integer> aboveAverageImpactors(int varIndex) {
         List<Integer> impactors = new LinkedList<>();
-        CrossImpactMatrix normMatrix = this.scale(1);
+        SquareMatrix normMatrix = this.scale(1);
         double average = normMatrix.columnAverage(varIndex, true);
         for(int i=1; i<=normMatrix.varCount; i++) {
             if(Math.abs(normMatrix.getValue(i, varIndex)) >= average)

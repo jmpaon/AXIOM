@@ -31,6 +31,10 @@ public class SquareMatrix {
     private boolean isLocked;
     
     
+    public SquareMatrix(boolean onlyIntegers, String[] names, double[][] values) {
+        this(values.length, onlyIntegers, names, flattenArray(values));
+    }    
+    
     /**
      * Constructor for <code>SquareDataMatrix</code>.
      * @param varCount Number of rows, columns and variables in the matrix

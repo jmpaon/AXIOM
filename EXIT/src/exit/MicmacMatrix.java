@@ -33,12 +33,12 @@ import java.util.Objects;
 public class MicmacMatrix extends SquareMatrix {
     
     public static enum Orientation {
-        byDependency,
+        byDependence,
         byInfluence;
         
         @Override
         public String toString() {
-            if(this==byDependency) return "by dependency";
+            if(this==byDependence) return "by dependence";
             if(this==byInfluence)  return "by influence";
             return "Unknown";
         }
@@ -60,7 +60,7 @@ public class MicmacMatrix extends SquareMatrix {
     
     /**
      * Returns a info table about the MICMAC rankings of the variables.
-     * @param orientation [byInfluence|byDependency]
+     * @param orientation [byInfluence|byDependence]
      * @return <code>VarInfoTable</code> containing initial and MICMAC rankings of the matrix variables
      * @see MicmacMatrix#altMICMAC(exit.MicmacMatrix.Orientation) alternative implementation
      */
@@ -246,7 +246,7 @@ public class MicmacMatrix extends SquareMatrix {
      * Ordering of a variable is based on either the apparent influence
      * (row sum) or the apparent dependency (column sum) in the cross-impact system.
      * <b>Orientation</b> determines which ordering is returned.
-     * @param orientation <i>[byInfluence|byDependency]</i> 
+     * @param orientation <i>[byInfluence|byDependence]</i> 
      * @return Ordering of the variables in this matrix
      */
     Ordering getOrdering(Orientation orientation) {
@@ -262,9 +262,9 @@ public class MicmacMatrix extends SquareMatrix {
      * higher absolute row/column sum, the sumRanking for that variable will be
      * 3 (2+1). The variable with the highest row/column sum will have ranking 1.
      * @param varIndex Index of the variable for which the sumRanking is calculated
-     * @param orientation <i>[byInfluence|byDependency]</i> 
+     * @param orientation <i>[byInfluence|byDependence]</i> 
      * if <i>byInfluence</i>, row sums are used;
-     * if <i>byDependency</i>, column sums are used;
+     * if <i>byDependence</i>, column sums are used;
      * @return the ranking of the variable with index <b>varIndex</b>
      */
     public int sumRanking(int varIndex, Orientation orientation) {
@@ -291,7 +291,7 @@ public class MicmacMatrix extends SquareMatrix {
      * in a <code>VarInfoTable</code>.
      * Variable with rank 1 has the highest score
      * by influence/dependency, rank 2 has the second highest score etc.
-     * @param orientation <i>[byInfluence|byDependency]</i> is the ranking based on row or column sums?
+     * @param orientation <i>[byInfluence|byDependence]</i> is the ranking based on row or column sums?
      * Summing absolute row values gives a score indicating influence in the cross-impact system,
      * summing absolute column values gives a score indicating dependency.
      * @return Initial and MICMAC rankings of the matrix variables
@@ -377,7 +377,7 @@ public class MicmacMatrix extends SquareMatrix {
         /**
          * Constructor for <code>Ordering</code>.
          * @param matrix The matrix this ordering relates to
-         * @param orientation <i>[byInfluence|byDependency]</i> Is the ordering constructed based on influence or dependency?
+         * @param orientation <i>[byInfluence|byDependence]</i> Is the ordering constructed based on influence or dependency?
          */
         public Ordering(MicmacMatrix matrix, Orientation orientation) {
             if(matrix==null) throw new NullPointerException("matrix argument is null");

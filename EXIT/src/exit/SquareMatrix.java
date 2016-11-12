@@ -85,6 +85,26 @@ public class SquareMatrix {
         this(varCount, onlyIntegers, createNames(varCount), new double[varCount*varCount]);
     }
     
+    
+    /**
+     * Constructor for <code>SquareDataMatrix</code>
+     * @param varCount Number of rows, columns and variables in the matrix
+     * @param names Array of row/column/variable names or labels, length must be equal to varCount
+     */
+    public SquareMatrix(int varCount, String[] names) {
+        this(varCount, false, names);
+    }
+    
+    
+    /**
+     * Constructor for <code>SquareDataMatrix</code>
+     * @param varCount Number of rows, columns and variables in the matrix
+     */
+    public SquareMatrix(int varCount) {
+        this(varCount, createNames(varCount));
+    }
+    
+    
     /**
      * Constructor for <code>SquareDataMatrix</code>
      * @param onlyIntegers Are only integers allowed?
@@ -94,6 +114,7 @@ public class SquareMatrix {
     public SquareMatrix(boolean onlyIntegers, String[] names, double[][] values) {
         this(values.length, onlyIntegers, names, flattenArray(values));
     }    
+    
 
     /**
      * Returns true if <code>SquareMatrix</code> is locked, false otherwise. 
@@ -101,7 +122,7 @@ public class SquareMatrix {
      * that impact values cannot be changed anymore.
      * @return <i>true</i> if matrix is locked, <i>false</i> otherwise.
      */
-    protected boolean isLocked() {
+    public boolean isLocked() {
         return isLocked;
     }
 

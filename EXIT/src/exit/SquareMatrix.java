@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import jdk.nashorn.internal.objects.NativeArray;
 
 /**
  * <code>SquareMatrix</code> represents 
@@ -33,12 +32,8 @@ public class SquareMatrix {
     /** Is the matrix locked? If locked, matrix contents cannot be changed */
     private boolean isLocked;
     /** List of descriptions of transformations done to this matrix */
-    private final List<String> transformations;
-    
-    
-    public SquareMatrix(boolean onlyIntegers, String[] names, double[][] values) {
-        this(values.length, onlyIntegers, names, flattenArray(values));
-    }    
+    protected final List<String> transformations;
+
     
     /**
      * Constructor for <code>SquareDataMatrix</code>.
@@ -90,6 +85,15 @@ public class SquareMatrix {
         this(varCount, onlyIntegers, createNames(varCount), new double[varCount*varCount]);
     }
     
+    /**
+     * Constructor for <code>SquareDataMatrix</code>
+     * @param onlyIntegers Are only integers allowed?
+     * @param names Array of row/column/variable names or labels, length must be equal to rows and columns in <b>values</b>
+     * @param values 2-dimensional array. Each column must have the same number of elements as  there are rows in the array.
+     */
+    public SquareMatrix(boolean onlyIntegers, String[] names, double[][] values) {
+        this(values.length, onlyIntegers, names, flattenArray(values));
+    }    
 
     /**
      * Returns true if <code>SquareMatrix</code> is locked, false otherwise. 
@@ -113,14 +117,14 @@ public class SquareMatrix {
     /**
      * Returns the sum of the values in a specific row of the matrix.
      * @param row index of the row whose values are summed
-     * @param absoluteValues if <i>true</i>, sum of absolute values is returned;
+     * @param absolute if <i>true</i>, sum of absolute values is returned;
      * otherwise sum of values is returned
      * @return Sum of values in row with index <b>row</b>
      */
-    protected double rowSum(int row, boolean absoluteValues) {
+    public double rowSum(int row, boolean absolute) {
         double sum = 0;
         for (int i = 1; i <= varCount; i++) {
-            sum += absoluteValues ? Math.abs(getValue(row, i)) : getValue(row, i);
+            sum += absolute ? Math.abs(getValue(row, i)) : getValue(row, i);
         }
         return sum;
     }
@@ -129,14 +133,14 @@ public class SquareMatrix {
     /**
      * Returns the sum of the values in a specific column of the matrix.
      * @param column index of the column whose values are summed
-     * @param absoluteValues if <i>true</i>, sum of absolute values is
+     * @param absolute if <i>true</i>, sum of absolute values is
      * returned; otherwise sum of values is returned
      * @return Sum of values in column with index <b>column</b>
      */
-    protected double columnSum(int column, boolean absoluteValues) {
+    public double columnSum(int column, boolean absolute) {
         double sum = 0;
         for (int i = 1; i <= varCount; i++) {
-            sum += absoluteValues ? Math.abs(getValue(i, column)) : getValue(i, column);
+            sum += absolute ? Math.abs(getValue(i, column)) : getValue(i, column);
         }
         return sum;
     }
@@ -145,23 +149,23 @@ public class SquareMatrix {
     /**
      * Returns the average of values of specific row.
      * @param row Index of the variable which values are averaged
-     * @param absoluteValues If <i>true</i> average of absolute values is returned
+     * @param absolute If <i>true</i> average of absolute values is returned
      * @return Average of values in row with index <b>row</b>
      */
-    protected double rowAverage(int row, boolean absoluteValues) {
-        return rowSum(row, absoluteValues) / varCount;
+    public double rowAverage(int row, boolean absolute) {
+        return rowSum(row, absolute) / varCount;
     }
 
     
     /**
      * Returns the average of values on specific column.
      * @param column Index of the variable which values are averaged
-     * @param absoluteValues If <i>true</i> average of absolute values is returned
+     * @param absolute If <i>true</i> average of absolute values is returned
      * @return Average of values in column with index <b>column</b>
      * <b>column</b>
      */
-    protected double columnAverage(int column, boolean absoluteValues) {
-        return columnSum(column, absoluteValues) / varCount;
+    public double columnAverage(int column, boolean absolute) {
+        return columnSum(column, absolute) / varCount;
     }
     
     
@@ -171,7 +175,7 @@ public class SquareMatrix {
      * @param absolute if true, maximum of absolute values is returned; else maximum of values is returned
      * @return the maximum value in row <b>row</b>
      */
-    protected double rowMax(int row, boolean absolute) {
+    public double rowMax(int row, boolean absolute) {
         double max = absolute ? Math.abs(this.getValue(row, 1)) : this.getValue(row, 1);
         for (int i = 1; i <= varCount; i++) {
             if(absolute ? Math.abs(this.getValue(row, i)) > max : this.getValue(row, i) > max)
@@ -187,7 +191,7 @@ public class SquareMatrix {
      * @param absolute if <i>true</i>, maximum of absolute values is returned; else maximum of values is returned
      * @return the maximum value in column <b>column</b>
      */
-    protected double columnMax(int column, boolean absolute) {
+    public double columnMax(int column, boolean absolute) {
         double max = absolute ? Math.abs(this.getValue(1, column)) : this.getValue(1, column);
         for (int i = 1; i <= varCount; i++) {
             if(absolute ? Math.abs(this.getValue(i, column)) > max : this.getValue(i, column) > max)
@@ -201,7 +205,7 @@ public class SquareMatrix {
      * @param absolute If <i>true</i>, average of absolute values is returned, otherwise average is returned
      * @return Average of values in the matrix
      */
-    protected double matrixAverage(boolean absolute) {
+    public double matrixAverage(boolean absolute) {
         double sum = 0;
         for(Double val : this.values) {
             sum += absolute ? Math.abs(val) : val ;
@@ -214,7 +218,7 @@ public class SquareMatrix {
      * @param absolute If <i>true</i> median of absolute values is returned
      * @return The median of matrix values
      */
-    protected double matrixMedian(boolean absolute) {
+    public double matrixMedian(boolean absolute) {
         
         double[] sortedValues = this.values.clone();
         if(absolute) {

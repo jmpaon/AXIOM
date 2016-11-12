@@ -26,7 +26,7 @@ import java.util.LinkedList;
 public class ImpactChain implements Comparable<ImpactChain>  {
     
     /** The cross-impact matrix from whose variables the impact chain is formed from */
-    public final CrossImpactMatrix matrix;
+    public final EXITImpactMatrix matrix;
     
     /** Indices of the variables that are present in this chain */
     public final List<Integer> chainMembers;
@@ -41,7 +41,7 @@ public class ImpactChain implements Comparable<ImpactChain>  {
      * @param chainMembers The indices of the variables in the matrix.
      * All indices must be present in <b>matrix</b>.
      */
-    public ImpactChain(CrossImpactMatrix matrix, List<Integer> chainMembers) {
+    public ImpactChain(EXITImpactMatrix matrix, List<Integer> chainMembers) {
         if(matrix == null) throw new NullPointerException("matrix is null");
         this.matrix = matrix;
         if(chainMembers == null) {
@@ -70,7 +70,7 @@ public class ImpactChain implements Comparable<ImpactChain>  {
      * @param chainMembers The indices of the variables in the matrix.
      * All indices must be present in <b>matrix</b>.
      */
-    public ImpactChain(CrossImpactMatrix matrix, int... chainMembers) {
+    public ImpactChain(EXITImpactMatrix matrix, int... chainMembers) {
         if(matrix == null) throw new NullPointerException("matrix is null");
         this.matrix = matrix;
         if(chainMembers == null || chainMembers.length == 0) {

@@ -31,6 +31,8 @@ public class EXIT {
      */
     public static void main(String[] args)  {
         
+        test_new_features();
+        
         /* New standard calculation */
         new_exit_analysis(args);
         
@@ -43,6 +45,20 @@ public class EXIT {
         /* Test features */
         //test_features(args);
     
+    }
+    
+    
+    public static void test_new_features() {
+        double d[][] = new double[2][2];
+        d[0][0] = 11;
+        d[0][1] = 12;
+        d[1][0] = 21;
+        d[1][1] = 22;
+        String[] nam = {"mem","moo"};
+        
+        
+        SquareMatrix sm = new SquareMatrix(true, nam, d);
+        System.out.println(sm.toString());
     }
     
     public static void new_exit_analysis(String[] args) {
@@ -62,7 +78,7 @@ public class EXIT {
             Reporter.output = output;
             
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
+            EXITImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
             output.println("Direct impact matrix:");
             output.println(inputMatrix.toString());
@@ -121,7 +137,7 @@ public class EXIT {
             /* Print full cross-impact matrix displaying direct and indirect impacts */
             {
                 Timer timer = new Timer();
-                CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
+                EXITImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
                 
                 
@@ -185,7 +201,7 @@ public class EXIT {
             Reporter.output = output;
             
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix inputMatrix = ifr.readInputFile(arguments);
+            EXITImpactMatrix inputMatrix = ifr.readInputFile(arguments);
             
             output.println("Input matrix describing direct impacts:");
             output.println(inputMatrix.toString());
@@ -244,7 +260,7 @@ public class EXIT {
             /* Print full cross-impact matrix displaying direct and indirect impacts */
             {
                 Timer timer = new Timer();
-                CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
+                EXITImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
                 
                 
@@ -296,12 +312,12 @@ public class EXIT {
             InputFileReader ifr = new InputFileReader();
             String[] args = {"src/exit/eltran1.csv", "-max", "5"};
             EXITarguments arguments = new EXITarguments(args);            
-            CrossImpactMatrix matrix = ifr.readInputFile(arguments);
+            EXITImpactMatrix matrix = ifr.readInputFile(arguments);
             
             System.out.println("\nImpact matrix describing direct impacts between variables:");
             System.out.println(matrix.toString());
             
-            CrossImpactMatrix result = matrix.summedImpactMatrix(0.005);
+            EXITImpactMatrix result = matrix.summedImpactMatrix(0.005);
             
             System.out.println("\nImpact matrix describing total direct and indirect impacts between variables:");
             System.out.println(result.toString());
@@ -316,7 +332,7 @@ public class EXIT {
             for(int iter = 1; iter <= iterations; iter++) {
                 co1 = result.clone();
                 result = result.summedImpactMatrix(0.005);
-                if(sameIt==-1) if(result.areValuesApproximatelySame(co1, 0.005)) sameIt = iter;
+                if(sameIt==-1) if(result.equalsApproximately(co1, 0.005)) sameIt = iter;
                 System.out.printf("%n%nIteration %d:%n", iter);
                 System.out.println(result.scale(result.getMaxImpact()));
             }
@@ -344,7 +360,7 @@ public class EXIT {
             EXITarguments arguments = new EXITarguments(arggs);
             
             InputFileReader ifr = new InputFileReader();
-            CrossImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
+            EXITImpactMatrix directImpactMatrix = ifr.readInputFile(arguments);
 //            double mem[] = {0,1,0,1,0,1,1,0,0};
 //            String names[] = {"A","B","C"};
 //            double mem2[] = {0,3,-1,-2,1,-1,0,3,-3,2,3,2,0,2,-2,1,0,-1,0,2,-3,-2,0,-1,0};
@@ -353,12 +369,12 @@ public class EXIT {
 //            String names3[] = {"A","B","C","D"};
             //double article_data[] = {0,-2,2,1,5,3,0,-3,-2,1,0,1,0,-1,0,4,3,1,0,-5,2,-3,1,-1,0};
             //String article_vars[] = {"VarA","VarB","VarC","VarD","VarE"};
-            //directImpactMatrix = new CrossImpactMatrix(5, 5, true, article_vars, article_data);
+            //directImpactMatrix = new EXITImpactMatrix(5, 5, true, article_vars, article_data);
             
             
             System.out.println("Direct impact matrix");
             System.out.println(directImpactMatrix);
-            CrossImpactMatrix resultMatrix = directImpactMatrix.summedImpactMatrix(0.0000000001);
+            EXITImpactMatrix resultMatrix = directImpactMatrix.summedImpactMatrix(0.0000000001);
             
             System.out.println("Result matrix");
             System.out.println(resultMatrix);
@@ -405,7 +421,7 @@ public class EXIT {
             
 
             //MicmacMatrix mm = new MicmacMatrix(directImpactMatrix).booleanImpactMatrix(0.5);
-//            CrossImpactMatrix sm = directImpactMatrix.summedImpactMatrix(0.0000001).scale(directImpactMatrix.getMaxImpact());
+//            EXITImpactMatrix sm = directImpactMatrix.summedImpactMatrix(0.0000001).scale(directImpactMatrix.getMaxImpact());
 //            MicmacMatrix mm2 = new MicmacMatrix(sm).booleanImpactMatrix(0.6);
 //            System.out.println(mm.altMICMAC(MicmacMatrix.Orientation.byInfluence));
 //            System.out.println(mm2.altMICMAC(MicmacMatrix.Orientation.byInfluence));

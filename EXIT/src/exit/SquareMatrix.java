@@ -7,8 +7,6 @@ package exit;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -25,14 +23,8 @@ public class SquareMatrix {
     protected final int varCount;
     /** Matrix contents */
     protected final double[] values;
-    /** Are only integers allowed as matrix values? */
-    protected final boolean onlyIntegers; 
     /** Variable/row/column names */
     protected final String[] names;
-    /** Is the matrix locked? If locked, matrix contents cannot be changed */
-    private boolean isLocked;
-    /** List of descriptions of transformations done to this matrix */
-    protected final List<String> transformations;
 
     
     /**
@@ -56,12 +48,9 @@ public class SquareMatrix {
             throw new IllegalArgumentException(
                     String.format("names array has %d elements, while varCount is %d", names.length, varCount));
         
-        
-        this.onlyIntegers = onlyIntegers;
         this.values = values;
         this.names = names;
-        this.isLocked = false;
-        this.transformations = new LinkedList<>();
+        
     }
     
     
@@ -116,23 +105,6 @@ public class SquareMatrix {
     }    
     
 
-    /**
-     * Returns true if <code>SquareMatrix</code> is locked, false otherwise. 
-     * SquareMatrix being locked means 
-     * that impact values cannot be changed anymore.
-     * @return <i>true</i> if matrix is locked, <i>false</i> otherwise.
-     */
-    public boolean isLocked() {
-        return isLocked;
-    }
-
-    
-    /**
-     * Locks the matrix so that contents cannot be changed.
-     */
-    public void lock() {
-        this.isLocked = true;
-    }
 
     
     /**
@@ -335,7 +307,7 @@ public class SquareMatrix {
      * @param len Length of <b>exceptionMsg</b> after truncation.
      * @return Truncated String/name.
      */
-    protected String truncateName(String s, int len) {
+    public String truncateName(String s, int len) {
         return s.length()<=len ? s : s.substring(0, len-3) + "...";
     }    
     
@@ -363,9 +335,9 @@ public class SquareMatrix {
      * @throws IndexOutOfBoundsException
      */
     public void setName(int varIndex, String varName) throws IllegalArgumentException, IndexOutOfBoundsException, IllegalStateException  {
-        if (isLocked) {
-            throw new IllegalStateException("The impact matrix is locked and cannot be modified");
-        }
+        
+        // throw new IllegalStateException("The impact matrix is locked and cannot be modified");
+        
         if (varIndex < 0 || varIndex > varCount) {
             throw new IndexOutOfBoundsException("Invalid variable index");
         }
@@ -404,9 +376,9 @@ public class SquareMatrix {
     public void setValue(int row, int column, double value) throws IllegalArgumentException, IndexOutOfBoundsException, IllegalStateException {
 
         // Locked matrix cannot be changed
-        if (isLocked) {
-            throw new IllegalStateException("The impact matrix is locked and cannot be modified");
-        }
+        //if (isLocked) {
+        //    throw new IllegalStateException("The impact matrix is locked and cannot be modified");
+        //}
         // Test if indexes are legal
         if (row < 1 || row > varCount || column < 1 || column > varCount) {
             String s = String.format("Impact for index [%d:%d] cannot be set, varCount for the matrix is %d.", row, column, varCount);
@@ -414,9 +386,9 @@ public class SquareMatrix {
         }
         
         // If onlyIntegers is true for the matrix, only integral impact values can be set in the matrix
-        if (this.onlyIntegers && value != (int) value) {
-            throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
-        }
+        //if (this.onlyIntegers && value != (int) value) {
+        //    throw new IllegalArgumentException(String.format("Value %f is not an integer and not allowed", value));
+        //}
 
         int index = ((row - 1) * varCount) + (column - 1);
         values[index] = value;
@@ -500,14 +472,14 @@ public class SquareMatrix {
     
 
     /**
-     * Tests if impact values of this matrix deviate
-     * from the impact values of <b>matrix</b>
+     * Tests if values of this matrix deviate
+     * from the values of <b>matrix</b>
      * at most by value of <b>maxDifference</b>
      * @param matrix matrix to compare against this one in terms of impact sizes
      * @param maxDifference The maximum relative difference allowed to still consider the matrices approximately same in terms of values
      * @return <b>true</b> if
      */
-    boolean areValuesApproximatelySame(SquareMatrix matrix, double maxDifference) {
+    boolean equalsApproximately(SquareMatrix matrix, double maxDifference) {
         if(maxDifference <= 0) throw new IllegalArgumentException("maxDifference must be greater than 0");
         if (matrix.values.length != this.values.length) {
             throw new IllegalArgumentException("Matrices are differently sized and cannot be compared");
@@ -543,7 +515,7 @@ public class SquareMatrix {
             n++;
             c=0;
             while(c < varCount) {
-                if(this.onlyIntegers) {
+                if(false ) { // if onlyIntegers
                     DecimalFormat fmt = new DecimalFormat("+#,##0;-#");
                     if(values[i] == 0) 
                         {sb.append(" 0\t");} 
@@ -564,16 +536,6 @@ public class SquareMatrix {
         return sb.toString();
     }
     
-    public String getTransformations() {
-        StringBuilder sb = new StringBuilder();
-        transformations.stream().forEach((String s)->{sb.append(" * ").append(s).append("\n"); });
-        return sb.toString();
-    }
     
-    public void noteTransformation(String description) {
-        assert description != null;
-        assert !description.equalsIgnoreCase("");
-        this.transformations.add(description);
-    }
 
 }

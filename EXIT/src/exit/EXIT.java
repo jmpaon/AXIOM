@@ -88,7 +88,7 @@ public class EXIT {
                 output.println(inputMatrix.importanceMatrix().round(arguments.maxImpact.intValue()));
                 
                 output.println("Input matrix driver-driven report:");
-                output.println(inputMatrix.scale(1).driverDriven().toString());
+                output.println(new EXITImpactMatrix(inputMatrix.scale(1)).driverDriven().toString());
             }
             
 
@@ -137,7 +137,7 @@ public class EXIT {
             /* Print full cross-impact matrix displaying direct and indirect impacts */
             {
                 Timer timer = new Timer();
-                EXITImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
+                CrossImpactMatrix resultMatrix = inputMatrix.summedImpactMatrix(arguments.treshold);
                 timer.stopTime("Process duration: ");
                 
                 

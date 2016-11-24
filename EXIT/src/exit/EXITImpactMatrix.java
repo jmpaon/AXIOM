@@ -53,7 +53,7 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
-     * @param maxImpact The maximum value values in the matrix can have.
+     * @param maxImpact The maximum value allowed in the matrix
      * Minimum allowed value is negative <b>maxImpact</b> and maximum <b>maxImpact</b>.
      * <b>maxImpact</b> must be greater than 0.
      * @param varCount The number of variables in the matrix; 
@@ -74,7 +74,7 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
-     * @param maxImpact The maximum value values in the matrix can have.
+     * @param maxImpact The maximum value allowed in the matrix
      * Minimum allowed value is negative <b>maxImpact</b> and maximum <b>maxImpact</b>.
      * <b>maxImpact</b> must be greater than 0.
      * @param varCount The number of variables in the matrix; 
@@ -89,7 +89,7 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
 
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
-     * @param maxImpact The maximum value values in the matrix can have.
+     * @param maxImpact The maximum value allowed in the matrix
      * Minimum allowed value is <b>-maxImpact</b> and maximum <b>maxImpact</b>.
      * @param varCount The number of variables in the matrix; 
      * @param onlyIntegers <b>true</b> if matrix contains only integers
@@ -102,7 +102,7 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
     
     /**
      * Constructor for <code>CrossImpactMatrix</code>.
-     * @param maxImpact The maximum value values in the matrix can have.
+     * @param maxImpact The maximum value allowed in the matrix
      * Minimum allowed value is <b>-maxImpact</b> and maximum <b>maxImpact</b>.
      * <b>maxImpact</b> must be greater than 0.
      * @param varCount The number of variables in the matrix; 
@@ -119,15 +119,25 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
     public EXITImpactMatrix(SquareMatrix matrix) {
         this(matrix, matrix.greatestValue());
     }
-    
+    /**
+     * Creates a <tt>CrossImpactMatrix</tt> from a <tt>SquareMatrix</tt>.
+     * @param matrix <tt>SquareMatrix</tt> that is a valid <tt>EXITImpactMatrix</tt>
+     * @param maxImpact The maximum value allowed in the matrix
+     */
     public EXITImpactMatrix(SquareMatrix matrix, double maxImpact) {
-        this(maxImpact, matrix.varCount, matrix.allValuesAreIntegers() && , matrix.names.clone(), matrix.values.clone());
+        this(
+                maxImpact, 
+                matrix.varCount, 
+                matrix.allValuesAreIntegers() && SquareMatrix.isInteger(maxImpact), 
+                matrix.names.clone(), 
+                matrix.values.clone());
+        
         for(int i=1;i<=this.varCount;i++) {
             assert this.getValue(i, i) == 0: 
                     "SquareMatrix "+matrix+" is not valid EXITImpactMatrix. Impact of hypothesis on itself not allowed";
         }
         for(double d : this.values) {
-            assert d < =this.maxImpact;
+            assert d <= this.maxImpact;
         }
         
     }
@@ -146,8 +156,8 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
      * See {@link ImpactChain#highImpactChains(double)}.
      * @return <code>EXITImpactMatrix</code> with the summed direct and indirect values between variables
      */
-    public EXITImpactMatrix summedImpactMatrix(double impactThreshold) {
-        EXITImpactMatrix resultMatrix = new EXITImpactMatrix(maxImpact*varCount, varCount, false, names);
+    public CrossImpactMatrix summedImpactMatrix(double impactThreshold) {
+        CrossImpactMatrix resultMatrix = new CrossImpactMatrix(varCount, false, names);
         double totalCount=0;
         for (int impactor=1; impactor<=this.varCount; impactor++) {
             Reporter.msg("Calculating significant indirect impacts of %s(%s)... ", getNameShort(impactor), truncateName(getName(impactor), 15));
@@ -158,7 +168,7 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
         }
         Reporter.msg("%s significant (threshold %1.4f) impact chains found in the matrix.%n", Math.round(totalCount), impactThreshold);
         Reporter.msg("The total number of possible chains in this matrix is %s.%n", approximateChainCountString());
-        resultMatrix.setMaxImpact(resultMatrix.greatestValue());
+        // resultMatrix.setMaxImpact(resultMatrix.greatestValue());
         return resultMatrix;
     }
     
@@ -174,7 +184,7 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
      * @param resultMatrix <code>EXITImpactMatrix</code> where the significant values are summed
      * @return count of significant impact chains found in <b>chain</b> and its expansions.
      */
-    private double sumImpacts(ImpactChain chain, double impactThreshold, EXITImpactMatrix resultMatrix) {
+    private double sumImpacts(ImpactChain chain, double impactThreshold, CrossImpactMatrix resultMatrix) {
         
         double count = 0;
         if(Math.abs(chain.impact()) >= impactThreshold) {
@@ -186,9 +196,9 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
             double newValue         = accumulatedValue + additionValue;
             
             if(impactor != impacted) {
-                if(resultMatrix.maxImpact < Math.abs(newValue)) {
-                    resultMatrix.setMaxImpact(Math.abs(Math.round((accumulatedValue + additionValue)*1.5)));
-                }
+                //if(resultMatrix.maxImpact < Math.abs(newValue)) {
+                //    resultMatrix.setMaxImpact(Math.abs(Math.round((accumulatedValue + additionValue)*1.5)));
+                //}
                 resultMatrix.setImpact(impactor, impacted, newValue);
             }
             
@@ -205,116 +215,8 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
     
     
     
-    /**
-     * Returns a matrix where values of <b>subtractMatrix</b> have
-     * been subtracted from values of this matrix.
-     * @param subtractMatrix Matrix whose values are subtracted from values of this matrix
-     * @return Difference matrix
-     */
-    public EXITImpactMatrix differenceMatrix(EXITImpactMatrix subtractMatrix) {
-        if(this.varCount != subtractMatrix.varCount) throw new IllegalArgumentException("Comparison matrix is of different size");
-        // if(this.maxImpact != subtractMatrix.maxImpact) throw new IllegalArgumentException("Comparison matrix has different maxImpact and might be not suitable for difference calculation");
-        boolean bothMatricesIntegral = this.onlyIntegers && subtractMatrix.onlyIntegers;
-        EXITImpactMatrix differenceMatrix = new EXITImpactMatrix((this.maxImpact+subtractMatrix.maxImpact), this.varCount, bothMatricesIntegral, this.names, this.values);
-        for (int i = 0; i < differenceMatrix.values.length; i++) {
-            differenceMatrix.values[i] -= subtractMatrix.values[i];
-        }
-        differenceMatrix.noteTransformation("Derived as a difference matrix");
-        return differenceMatrix;
-    }
 
     
-    /**
-     * Returns a <code>VarInfoTable</code>
-     * where for each variable, the sum of impacts on other variables
-     * and the sum of impacts of other variables have been calculated.
-     * Variables are classified into four classes on the basis of this information.
-     * <table><tr><th></th><th>driven &lt; average</th><th>driven &gt; average</th></tr><tr><td>driver &gt; average</td><td>Driver</td><td>Critical</td></tr><tr><td>driver &lt; average</td><td>Stable</td><td>Reactive</td></tr></table>
-     * 
-     * @return <code>EXITImpactMatrix</code> row and column sums for each variable and the classification in a <code>VarInfoTable</code>
-     */
-    public VarInfoTable<String> driverDriven() {
-        VarInfoTable<String> driverDrivenInfo = new VarInfoTable<>(Arrays.asList("Driver", "Driven", "Type"));
-        double driverAverage = rowSum(1, true), drivenAverage = columnSum(1, true);
-        for (int i = 2; i <= varCount; i++) {
-            driverAverage = ((i-1)*driverAverage + rowSum(i, true)) / i ;
-            drivenAverage = ((i-1)*drivenAverage + columnSum(i, true)) / i ;
-        }
-        
-        
-        for (int i = 1; i <= this.varCount; i++) {
-            String name = this.getNamePrint(i);
-            double driver = this.rowSum(i, true);
-            double driven = this.columnSum(i, true);
-            boolean isDriver = driver > driverAverage;
-            boolean isDriven = driven > drivenAverage;
-            String type = isDriver ?
-                    isDriven ? "Critical" : "Driver" :
-                    isDriven ? "Reactive" : "Stable" ;
-            String driver_s = String.format("%2.1f", driver);
-            String driven_s = String.format("%2.1f", driven);
-            driverDrivenInfo.put(name, Arrays.asList(driver_s, driven_s, type));
-        }
-        return driverDrivenInfo;
-    }
-    
-    
-    /**
-     * Returns information about the most important drivers of each variable.
-     * Extracts the same information as {@link CrossImpactMatrix#reportDrivingVariables()}
-     * in a <code>VarInfoTable</code>.
-     * @return Information about the most important drivers for each variable.
-     */
-    public VarInfoTable<String> drivingVariables() {
-        VarInfoTable<String> drivers = new VarInfoTable<>();
-        for (int i = 1; i <= varCount; i++) {
-            String varName = this.getNamePrint(i);
-            List<String> impactors = new LinkedList<>();
-            for(Integer imp : this.aboveAverageImpactors(i)) {
-                impactors.add(this.getNamePrint(imp));
-            }
-            drivers.put(varName, impactors);
-        }
-        return drivers;
-    }
-    
-    
-    /**
-     * Lists for each variable the variables that have an above-average
-     * impact on the variable.
-     * @return String containing the report of important driving variables for each variable
-     */
-    public String reportDrivingVariables() {
-        String report = "";
-        EXITImpactMatrix m = this.scale(1);
-        for(int i = 1 ; i<=varCount; i++) {
-            report += String.format("Important drivers for %s:%n", m.getName(i));
-            for(Integer imp : m.aboveAverageImpactors(i)) {
-                report += String.format("\t%s (%1.1f)%n", m.getName(imp), m.getValue(imp, i));
-            }
-        }
-        return report;
-    }
-    
-    
-    /**
-     * Returns a list of indices of the variables
-     * that have a greater than average impact on variable
-     * with index <b>varIndex</b>.
-     * @param varIndex Variable index for variable whose above-average impactors
-     * are returned
-     * @return List of above-average impactors for variable <b>varIndex</b>
-     */
-    List<Integer> aboveAverageImpactors(int varIndex) {
-        List<Integer> impactors = new LinkedList<>();
-        SquareMatrix normMatrix = this.scale(1);
-        double average = normMatrix.columnAverage(varIndex, true);
-        for(int i=1; i<=normMatrix.varCount; i++) {
-            if(Math.abs(normMatrix.getValue(i, varIndex)) >= average)
-                impactors.add(i);
-        }
-        return impactors;
-    }
     
     
     /**
@@ -378,18 +280,13 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
      * @param impacted Index of impacted variable
      * @param value New value for impact
      */
+    @Override
     public void setImpact(int impactor, int impacted, double value) {
         
         // Absolute value of impact cannot be greater than maxImpact
         if (maxImpact < Math.abs(value)) {
             throw new IllegalArgumentException(String.format("Value %2.2f is bigger than max value %2.2f", value, maxImpact));
         }
-        
-        // Variables cannot have an impact on themselves
-        if (impactor == impacted && value != 0) {
-            throw new IllegalArgumentException(String.format("Attempt to set an impact (%s) of variable (%s) on itself", value, impactor));
-        }        
-        
         
         super.setValue(impactor, impacted, value);
     }
@@ -546,8 +443,9 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
      * Returns a clone of the cross-impact matrix.
      * @return Clone of the matrix
      */
-    public EXITImpactMatrix clone() {
-        
+    @Override
+    public EXITImpactMatrix clone() throws CloneNotSupportedException {
+        super.clone();
         return new EXITImpactMatrix(maxImpact, varCount, onlyIntegers, this.names.clone(), this.values.clone());
     }
 

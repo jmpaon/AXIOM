@@ -114,13 +114,22 @@ public final class EXITImpactMatrix extends CrossImpactMatrix {
     
     /**
      * Creates a <tt>CrossImpactMatrix</tt> from a <tt>SquareMatrix</tt>.
-     * @param matrix <tt>SquareMatrix</tt> that is a valid <tt>CrossImpactMatrix</tt>
+     * @param matrix <tt>SquareMatrix</tt> that is a valid <tt>EXITImpactMatrix</tt>
      */
     public EXITImpactMatrix(SquareMatrix matrix) {
-        this(matrix.greatestValue(), matrix.varCount, matrix.allValuesAreIntegers(), matrix.names.clone(), matrix.values.clone());
+        this(matrix, matrix.greatestValue());
+    }
+    
+    public EXITImpactMatrix(SquareMatrix matrix, double maxImpact) {
+        this(maxImpact, matrix.varCount, matrix.allValuesAreIntegers() && , matrix.names.clone(), matrix.values.clone());
         for(int i=1;i<=this.varCount;i++) {
-            assert this.getValue(i, i) == 0 : "Impact of hypothesis on itself not allowed";
-        }        
+            assert this.getValue(i, i) == 0: 
+                    "SquareMatrix "+matrix+" is not valid EXITImpactMatrix. Impact of hypothesis on itself not allowed";
+        }
+        for(double d : this.values) {
+            assert d < =this.maxImpact;
+        }
+        
     }
     
     

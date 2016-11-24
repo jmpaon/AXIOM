@@ -120,16 +120,16 @@ public class CrossImpactMatrix extends SquareMatrix{
     public CrossImpactMatrix normalize() {
         double[] normalizedValues = this.values.clone();
         double averageDistanceFromZero = this.matrixAverage(true);
-        for (int i = 0; i < normalizedValues.length; i++) {
+        for (int i=0; i < normalizedValues.length; i++) {
             normalizedValues[i] /= averageDistanceFromZero;
         }
-        double[] sorted = normalizedValues.clone();
-        return new CrossImpactMatrix(this.varCount, false, this.names, normalizedValues);
+        CrossImpactMatrix normalized = new CrossImpactMatrix(this.varCount, false, this.names, normalizedValues);
+        normalized.noteTransformation("normalized");
+        return normalized;
     }
 
-    public EXITImpactMatrix normalize(double scaleTo) {
-        EXITImpactMatrix normalized = this.normalize().scale(scaleTo);
-        normalized.noteTransformation("Normalized to " + scaleTo);
+    public CrossImpactMatrix normalize(double scaleTo) {
+        CrossImpactMatrix normalized = this.normalize().scale(scaleTo);
         return normalized;
     }
 
@@ -152,15 +152,15 @@ public class CrossImpactMatrix extends SquareMatrix{
      * @param scaleTo The value that the highest absolute impact value in the matrix will be scaled to
      * @return <code>EXITImpactMatrix</code> that has its values scaled to <b>scaleTo</b> and rounded to nearest integers
      */
-    public EXITImpactMatrix round(int scaleTo) {
+    public CrossImpactMatrix round(int scaleTo) {
         if (Math.abs(scaleTo) < 1) {
             throw new IllegalArgumentException("scaleTo cannot be 0");
         }
-        EXITImpactMatrix roundedMatrix = this.scale(scaleTo);
+        CrossImpactMatrix roundedMatrix = this.scale(scaleTo);
         for (int i = 0; i < roundedMatrix.values.length; i++) {
             roundedMatrix.values[i] = Math.round(roundedMatrix.values[i]);
         }
-        return new EXITImpactMatrix(roundedMatrix.maxImpact, roundedMatrix.varCount, true, roundedMatrix.names, roundedMatrix.values);
+        return roundedMatrix;
     }
 
     /**
@@ -169,7 +169,7 @@ public class CrossImpactMatrix extends SquareMatrix{
      * @param scaleTo The value that the greatest absolute impact value in the matrix will be scaled to
      * @return <code>EXITImpactMatrix</code> scaled according to <b>scaleTo</b> argument.
      */
-    public EXITImpactMatrix scale(double scaleTo) {
+    public CrossImpactMatrix scale(double scaleTo) {
         if (scaleTo == 0) {
             throw new IllegalArgumentException("scaleTo cannot be 0");
         }
@@ -178,7 +178,11 @@ public class CrossImpactMatrix extends SquareMatrix{
         for (int i = 0; i < values.length; i++) {
             scaledImpacts[i] = values[i] / max * scaleTo;
         }
-        return new EXITImpactMatrix(Math.abs(scaleTo), this.varCount, this.onlyIntegers, this.names, scaledImpacts);
+        return new CrossImpactMatrix(this.varCount, this.onlyIntegers, this.names, scaledImpacts);
+    }
+    
+    public EXITImpactMatrix toEXITImpactMatrix(double maxImpact) {
+        // return new EXITImpactMatrix
     }
     
     

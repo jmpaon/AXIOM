@@ -406,11 +406,16 @@ public class SquareMatrix {
      */
     protected boolean allValuesAreIntegers() {
         for (int i = 0; i < values.length; i++) {
-            if (values[i] != (int) values[i]) {
+            //if (values[i] != (int) values[i]) { // REMOVE
+            if ( ! isInteger(values[i])) {
                 return false;
             }
         }
         return true;
+    }
+    
+    protected static boolean isInteger(double d) {
+        return d == (int) d;
     }
 
     /**

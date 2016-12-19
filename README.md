@@ -1,6 +1,8 @@
 # AXIOM
 
 This java program implements the AXIOM method.
+AXIOM is a cross-impact modeling and analysis technique.
+Detailed description of the approach can be found [here](http://urn.fi/URN:NBN:fi:uta-201611142562)
 
 
 ## Usage 
